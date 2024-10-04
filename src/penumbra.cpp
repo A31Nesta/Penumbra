@@ -3,6 +3,7 @@
 #include <bgfx/platform.h>
 
 #include <GLFW/glfw3.h>
+#include <cstring>
 #include <iostream>
 #include <string>
 #if BX_PLATFORM_LINUX
@@ -26,14 +27,18 @@ int main(int argc, char** argv) {
     glfwSetErrorCallback(glfw_errorCallback);
 
 #if BX_PLATFORM_LINUX || BX_PLATFORM_BSD
-    glfwInitHint(GLFW_PLATFORM, GLFW_PLATFORM_X11);
+    if (argc >= 2 && strcmp(argv[1], "wayland")) {
+        glfwInitHint(GLFW_PLATFORM, GLFW_PLATFORM_X11);
+    }
 #endif
 
     if (!glfwInit()) {
         throw std::runtime_error("PENUMBRA: Couldn't initialize GLFW");
     }
 
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+    if (argc >= 1 && strcmp(argv[0], "transparent")) {
+        glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+    }
     glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
 
     GLFWwindow* window = glfwCreateWindow(1280, 720, "Penumbra", NULL, NULL);
