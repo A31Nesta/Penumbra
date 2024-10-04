@@ -20,8 +20,13 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 )
 
 target_link_libraries(${PROJECT_NAME}
-    glfw
-    bx
-    bimg
     bgfx
+    bimg
+    bx
+    glfw
+
+    dl
+    GL
+    pthread
+    X11
 )
