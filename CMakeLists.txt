@@ -13,7 +13,21 @@ add_executable(penumbra
     src/penumbra.cpp
 )
 
+option(LINUX_X11 "Linux Only. Enables X11 support. [Recommended]" ON)
+option(LINUX_WAYLAND "Linux Only. Enables Wayland support. [Recommended if Wayland is installed]" ON)
+
 add_compile_definitions(BX_CONFIG_DEBUG=$<CONFIG:Debug>)
+
+# Define PENUMBRA_X11_COMPAT and PENUMBRA_WL_COMPAT
+if(LINUX)
+    if(LINUX_X11)
+        add_compile_definitions(PENUMBRA_X11_COMPAT)
+    endif(LINUX_X11)
+    if(LINUX_WAYLAND)
+        add_compile_definitions(PENUMBRA_WL_COMPAT)
+    endif(LINUX_WAYLAND)
+endif(LINUX)
+
 
 target_include_directories(${PROJECT_NAME} PRIVATE
     include
@@ -29,5 +43,13 @@ target_link_libraries(${PROJECT_NAME}
     dl
     GL
     pthread
-    X11
 )
+
+# If using X11, link it
+if(LINUX)
+    if(LINUX_X11)
+        target_link_libraries(${PROJECT_NAME}
+            X11
+        )
+    endif(LINUX_X11)
+endif(LINUX)
