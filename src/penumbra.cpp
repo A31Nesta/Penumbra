@@ -1,3 +1,6 @@
+#include "debug/consoleColors.hpp"
+#include "debug/log.hpp"
+#include <X11/Xlib.h>
 #include <bx/bx.h>
 #include <bgfx/bgfx.h>
 #include <bgfx/platform.h>
@@ -132,12 +135,33 @@ int main(int argc, char** argv) {
 
 	// Set view 0 to the same dimensions as the window and to clear the color buffer.
 	const bgfx::ViewId kClearView = 0;
-	bgfx::setViewClear(kClearView, BGFX_CLEAR_COLOR, 0x00000000);
+	bgfx::setViewClear(kClearView, BGFX_CLEAR_COLOR, (penumbra_flags & PENUMBRA_TRANSPARENT)?0x00000000:0x7e7189ff);
 	bgfx::setViewRect(kClearView, 0, 0, bgfx::BackbufferRatio::Equal);
 
     // Enable debug text.
     bgfx::setDebug(BGFX_DEBUG_TEXT);
 
+	// Output text to console
+	pen::debug::print(" PENUMBRA ", pen::debug::Color::DARK_GRAY, pen::debug::Color::WHITE);
+	pen::debug::print(" -  Debug Version \n\n", pen::debug::Color::WHITE, pen::debug::Color::DARK_GRAY);
+	// EXTRA DEBUGGING INFO
+	if (penumbra_flags & PENUMBRA_TRANSPARENT) {
+		pen::debug::printPositioned(" TRANSPARENCY ENABLED: PREPARE FOR BUGS ", 40, 1, true, true, pen::debug::Color::DARK_GRAY, pen::debug::Color::YELLOW);
+	}
+	#if BX_PLATFORM_LINUX
+		std::string renderer = bgfx::getRendererName(bgfx::getRendererType());
+		if (isWayland) {
+			pen::debug::printPositioned(" Wayland - "+renderer, 0, 1, false, true, pen::debug::Color::WHITE, pen::debug::Color::DARK_BLUE);
+		} else {
+			pen::debug::printPositioned(" X11 - "+renderer, 0, 1, false, true, pen::debug::Color::WHITE, pen::debug::Color::DARK_BLUE);
+		}
+	#endif
+	// Frame Counter
+	long counter = 0;
+	pen::debug::printPositioned("Frame: ", 0, 2, false, true, pen::debug::Color::YELLOW, pen::debug::Color::DARK_GRAY);
+	pen::debug::printPositionedValue(counter, 7, 2, false, true, pen::debug::Color::YELLOW, pen::debug::Color::DARK_GRAY);
+
+	// Loop
 	while (!glfwWindowShouldClose(window)) {
 		glfwPollEvents();
 		// Handle window resize.
@@ -149,26 +173,11 @@ int main(int argc, char** argv) {
 		}
 		// This dummy draw call is here to make sure that view 0 is cleared if no other draw calls are submitted to view 0.
 		bgfx::touch(kClearView);
-		// Use debug font to print information about this example.
-		bgfx::dbgTextClear();
-		bgfx::dbgTextPrintf(1, 1, 0x0f, "PENUMBRA: Test Version");
-		bgfx::dbgTextPrintf(80, 1, 0x0f, "\x1b[;0m    \x1b[;1m    \x1b[; 2m    \x1b[; 3m    \x1b[; 4m    \x1b[; 5m    \x1b[; 6m    \x1b[; 7m    \x1b[0m");
-		bgfx::dbgTextPrintf(80, 2, 0x0f, "\x1b[;8m    \x1b[;9m    \x1b[;10m    \x1b[;11m    \x1b[;12m    \x1b[;13m    \x1b[;14m    \x1b[;15m    \x1b[0m");
-		const bgfx::Stats* stats = bgfx::getStats();
-		bgfx::dbgTextPrintf(1, 2, 0x0f, "Backbuffer %dW x %dH in pixels, debug text %dW x %dH in characters.", stats->width, stats->height, stats->textWidth, stats->textHeight);
 
-		// EXTRA DEBUGGING INFO
-		if (penumbra_flags & PENUMBRA_TRANSPARENT) {
-			bgfx::dbgTextPrintf(stats->textWidth-40, stats->textHeight-1, 0xcf, " TRANSPARENCY ENABLED: PREPARE FOR BUGS ");
-		}
-		#if BX_PLATFORM_LINUX
-			std::string renderer = bgfx::getRendererName(bgfx::getRendererType());
-			if (isWayland) {
-				bgfx::dbgTextPrintf(0, stats->textHeight-1, 0xe8, std::string(" Wayland - "+renderer).c_str());
-			} else {
-				bgfx::dbgTextPrintf(0, stats->textHeight-1, 0xe8, std::string(" X11 - "+renderer).c_str());
-			}
-		#endif
+		// Update Counter
+		counter++;
+		// Update Debug Text
+		pen::debug::updateConsole();
 		
 		// Advance to next frame. Process submitted rendering primitives.
 		bgfx::frame();
