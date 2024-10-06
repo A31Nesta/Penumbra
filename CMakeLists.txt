@@ -13,6 +13,7 @@ add_executable(penumbra
     src/debug/log.cpp
     src/utils/config.cpp
     src/penumbra.cpp
+    testEntry.cpp
 )
 
 option(LINUX_X11 "Linux Only. Enables X11 support. [Recommended]" ON)
