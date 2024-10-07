@@ -52,6 +52,9 @@ namespace pen::core {
         winStruct.view2D = view2D;
         init(title, width, height, penumbra_flags);
     }
+	Window::~Window() {
+		glfwDestroyWindow(winStruct._window);
+	}
     
     // Set behavior properties
     void Window::setWindowCanClose(bool canClose) {
@@ -170,7 +173,6 @@ namespace pen::core {
 		init.resolution.reset = winStruct._resetFlags;
 
 		// Choose Vulkan backend
-		// TODO: Also support OpenGL if Vulkan is not supported
 		init.type = bgfx::RendererType::Vulkan;
 
 		if (!bgfx::init(init)) {
@@ -181,7 +183,8 @@ namespace pen::core {
 		bgfx::setViewClear(winStruct.view3D, BGFX_CLEAR_COLOR, (penumbra_flags & PENUMBRA_TRANSPARENT)?0x00000000:0x7e7189ff);
 		bgfx::setViewRect(winStruct.view3D, 0, 0, bgfx::BackbufferRatio::Equal);
 
-        bgfx::setViewClear(winStruct.view2D, BGFX_CLEAR_COLOR, 0x00000000);
+		// INFO: View Clear Disabled for 2D. Test
+        // bgfx::setViewClear(winStruct.view2D, BGFX_CLEAR_COLOR, 0x00000000);
 		bgfx::setViewRect(winStruct.view2D, 0, 0, bgfx::BackbufferRatio::Equal);
 
 		// Enable debug text.

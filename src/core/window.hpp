@@ -25,6 +25,7 @@ namespace pen::core {
     class Window {
     public:
         Window(std::string title, int width, int height, uint32_t penumbra_flags, uint16_t view3D, uint16_t view2D);
+        ~Window();
 
         // Set behavior properties
         void setWindowCanClose(bool canClose);

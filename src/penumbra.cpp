@@ -1,5 +1,9 @@
 #include "penumbra.hpp"
 
+// Libs
+#include <GLFW/glfw3.h>
+#include <bgfx/bgfx.h>
+
 // STD
 #include <cstring>
 #include <string>
@@ -19,8 +23,12 @@ namespace pen {
 		core::updateWindows();
 	}
 
-	// void end() {
-	// 	bgfx::shutdown();
-	// 	glfwTerminate();
-	// }
+	void end() {
+		bgfx::shutdown();
+		glfwTerminate();
+	}
+
+	bool running() {
+		return core::running();
+	}
 }

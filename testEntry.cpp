@@ -34,10 +34,10 @@ int main(int argc, char** argv) {
         "Now there is a whole train of men masturbating together at this one image.\nThis is all your fault, you could have prevented this if you had just tagged this post NSFW.\n");
 
     // Run Program
-    while (true) {
+    while (pen::running()) {
         counter++;
         pen::update();
     }
 
-    // pen::end();
+    pen::end();
 }

@@ -1,7 +1,10 @@
 #include "windowCoordinator.hpp"
+#include "debug/consoleColors.hpp"
 #include "debug/log.hpp"
 #include "window.hpp"
+
 #include <GLFW/glfw3.h>
+
 #include <cstdint>
 #include <string>
 #include <vector>
@@ -9,6 +12,7 @@
 namespace pen::core {
     namespace {
         std::vector<Window*> windows;
+        bool isRunning = true;
     }
 
     uint32_t createWindow(std::string title, int width, int height, uint32_t flags) {
@@ -19,17 +23,27 @@ namespace pen::core {
 
         return id;
     }
+    void setWindowCloseable(uint32_t window, bool closeable) {
+        Window* w = windows.at(window);
+        if (w == nullptr)
+            return;
+        
+        w->setWindowCanClose(closeable);
+    }
+
     void updateWindows() {
         uint32_t size = windows.size();
 
         glfwPollEvents();
 
+        isRunning = false;
         for (uint32_t i = 0; i < size; i++) {
             Window* w = windows.at(i);
             if (w == nullptr)
                 continue;
 
             if (w->running()) {
+                isRunning = true;
                 w->update();
             }
             // Only delete if we allow it to be deleted lmao
@@ -38,7 +52,12 @@ namespace pen::core {
                 windows.at(i) = nullptr;
             }
             else {
-                debug::print("ERROR: Can't close this window.\n> Reason: Window "+std::to_string(i)+" has canClose set to false.\n> You can force-close all with closeAll()");
+                isRunning = true;
+                glfwSetWindowShouldClose(w->getWinStruct()._window, GLFW_FALSE);
+                debug::print(
+                    "ERROR: Can't close this window.\n> Reason: Window "+std::to_string(i)+" has canClose set to false.\n> You can force-close all with closeAll()\n\n",
+                    debug::Color::DARK_RED
+                );
             }
         }
     }
@@ -46,6 +65,10 @@ namespace pen::core {
         windows.at(window)->end();
     }
     void closeAll() {
+        // TODO: Add CloseAll
+    }
 
+    bool running() {
+        return isRunning;
     }
 }
