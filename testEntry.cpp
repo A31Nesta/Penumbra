@@ -4,6 +4,21 @@
 
 #include <bgfx/bgfx.h>
 #include <cstdint>
+#include <memory>
+#include <array>
+
+std::string exec(const char* cmd) {
+    std::array<char, 128> buffer;
+    std::string result;
+    std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+    if (!pipe) {
+        throw std::runtime_error("popen() failed!");
+    }
+    while (fgets(buffer.data(), static_cast<int>(buffer.size()), pipe.get()) != nullptr) {
+        result += buffer.data();
+    }
+    return result;
+}
 
 int main(int argc, char** argv) {
     uint32_t flags = pen::getFlagsFromArguments(argc, argv);
@@ -29,9 +44,7 @@ int main(int argc, char** argv) {
     pen::debug::printPositioned("Frame: ", 0, 2, false, true, pen::debug::Color::YELLOW, pen::debug::Color::DARK_GRAY);
     pen::debug::printPositionedValue(counter, 7, 2, false, true, pen::debug::Color::YELLOW, pen::debug::Color::DARK_GRAY);
 
-    pen::debug::print("Please put an NSFW tag on this.\nI was on the train and when I saw this I had to start furiously masturbating.\n"
-        "Everyone else gave me strange looks and were saying things like \"what the fuck\" and \"call the police\".\nI dropped my phone and everyone around me saw this image.\n"
-        "Now there is a whole train of men masturbating together at this one image.\nThis is all your fault, you could have prevented this if you had just tagged this post NSFW.\n");
+    pen::debug::print(exec("cowsay mooooo"));
 
     // Run Program
     while (pen::running()) {
