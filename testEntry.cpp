@@ -10,7 +10,7 @@ int main(int argc, char** argv) {
     pen::init("Penumbra", 1280, 720, flags);
 
     // Set Debug Stuff
-    pen::debug::print(" RENDERING LIB ", pen::debug::Color::DARK_GRAY, pen::debug::Color::WHITE);
+    pen::debug::print(" PENUMBRA ", pen::debug::Color::DARK_GRAY, pen::debug::Color::WHITE);
     pen::debug::print(" -  Debug Version \n\n", pen::debug::Color::WHITE, pen::debug::Color::DARK_GRAY);
     // EXTRA DEBUGGING INFO
     if (flags & PENUMBRA_TRANSPARENT) {
@@ -34,10 +34,10 @@ int main(int argc, char** argv) {
         "Now there is a whole train of men masturbating together at this one image.\nThis is all your fault, you could have prevented this if you had just tagged this post NSFW.\n");
 
     // Run Program
-    while (pen::running()) {
+    while (true) {
         counter++;
         pen::update();
     }
 
-    pen::end();
+    // pen::end();
 }

@@ -11,6 +11,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_executable(penumbra
     src/debug/consoleColors.cpp
     src/debug/log.cpp
+    src/core/window.cpp
+    src/core/windowCoordinator.cpp
     src/utils/config.cpp
     src/penumbra.cpp
     testEntry.cpp
