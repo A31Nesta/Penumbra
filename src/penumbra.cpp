@@ -11,6 +11,7 @@
 
 // CUSTOM
 #include "core/windowCoordinator.hpp"
+#include "debug/log.hpp"
 
 namespace pen {
 	uint32_t win;
@@ -24,6 +25,7 @@ namespace pen {
 	}
 
 	void end() {
+		debug::clearAll();
 		bgfx::shutdown();
 		glfwTerminate();
 	}

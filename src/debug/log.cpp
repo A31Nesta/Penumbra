@@ -3,6 +3,7 @@
 #include "debug/messageStr.hpp"
 #include "debug/messageNum.hpp"
 
+#include <algorithm>
 #include <bgfx/bgfx.h>
 #include <cstdint>
 #include <sstream>
@@ -16,6 +17,15 @@ namespace pen::debug {
         uint16_t _x = 0;
         uint16_t _y = 0;
 
+        // Debug
+        int _debx = 0;
+        int _deby = 0;
+        int _maxx = 0;
+        int _maxy = 0;
+        int _logSize = 0;
+        bool _debuggingPosition = false;
+
+        // Messages
         std::vector<log::Message*> _consoleLog; // All the non-positioned messages
         std::vector<log::Message*> _positionedLog; // All the positioned messages
     }
@@ -25,11 +35,22 @@ namespace pen::debug {
         // Get Console size
         std::pair<uint16_t, uint16_t> cSize = getConsoleSize();
 
+        if (_debuggingPosition) {
+            _debx = _x;
+            _deby = _y;
+            _maxx = cSize.first;
+            _maxy = cSize.second;
+            _logSize = _consoleLog.size();
+        }
+
         // Clear
         bgfx::dbgTextClear();
 
         // Console Log
         for (log::Message* msg : _consoleLog) {
+            if (msg == nullptr) {
+                continue;
+            }
             msg->print(cSize.first, cSize.second);
         }
 
@@ -58,6 +79,35 @@ namespace pen::debug {
         return {stats->textWidth, stats->textHeight};
     }
 
+    // UTILITIES (PRIVATE)
+    
+    // Moves all messages down (or up if it's a negative number)
+    void moveAll(int spaces) {
+        for (uint32_t i = 0; i < _consoleLog.size(); i++) {
+            log::Message* msg = _consoleLog.at(i);
+            if (msg == nullptr) {
+                continue;
+            }
+
+            msg->translate(0, spaces);
+            if (msg->getPos().second<0) {
+                delete msg;
+                _consoleLog.at(i) = nullptr;
+            }
+        }
+    }
+
+    // Checks the position of the text cursor and moves everything up
+    void correctTextView() {
+        std::pair<uint16_t, uint16_t> consoleSize = getConsoleSize();
+        uint16_t offset = std::max(_y - consoleSize.second, 0);
+        if (offset) {
+            moveAll(-offset);
+            _y = consoleSize.second;
+        }
+    }
+    // END UTILITIES
+
     // Prints the desired text into the screen. It automatically prints the text after the last line
     void print(std::string msg, Color color, Color background) {
         std::stringstream ss(msg);
@@ -69,7 +119,23 @@ namespace pen::debug {
 
         while (std::getline(ss, line, '\n')) {
             log::MessageStr* message = new log::MessageStr(line, _x, _y, color, background);
-            _consoleLog.push_back(message);
+
+            // Find free space on vector
+            uint32_t id = 0;
+            bool idFound = false;
+            for (uint32_t i = 0; i < _consoleLog.size(); i++) {
+                if (_consoleLog.at(i)==nullptr) {
+                    id = i;
+                    idFound = true;
+                    break;
+                }
+            }
+            // Put message in free space, if there's no free space create a new space
+            if (idFound) {
+                _consoleLog.at(id) = message;
+            } else {
+                _consoleLog.push_back(message);
+            }
 
             // Save updated coords. The length of the line must be added to X
             origX = _x + line.length();
@@ -85,6 +151,8 @@ namespace pen::debug {
             _x = origX;
             _y = origY;
         }
+
+        correctTextView();
     }
     // Prints the value of the variable passed by reference. This reference is held onto and updated
     // until the console is cleared
@@ -94,6 +162,8 @@ namespace pen::debug {
         // Set the coords to the next line
         _x = 0;
         _y += 1;
+
+        correctTextView();
     }
     void printValue(long& variable, Color color, Color background) {
         log::MessageLong* msg = new log::MessageLong(variable, _x, _y, color, background);
@@ -101,6 +171,8 @@ namespace pen::debug {
         // Set the coords to the next line
         _x = 0;
         _y += 1;
+
+        correctTextView();
     }
     void printValue(float& variable, Color color, Color background) {
         log::MessageFloat* msg = new log::MessageFloat(variable, _x, _y, color, background);
@@ -108,6 +180,8 @@ namespace pen::debug {
         // Set the coords to the next line
         _x = 0;
         _y += 1;
+
+        correctTextView();
     }
     void printValue(double& variable, Color color, Color background) {
         log::MessageDouble* msg = new log::MessageDouble(variable, _x, _y, color, background);
@@ -115,6 +189,8 @@ namespace pen::debug {
         // Set the coords to the next line
         _x = 0;
         _y += 1;
+
+        correctTextView();
     }
 
     // Print the desired text in a fixed position. This can be used to print labels for value prints
@@ -157,6 +233,23 @@ namespace pen::debug {
     void deletePositioned(uint32_t id) {
         delete _positionedLog.at(id);
         _positionedLog.at(id) = nullptr;
+    }
+
+    // DEBUG
+    void debugCursorPosition() {
+        _debuggingPosition = true;
+
+        printPositioned("CUR", 3, 0, true);
+        printPositionedValue(_deby, 7, 0, true);
+        printPositionedValue(_debx, 13, 0, true);
+
+
+        printPositioned("MAX", 3, 1, true);
+        printPositionedValue(_maxy, 7, 1, true);
+        printPositionedValue(_maxx, 13, 1, true);
+
+        printPositioned("LOG", 3, 2, true);
+        printPositionedValue(_logSize, 7, 2, true);
     }
 
     // Clears the console without unregistering positioned texts

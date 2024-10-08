@@ -2,13 +2,14 @@
 
 #include <bgfx/bgfx.h>
 #include <cstdint>
+#include <utility>
 
 #include "debug/consoleColors.hpp"
 
 namespace pen::debug::log {
     class Message {
     public:
-        Message(uint16_t x, uint16_t y, Color color, Color background) {
+        Message(int16_t x, int16_t y, Color color, Color background) {
             this->x = x;
             this->y = y;
 
@@ -28,18 +29,21 @@ namespace pen::debug::log {
 
         virtual void print(uint16_t consoleX, uint16_t consoleY) = 0;
 
-        void translate(uint16_t x, uint16_t y) {
+        void translate(int16_t x, int16_t y) {
             this->x += x;
             this->y += y;
         }
-        void setPos(uint16_t x, uint16_t y) {
+        void setPos(int16_t x, int16_t y) {
             this->x = x;
             this->y = y;
         }
+        std::pair<int16_t, int16_t> getPos() {
+            return {x, y};
+        }
 
     protected:
-        uint16_t x;
-        uint16_t y;
+        int16_t x;
+        int16_t y;
 
         bool alignRight = false;
         bool alignBottom = false;

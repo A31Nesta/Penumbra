@@ -5,13 +5,14 @@
 #include <bgfx/bgfx.h>
 #include <cstdint>
 #include <stdexcept>
+#include <string>
 
 // Run command and get output.
 // When the shell is sus
-std::string exec(const char* cmd) {
+std::string exec(std::string cmd) {
     char buffer[128];
     std::string result = "";
-    FILE* pipe = popen(cmd, "r");
+    FILE* pipe = popen(cmd.c_str(), "r");
     if (!pipe) throw std::runtime_error("popen() failed!");
     try {
         while (fgets(buffer, sizeof buffer, pipe) != NULL) 
@@ -29,8 +30,9 @@ int main(int argc, char** argv) {
     pen::init("Penumbra", 1280, 720, flags);
 
     // Set Debug Stuff
-    pen::debug::print(" PENUMBRA ", pen::debug::Color::DARK_GRAY, pen::debug::Color::WHITE);
-    pen::debug::print(" -  Debug Version \n\n", pen::debug::Color::WHITE, pen::debug::Color::DARK_GRAY);
+    pen::debug::printPositioned(" RENDERER ", 0, 0, false, false, pen::debug::Color::DARK_GRAY, pen::debug::Color::WHITE);
+    pen::debug::printPositioned(" -  Debug Version ", 10, 0, false, false, pen::debug::Color::WHITE, pen::debug::Color::DARK_GRAY);
+    pen::debug::setCursorPos(0, 2);
     // EXTRA DEBUGGING INFO
     if (flags & PENUMBRA_TRANSPARENT) {
         pen::debug::printPositioned(" TRANSPARENCY ENABLED: PREPARE FOR BUGS ", 40, 1, true, true, pen::debug::Color::DARK_GRAY, pen::debug::Color::YELLOW);
@@ -48,11 +50,17 @@ int main(int argc, char** argv) {
     pen::debug::printPositioned("Frame: ", 0, 2, false, true, pen::debug::Color::YELLOW, pen::debug::Color::DARK_GRAY);
     pen::debug::printPositionedValue(counter, 7, 2, false, true, pen::debug::Color::YELLOW, pen::debug::Color::DARK_GRAY);
 
-    pen::debug::print(exec("cowsay mooooo"));
+    pen::debug::debugCursorPosition();
 
     // Run Program
     while (pen::running()) {
         counter++;
+
+        if (counter % 500 == 0) {
+            // Test without icles for real for real no cap
+            pen::debug::print(std::to_string(counter)+"\n");
+        }
+        
         pen::update();
     }
 

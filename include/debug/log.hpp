@@ -44,6 +44,9 @@ namespace pen::debug {
     // Deletes a Positioned text
     void deletePositioned(uint32_t id);
 
+    // DEBUG
+    void debugCursorPosition();
+
     // Clears the console without unregistering positioned texts
     void clearConsole();
     // Clears the console and unregisters all positioned texts of all types
