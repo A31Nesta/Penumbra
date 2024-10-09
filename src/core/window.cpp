@@ -1,6 +1,10 @@
 #include "window.hpp"
+#include "antumbra/antumbra.hpp"
+#include "core/windowStruct.hpp"
+#include "debug/consoleColors.hpp"
 #include "debug/log.hpp"
 #include "utils/config.hpp"
+#include "utils/vectors.hpp"
 
 #include <bgfx/defines.h>
 #include <bx/bx.h>
@@ -64,6 +68,14 @@ namespace pen::core {
         return canClose;
     }
 
+	// Create or set renderers
+	void Window::createAntumbra(std::string defaultShader) {
+		antumbra = new antumbra::Antumbra(defaultShader);
+		debug::print("LOG: Antumbra renderer successfully created\n");
+		antumbra->addSprite("", Vec2(0, 0));
+		debug::print("BEWARE! Example quad created! Remove this later!!!\n", debug::Color::DARK_GRAY, debug::Color::YELLOW);
+	}
+
     // Normal functions
     void Window::update() {
 		draw();
@@ -126,7 +138,9 @@ namespace pen::core {
 			glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 		}
 
-		winStruct._window = glfwCreateWindow(1280, 720, "Penumbra", NULL, NULL);
+		winStruct._width = width;
+		winStruct._height = height;
+		winStruct._window = glfwCreateWindow(width, height, "Penumbra", NULL, NULL);
 		if (!winStruct._window) {
 			throw std::runtime_error("PENUMBRA: Error during window creation");
 		}
@@ -184,7 +198,7 @@ namespace pen::core {
 		bgfx::setViewRect(winStruct.view3D, 0, 0, bgfx::BackbufferRatio::Equal);
 
 		// INFO: View Clear Disabled for 2D. Test
-        // bgfx::setViewClear(winStruct.view2D, BGFX_CLEAR_COLOR, 0x00000000);
+        bgfx::setViewClear(winStruct.view2D, BGFX_CLEAR_COLOR, 0x00000000);
 		bgfx::setViewRect(winStruct.view2D, 0, 0, bgfx::BackbufferRatio::Equal);
 
 		// Enable debug text.
@@ -199,7 +213,14 @@ namespace pen::core {
     void Window::draw() {
         // This dummy draw call is here to make sure that view 0 is cleared if no other draw calls are submitted to view 0.
 		bgfx::touch(winStruct.view3D);
-		bgfx::touch(winStruct.view2D);
+
+		// If we have a 2D renderer
+		if (antumbra != nullptr) {
+			antumbra->draw(winStruct.view2D, winStruct._width, winStruct._height);
+		} else {
+			// bgfx::touch(winStruct.view2D);
+		}
+
 		// Update Debug Text
 		pen::debug::updateConsole();
 		// Advance to next frame. Process submitted rendering primitives.

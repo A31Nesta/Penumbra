@@ -17,6 +17,7 @@
     at some point is not 0 either.
 */
 
+#include "antumbra/antumbra.hpp"
 #include "core/windowStruct.hpp"
 #include <cstdint>
 #include <string>
@@ -31,6 +32,9 @@ namespace pen::core {
         void setWindowCanClose(bool canClose);
         bool windowCanClose();
 
+        // Create or set renderers
+        void createAntumbra(std::string defaultShader);
+
         // Normal functions
         void update();
         void end();
@@ -44,6 +48,9 @@ namespace pen::core {
         void draw();
 
 	    WindowStruct winStruct;
+
+        // Renderers
+        antumbra::Antumbra* antumbra;
 
         // Behavior Properties
         bool canClose = true;

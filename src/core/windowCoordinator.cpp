@@ -31,6 +31,12 @@ namespace pen::core {
         w->setWindowCanClose(closeable);
     }
 
+    // Create or set renderers for windows
+    void createAntumbraForWindow(uint32_t window, std::string defaultShader) {
+        windows.at(window)->createAntumbra(defaultShader);
+    }
+
+
     void updateWindows() {
         uint32_t size = windows.size();
 

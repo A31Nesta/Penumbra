@@ -40,21 +40,24 @@ namespace pen::antumbra {
     public:
         Antumbra(std::string defaultShader);
 
-        Sprite& addSprite(std::string texture, Transform2D transform);
-        Sprite& addSprite(std::string texture, Transform2D transform, std::string shader);
-        Sprite& addSprite(std::string texture, Vec2 position, double rotation = 0, Vec2 scale = 0);
-        Sprite& addSprite(std::string texture, Vec2 position, double rotation, Vec2 scale, std::string shader);
+        Sprite* addSprite(std::string texture, Transform2D transform);
+        Sprite* addSprite(std::string texture, Transform2D transform, std::string shader);
+        Sprite* addSprite(std::string texture, Vec2 position, double rotation = 0, Vec2 scale = Vec2(1));
+        Sprite* addSprite(std::string texture, Vec2 position, double rotation, Vec2 scale, std::string shader);
 
         void removeSprite(Sprite sprite);
         void removeSprite(uint32_t sprite);
 
-        void draw(uint32_t view);
+        void draw(uint32_t view, uint16_t width, uint16_t height);
         
     private:
         // Inits the bgfx objects and loads the default shader
         void initQuad();
 
-        std::vector<Sprite> sprites;
+        // Utitities
+        Shader getShader(std::string shader);
+
+        std::vector<Sprite*> sprites;
         std::vector<Texture> textures;
         std::vector<Shader> shaders;
 
@@ -62,22 +65,7 @@ namespace pen::antumbra {
 
         // Quad Vertex and Index Buffer Handles
         bgfx::VertexLayout vertexAttr;
-        bgfx::IndexBufferHandle vbh;
+        bgfx::VertexBufferHandle vbh;
         bgfx::IndexBufferHandle ibh;
-
-        // Same for every object. Everything is based on squares in 2D
-        static constexpr float QUAD_VTX[30] = {
-            //   _______________    _________
-            //  |    POSITION   |  |   UVs   |
-                -.5f, 0.5f, 0.0f,  0.0f, 1.0f,	// top left
-                0.5f, 0.5f, 0.0f,  1.0f, 1.0f,	// top right
-                0.5f, -.5f, 0.0f,  1.0f, 0.0f,	// bottom right
-                -.5f, -.5f, 0.0f,  0.0f, 0.0f	// bottom left 
-            //  _________________  ___________
-        };
-        static constexpr uint16_t QUAD_IDX[6] = {
-            0, 1, 2,
-            2, 3, 4
-        };
     };
 }

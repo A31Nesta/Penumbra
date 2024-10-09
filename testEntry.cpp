@@ -25,10 +25,7 @@ std::string exec(std::string cmd) {
     return result;
 }
 
-int main(int argc, char** argv) {
-    uint32_t flags = pen::getFlagsFromArguments(argc, argv);
-    pen::init("Penumbra", 1280, 720, flags);
-
+void putDebugShit(uint32_t flags) {
     // Set Debug Stuff
     pen::debug::printPositioned(" RENDERER ", 0, 0, false, false, pen::debug::Color::DARK_GRAY, pen::debug::Color::WHITE);
     pen::debug::printPositioned(" -  Debug Version ", 10, 0, false, false, pen::debug::Color::WHITE, pen::debug::Color::DARK_GRAY);
@@ -45,22 +42,18 @@ int main(int argc, char** argv) {
             pen::debug::printPositioned(" Default - "+renderer+" ", 0, 1, false, true, pen::debug::Color::WHITE, pen::debug::Color::DARK_BLUE);
         }
     #endif
-    // Frame Counter
-    long counter = 0;
-    pen::debug::printPositioned("Frame: ", 0, 2, false, true, pen::debug::Color::YELLOW, pen::debug::Color::DARK_GRAY);
-    pen::debug::printPositionedValue(counter, 7, 2, false, true, pen::debug::Color::YELLOW, pen::debug::Color::DARK_GRAY);
-
+    
     pen::debug::debugCursorPosition();
+}
+
+int main(int argc, char** argv) {
+    uint32_t flags = pen::getFlagsFromArguments(argc, argv);
+    pen::init("Penumbra", 1280, 720, flags);
+
+    putDebugShit(flags);
 
     // Run Program
     while (pen::running()) {
-        counter++;
-
-        if (counter % 500 == 0) {
-            // Test without icles for real for real no cap
-            pen::debug::print(std::to_string(counter)+"\n");
-        }
-        
         pen::update();
     }
 
