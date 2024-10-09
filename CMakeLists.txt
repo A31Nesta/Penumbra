@@ -9,12 +9,21 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # )
 
 add_executable(penumbra
+    src/utils/vectors.cpp 
+    src/utils/transform2D.cpp 
+
+    src/antumbra/types/shader.cpp 
+    src/antumbra/types/texture.cpp 
+    src/antumbra/types/sprite.cpp 
+    src/antumbra/antumbra.cpp 
+
     src/debug/consoleColors.cpp
     src/debug/log.cpp
     src/core/window.cpp
     src/core/windowCoordinator.cpp
     src/utils/config.cpp
     src/penumbra.cpp
+
     testEntry.cpp
 )
 
