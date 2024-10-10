@@ -18,7 +18,7 @@ namespace pen {
 
 	void init(std::string title, int width, int height, uint32_t penumbra_flags) {
 		uint32_t win = core::createWindow(title, width, height, penumbra_flags);
-		core::createAntumbraForWindow(win, "pnmbr/shaders-2D/default2");
+		core::createAntumbraForWindow(win, "pnmbr/shaders-2D/default3");
 	}
 
 	void update() {

@@ -53,6 +53,7 @@ target_link_libraries(${PROJECT_NAME}
     bimg
     bx
     glfw
+    glm
 
     dl
     GL

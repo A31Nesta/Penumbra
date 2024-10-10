@@ -82,10 +82,12 @@ namespace pen::antumbra {
         bgfx::setVertexBuffer(0, vbh);
         // bgfx::setIndexBuffer(ibh);
 
-        for (Sprite* sprite : sprites) {
-            sprite->loadMatrix();
-            bgfx::submit(view, shaders.at(0).getProgram());
-        }
+        // for (Sprite* sprite : sprites) {
+        //     sprite->loadMatrix();
+        //     bgfx::submit(view, shaders.at(0).getProgram());
+        // }
+
+        bgfx::submit(view, shaders.at(0).getProgram());
     }
 
 
