@@ -10,6 +10,21 @@
 #include <cstdint>
 
 namespace pen::antumbra {
+    // Same for every object. Everything is based on squares in 2D
+    const PosUvVertex QUAD_VTX[] = {
+        {-.5f, 0.5f, 0.0f,  0.0f, 1.0f},	// top left
+        {0.5f, 0.5f, 0.0f,  1.0f, 1.0f},	// top right
+        {0.5f, -.5f, 0.0f,  1.0f, 0.0f},	// bottom right
+
+        {0.5f, -.5f, 0.0f,  1.0f, 0.0f},	// bottom right
+        {-.5f, -.5f, 0.0f,  0.0f, 0.0f},	// bottom left 
+        {-.5f, 0.5f, 0.0f,  0.0f, 1.0f} 	// top left
+    };
+    const uint16_t QUAD_IDX[] = {
+        0, 1, 2,
+        2, 3, 0
+    };
+
     Antumbra::Antumbra(std::string defaultShader) {
         defaultShaderPath = defaultShader;
         initQuad();
@@ -65,10 +80,10 @@ namespace pen::antumbra {
         bgfx::setViewTransform(view, viewMtx, projMtx);
 
         bgfx::setVertexBuffer(0, vbh);
-        bgfx::setIndexBuffer(ibh);
+        // bgfx::setIndexBuffer(ibh);
 
         for (Sprite* sprite : sprites) {
-            // sprite->loadMatrix();
+            sprite->loadMatrix();
             bgfx::submit(view, shaders.at(0).getProgram());
         }
     }
@@ -78,18 +93,6 @@ namespace pen::antumbra {
 
     // Inits the bgfx objects and loads the default shader
     void Antumbra::initQuad() {
-        // Same for every object. Everything is based on squares in 2D
-        static const PosUvVertex QUAD_VTX[4] = {
-            {-.5f, 0.5f, 0.0f,  0.0f, 1.0f},	// top left
-            {0.5f, 0.5f, 0.0f,  1.0f, 1.0f},	// top right
-            {0.5f, -.5f, 0.0f,  1.0f, 0.0f},	// bottom right
-            {-.5f, -.5f, 0.0f,  0.0f, 0.0f} 	// bottom left 
-        };
-        static const uint16_t QUAD_IDX[6] = {
-            0, 1, 2,
-            2, 3, 4
-        };
-
         // Init vertex attributes
         vertexAttr
             .begin()

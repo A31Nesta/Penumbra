@@ -198,7 +198,7 @@ namespace pen::core {
 		bgfx::setViewRect(winStruct.view3D, 0, 0, bgfx::BackbufferRatio::Equal);
 
 		// INFO: View Clear Disabled for 2D. Test
-        bgfx::setViewClear(winStruct.view2D, BGFX_CLEAR_COLOR, 0x00000000);
+        bgfx::setViewClear(winStruct.view2D, BGFX_CLEAR_COLOR, 0x1e093600);
 		bgfx::setViewRect(winStruct.view2D, 0, 0, bgfx::BackbufferRatio::Equal);
 
 		// Enable debug text.
@@ -213,6 +213,9 @@ namespace pen::core {
     void Window::draw() {
         // This dummy draw call is here to make sure that view 0 is cleared if no other draw calls are submitted to view 0.
 		bgfx::touch(winStruct.view3D);
+
+		// Set render states.
+      	bgfx::setState(BGFX_STATE_DEFAULT);
 
 		// If we have a 2D renderer
 		if (antumbra != nullptr) {
