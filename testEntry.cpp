@@ -26,8 +26,8 @@
 #endif
 #include <GLFW/glfw3native.h>
 
-int width = 1280;
-int height = 720;
+int _width = 1280;
+int _height = 720;
 GLFWwindow* window;
 
 struct PosUvVertex {
@@ -66,8 +66,8 @@ static void glfw_errorCallback(int error, const char *description)
     fprintf(stderr, "GLFW error %d: %s\n", error, description);
 }
 static void glfw_framebufferResizeCallback(GLFWwindow* window, int width, int height) {
-    width = width;
-    height = height;
+    _width = width;
+    _height = height;
 
     bgfx::reset((uint32_t)width, (uint32_t)height, 0);
     bgfx::setViewRect(0, 0, 0, bgfx::BackbufferRatio::Equal);
@@ -97,9 +97,9 @@ void createWindow() {
 
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
-		width = width;
-		height = height;
-		window = glfwCreateWindow(width, height, "Penumbra", NULL, NULL);
+		_width = _width;
+		_height = _height;
+		window = glfwCreateWindow(_width, _height, "Penumbra", NULL, NULL);
 		if (!window) {
 			throw std::runtime_error("PENUMBRA: Error during window creation");
 		}
@@ -135,9 +135,9 @@ void createWindow() {
 		init.platformData.type = bgfx::NativeWindowHandleType::Default;
 	#endif
 
-		glfwGetWindowSize(window, &width, &height);
-		init.resolution.width = (uint32_t)width;
-		init.resolution.height = (uint32_t)height;
+		glfwGetWindowSize(window, &_width, &_height);
+		init.resolution.width = (uint32_t)_width;
+		init.resolution.height = (uint32_t)_height;
 		init.resolution.reset = 0;
 
 		// Choose Vulkan backend
@@ -181,7 +181,7 @@ int main() {
         float projMtx[16];
         bx::mtxProj(projMtx,
                     60.0f,
-                    float(width)/float(height),
+                    float(_width)/float(_height),
                     0.1f, 100.0f,
                     bgfx::getCaps()->homogeneousDepth);
 
