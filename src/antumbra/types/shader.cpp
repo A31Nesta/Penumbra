@@ -1,9 +1,8 @@
 #include "shader.hpp"
-#include "debug/consoleColors.hpp"
-#include "debug/log.hpp"
 
 #include <bgfx/bgfx.h>
 #include <fstream>
+#include <iostream>
 #include <stdexcept>
 #include <string>
 
@@ -12,15 +11,15 @@ namespace pen::antumbra {
         this->id = id;
         path = shader;
 
-        debug::print("\n\n--- LOADING SHADER: "+shader+" ---\n");
+        std::cout << "--- LOADING SHADER: "+shader+" ---\n";
 
         vsh = loadShader(shader+".vs");
         fsh = loadShader(shader+".fs");
         program = bgfx::createProgram(vsh, fsh, true);
 
-        debug::print("SHADER PROGRAM CREATED! - "+std::to_string(program.idx)+"\n");
+        std::cout << "SHADER PROGRAM CREATED! - "+std::to_string(program.idx)+"\n";
         if (!bgfx::isValid(program)) {
-            debug::print("INVALID SHADER! FUUUUUUUUUUUCKKKK\n", debug::Color::WHITE, debug::Color::DARK_RED);
+            std::cerr << "INVALID SHADER! FUUUUUUUUUUUCKKKK\n";
         }
     }
 
@@ -46,9 +45,9 @@ namespace pen::antumbra {
         bgfx::setName(handle, name.c_str());
 
         if (bgfx::isValid(handle)) {
-            debug::print("VALID SHADER! ("+name+" = "+std::to_string(handle.idx)+")\n");
+            std::cout << "VALID SHADER! ("+name+" = "+std::to_string(handle.idx)+")\n";
         } else {
-            debug::print("INVALID SHADER! ("+name+" = "+std::to_string(handle.idx)+")\n", debug::Color::WHITE, debug::Color::DARK_RED);
+            std::cerr << "INVALID SHADER! ("+name+" = "+std::to_string(handle.idx)+")\n";
         }
 
         return handle;
