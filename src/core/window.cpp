@@ -48,6 +48,9 @@ namespace pen::core {
             bgfx::reset((uint32_t)winStruct._width, (uint32_t)winStruct._height, winStruct._resetFlags);
             bgfx::setViewRect(winStruct.view3D, 0, 0, bgfx::BackbufferRatio::Equal);
             bgfx::setViewRect(winStruct.view2D, 0, 0, bgfx::BackbufferRatio::Equal);
+			
+			bgfx::setViewClear(winStruct.view3D, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, (winStruct._penumbraFlags & PENUMBRA_TRANSPARENT)?0x00000000:0x7e7189ff, 1.0f, 0);
+			bgfx::setViewClear(winStruct.view2D, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x1e093600, 1.0f, 0);
         }
     }
 
@@ -138,6 +141,7 @@ namespace pen::core {
 			glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 		}
 
+		winStruct._penumbraFlags = penumbra_flags;
 		winStruct._width = width;
 		winStruct._height = height;
 		winStruct._window = glfwCreateWindow(width, height, "Penumbra", NULL, NULL);
@@ -194,11 +198,11 @@ namespace pen::core {
 		}
 
 		// Set view 0 to the same dimensions as the window and to clear the color buffer.
-		bgfx::setViewClear(winStruct.view3D, BGFX_CLEAR_COLOR, (penumbra_flags & PENUMBRA_TRANSPARENT)?0x00000000:0x7e7189ff);
+		bgfx::setViewClear(winStruct.view3D, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, (penumbra_flags & PENUMBRA_TRANSPARENT)?0x00000000:0x7e7189ff, 1.0f, 0);
 		bgfx::setViewRect(winStruct.view3D, 0, 0, bgfx::BackbufferRatio::Equal);
 
 		// INFO: View Clear Disabled for 2D. Test
-        bgfx::setViewClear(winStruct.view2D, BGFX_CLEAR_COLOR, 0x1e093600);
+        bgfx::setViewClear(winStruct.view2D, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x1e093600, 1.0f, 0);
 		bgfx::setViewRect(winStruct.view2D, 0, 0, bgfx::BackbufferRatio::Equal);
 
 		// Enable debug text.

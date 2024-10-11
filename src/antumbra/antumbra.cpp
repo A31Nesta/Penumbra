@@ -14,17 +14,14 @@
 namespace pen::antumbra {
     // Same for every object. Everything is based on squares in 2D
     const PosUvVertex QUAD_VTX[] = {
-        {-.5f, 0.5f, 0.0f,  0.0f, 1.0f},	// top left
         {0.5f, 0.5f, 0.0f,  1.0f, 1.0f},	// top right
         {0.5f, -.5f, 0.0f,  1.0f, 0.0f},	// bottom right
-
-        {0.5f, -.5f, 0.0f,  1.0f, 0.0f},	// bottom right
-        {-.5f, -.5f, 0.0f,  0.0f, 0.0f},	// bottom left 
+        {-.5f, -.5f, 0.0f,  0.0f, 0.0f},	// bottom left
         {-.5f, 0.5f, 0.0f,  0.0f, 1.0f} 	// top left
     };
     const uint16_t QUAD_IDX[] = {
-        0, 1, 2,
-        2, 3, 0
+        0, 1, 3,
+        1, 2, 3
     };
 
     Antumbra::Antumbra(std::string defaultShader) {
@@ -65,8 +62,8 @@ namespace pen::antumbra {
     // The Final Boss.
     // Draw a fucking scene
     void Antumbra::draw(uint32_t view, uint16_t width, uint16_t height) {
-        const bx::Vec3 at  = { 0.0f, 0.0f,   0.0f };
-        const bx::Vec3 eye = { 0.0f, 0.0f, -5.0f };
+        const bx::Vec3 at  = { 0.0f, 0.0f, 0.0f };
+        const bx::Vec3 eye = { 0.0f, 0.0f, 2.0f };
 
         // Set view and projection matrix for view 0.
         float viewMtx[16];

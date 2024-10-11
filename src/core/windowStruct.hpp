@@ -11,5 +11,6 @@ namespace pen::core {
         int _width;
         int _height;
         uint32_t _resetFlags = 0;
+        uint32_t _penumbraFlags = 0;
     };
 }
