@@ -26,11 +26,12 @@ namespace pen::antumbra {
 
     Antumbra::Antumbra(std::string defaultShader) {
         defaultShaderPath = defaultShader;
-        initQuad();
 
         Shader defaultS(0, defaultShaderPath);
         defaultS.setPersistence(true);
         shaders.push_back(defaultS);
+
+        initQuad();
     }
 
     // BASE ADD SPRITE
@@ -99,7 +100,7 @@ namespace pen::antumbra {
         vbh = bgfx::createVertexBuffer(bgfx::makeRef(QUAD_VTX, sizeof(QUAD_VTX)), vtxLayout);
         ibh = bgfx::createIndexBuffer(bgfx::makeRef(QUAD_IDX, sizeof(QUAD_IDX)));
 
-        debug::print("\n\nSIZEOF QUAD_VTX: "+std::to_string(sizeof(QUAD_VTX)));
+        debug::print("\n\nSIZEOF QUAD_VTX: "+std::to_string(sizeof(QUAD_VTX))+"\n");
     }
 
     Shader Antumbra::getShader(std::string shader) {

@@ -48,7 +48,7 @@ namespace pen::core {
             bgfx::reset((uint32_t)winStruct._width, (uint32_t)winStruct._height, winStruct._resetFlags);
             bgfx::setViewRect(winStruct.view3D, 0, 0, bgfx::BackbufferRatio::Equal);
             bgfx::setViewRect(winStruct.view2D, 0, 0, bgfx::BackbufferRatio::Equal);
-			
+
 			bgfx::setViewClear(winStruct.view3D, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, (winStruct._penumbraFlags & PENUMBRA_TRANSPARENT)?0x00000000:0x7e7189ff, 1.0f, 0);
 			bgfx::setViewClear(winStruct.view2D, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x1e093600, 1.0f, 0);
         }
@@ -75,8 +75,8 @@ namespace pen::core {
 	void Window::createAntumbra(std::string defaultShader) {
 		antumbra = new antumbra::Antumbra(defaultShader);
 		debug::print("LOG: Antumbra renderer successfully created\n");
-		antumbra->addSprite("", Vec2(0, 0));
-		debug::print("BEWARE! Example quad created! Remove this later!!!\n", debug::Color::DARK_GRAY, debug::Color::YELLOW);
+		// antumbra->addSprite("", Vec2(0, 0));
+		// debug::print("BEWARE! Example quad created! Remove this later!!!\n", debug::Color::DARK_GRAY, debug::Color::YELLOW);
 	}
 
     // Normal functions
