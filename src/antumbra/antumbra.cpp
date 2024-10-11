@@ -2,12 +2,14 @@
 #include "antumbra/types/posUvVertex.hpp"
 #include "antumbra/types/shader.hpp"
 #include "antumbra/types/sprite.hpp"
+#include "debug/log.hpp"
 #include "utils/vectors.hpp"
 
 #include <bgfx/bgfx.h>
 #include <bx/math.h>
 
 #include <cstdint>
+#include <string>
 
 namespace pen::antumbra {
     // Same for every object. Everything is based on squares in 2D
@@ -80,7 +82,7 @@ namespace pen::antumbra {
         bgfx::setViewTransform(view, viewMtx, projMtx);
 
         bgfx::setVertexBuffer(0, vbh);
-        // bgfx::setIndexBuffer(ibh);
+        bgfx::setIndexBuffer(ibh);
 
         // for (Sprite* sprite : sprites) {
         //     sprite->loadMatrix();
@@ -95,15 +97,12 @@ namespace pen::antumbra {
 
     // Inits the bgfx objects and loads the default shader
     void Antumbra::initQuad() {
-        // Init vertex attributes
-        vertexAttr
-            .begin()
-            .add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float)
-            .add(bgfx::Attrib::TexCoord0, 2, bgfx::AttribType::Float)
-            .end();
+        const bgfx::VertexLayout vtxLayout = PosUvVertex::getVertexLayout();
         
-        vbh = bgfx::createVertexBuffer(bgfx::makeRef(QUAD_VTX, sizeof(QUAD_VTX)), vertexAttr);
+        vbh = bgfx::createVertexBuffer(bgfx::makeRef(QUAD_VTX, sizeof(QUAD_VTX)), vtxLayout);
         ibh = bgfx::createIndexBuffer(bgfx::makeRef(QUAD_IDX, sizeof(QUAD_IDX)));
+
+        debug::print("\n\nSIZEOF QUAD_VTX: "+std::to_string(sizeof(QUAD_VTX)));
     }
 
     Shader Antumbra::getShader(std::string shader) {

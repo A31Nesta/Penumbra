@@ -64,7 +64,6 @@ namespace pen::antumbra {
         std::string defaultShaderPath;
 
         // Quad Vertex and Index Buffer Handles
-        bgfx::VertexLayout vertexAttr;
         bgfx::VertexBufferHandle vbh;
         bgfx::IndexBufferHandle ibh;
     };
