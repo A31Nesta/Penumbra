@@ -97,8 +97,9 @@ namespace pen::antumbra {
     void Antumbra::initQuad() {
         const bgfx::VertexLayout vtxLayout = PosUvVertex::getVertexLayout();
         
-        vbh = bgfx::createVertexBuffer(bgfx::makeRef(QUAD_VTX, sizeof(QUAD_VTX)), vtxLayout);
-        ibh = bgfx::createIndexBuffer(bgfx::makeRef(QUAD_IDX, sizeof(QUAD_IDX)));
+        // HACK: Rules out the posibility of buffers not being copied correctly. it should be makeRef
+        vbh = bgfx::createVertexBuffer(bgfx::copy(QUAD_VTX, sizeof(QUAD_VTX)), vtxLayout);
+        ibh = bgfx::createIndexBuffer(bgfx::copy(QUAD_IDX, sizeof(QUAD_IDX)));
 
         debug::print("\n\nSIZEOF QUAD_VTX: "+std::to_string(sizeof(QUAD_VTX))+"\n");
     }
