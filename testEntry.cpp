@@ -1,6 +1,7 @@
-#include "antumbra/types/shader.hpp"
+#include "shader.hpp"
 
 #include <bgfx/bgfx.h>
+#include <bgfx/defines.h>
 #include <bgfx/platform.h>
 #include <bx/math.h>
 #include <cstdint>
@@ -50,17 +51,14 @@ struct PosUvVertex {
 
 // Same for every object. Everything is based on squares in 2D
 const PosUvVertex QUAD_VTX[] = {
-    {-.5f, 0.5f, 0.0f,  0.0f, 1.0f},	// top left
     {0.5f, 0.5f, 0.0f,  1.0f, 1.0f},	// top right
     {0.5f, -.5f, 0.0f,  1.0f, 0.0f},	// bottom right
-
-    {0.5f, -.5f, 0.0f,  1.0f, 0.0f},	// bottom right
-    {-.5f, -.5f, 0.0f,  0.0f, 0.0f},	// bottom left 
+    {-.5f, -.5f, 0.0f,  0.0f, 0.0f},	// bottom left
     {-.5f, 0.5f, 0.0f,  0.0f, 1.0f} 	// top left
 };
 const uint16_t QUAD_IDX[] = {
-    0, 1, 2,
-    2, 3, 0
+    0, 1, 3,
+    1, 2, 3
 };
 
 static void glfw_errorCallback(int error, const char *description)
@@ -149,7 +147,7 @@ void createWindow() {
 			throw std::runtime_error("PENUMBRA: Error while initializing BGFX");
 		}
         
-        bgfx::setViewClear(0, BGFX_CLEAR_COLOR, 0x1e093600);
+        bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x1e093600, 1.0f, 0);
 		bgfx::setViewRect(0, 0, 0, bgfx::BackbufferRatio::Equal);
 
 		// Enable debug text.
@@ -159,7 +157,7 @@ void createWindow() {
 int main() {
     createWindow();
 
-    pen::antumbra::Shader s(0, "pnmbr/shaders-2D/default3");
+    pen::antumbra::Shader s(0, "pnmbr/shaders-2D/default2");
 
     const bgfx::VertexLayout vtxLayout = PosUvVertex::getVertexLayout();
         
@@ -173,11 +171,8 @@ int main() {
         // This dummy draw call is here to make sure that view 0 is cleared if no other draw calls are submitted to view 0.
 		bgfx::touch(0);
 
-		// Set render states.
-      	bgfx::setState(BGFX_STATE_DEFAULT);
-
-		const bx::Vec3 at  = { 0.0f, 0.0f,   0.0f };
-        const bx::Vec3 eye = { 0.0f, 0.0f, -5.0f };
+		const bx::Vec3 at  = { 0.0f, 0.0f, 0.0f };
+        const bx::Vec3 eye = { 0.0f, 0.0f, 2.0f };
 
         // Set view and projection matrix for view 0.
         float viewMtx[16];
@@ -190,11 +185,14 @@ int main() {
                     0.1f, 100.0f,
                     bgfx::getCaps()->homogeneousDepth);
 
+        bgfx::setViewClear(0, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x1e093600, 1.0f, 0);
+
         bgfx::setViewTransform(0, viewMtx, projMtx);
 
         bgfx::setVertexBuffer(0, vbh);
         bgfx::setIndexBuffer(ibh);
 
+        bgfx::setState(BGFX_STATE_DEFAULT);
         bgfx::submit(0, s.getProgram());
         
 		// Advance to next frame. Process submitted rendering primitives.
