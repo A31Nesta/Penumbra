@@ -1,10 +1,8 @@
 #include "window.hpp"
 #include "antumbra/antumbra.hpp"
 #include "core/windowStruct.hpp"
-#include "debug/consoleColors.hpp"
 #include "debug/log.hpp"
 #include "utils/config.hpp"
-#include "utils/vectors.hpp"
 
 #include <bgfx/defines.h>
 #include <bx/bx.h>

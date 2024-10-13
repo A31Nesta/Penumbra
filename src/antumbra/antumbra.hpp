@@ -26,6 +26,7 @@
         - Functions to set uniforms
  */
 
+#include "antumbra/types/posUvVertex.hpp"
 #include "antumbra/types/shader.hpp"
 #include "antumbra/types/texture.hpp"
 #include "types/sprite.hpp"
@@ -36,6 +37,18 @@
 #include <cstdint>
 #include <vector>
 namespace pen::antumbra {
+    // Same for every object. Everything is based on squares in 2D
+    const PosUvVertex QUAD_VTX[] = {
+        {0.5f, 0.5f, 0.0f,  1.0f, 1.0f},	// top right
+        {0.5f, -.5f, 0.0f,  1.0f, 0.0f},	// bottom right
+        {-.5f, -.5f, 0.0f,  0.0f, 0.0f},	// bottom left
+        {-.5f, 0.5f, 0.0f,  0.0f, 1.0f} 	// top left
+    };
+    const uint16_t QUAD_IDX[] = {
+        0, 1, 3,
+        1, 2, 3
+    };
+
     class Antumbra {
     public:
         Antumbra(std::string defaultShader);
