@@ -230,11 +230,11 @@ namespace pen::core {
 
 		// Debug Text
 		// TODO: Only set when changing state
-		// if (winStruct.debugging) {
-		// 	bgfx::setDebug(BGFX_DEBUG_TEXT);
-		// } else {
-		// 	bgfx::setDebug(BGFX_DEBUG_NONE);
-		// }
+		if (winStruct.debugging) {
+			bgfx::setDebug(BGFX_DEBUG_WIREFRAME);
+		} else {
+			bgfx::setDebug(BGFX_DEBUG_NONE);
+		}
 
 		// Update Debug Text
 		pen::debug::updateConsole();
