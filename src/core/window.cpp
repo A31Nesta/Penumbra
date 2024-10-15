@@ -1,10 +1,8 @@
 #include "window.hpp"
 #include "antumbra/antumbra.hpp"
 #include "core/windowStruct.hpp"
-#include "debug/consoleColors.hpp"
 #include "debug/log.hpp"
 #include "utils/config.hpp"
-#include "utils/vectors.hpp"
 
 #include <bgfx/defines.h>
 #include <bx/bx.h>
@@ -207,8 +205,8 @@ namespace pen::core {
 		bgfx::setViewRect(winStruct.view2D, 0, 0, bgfx::BackbufferRatio::Equal);
 
 		// Enable debug text.
-		if (!(penumbra_flags & PENUMBRA_NODEBUG)) {
-			bgfx::setDebug(BGFX_DEBUG_TEXT);
+		if (penumbra_flags & PENUMBRA_DEBUG) {
+			winStruct.debugging = true;
 		}
 
         // SET USER POINTER
@@ -229,6 +227,14 @@ namespace pen::core {
 		} else {
 			// bgfx::touch(winStruct.view2D);
 		}
+
+		// Debug Text
+		// TODO: Only set when changing state
+		// if (winStruct.debugging) {
+		// 	bgfx::setDebug(BGFX_DEBUG_TEXT);
+		// } else {
+		// 	bgfx::setDebug(BGFX_DEBUG_NONE);
+		// }
 
 		// Update Debug Text
 		pen::debug::updateConsole();
