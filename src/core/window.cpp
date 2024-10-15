@@ -216,10 +216,11 @@ namespace pen::core {
     void Window::draw() {
         // This dummy draw call is here to make sure that view 0 is cleared if no other draw calls are submitted to view 0.
 		bgfx::touch(winStruct.view3D);
+		bgfx::touch(winStruct.view2D);
 
 		// Set render states.
 		// HACK: remove BGFX_STATE_CULL_MASK makes the library render back sides
-      	bgfx::setState(BGFX_STATE_DEFAULT & ~BGFX_STATE_CULL_MASK);
+      	// bgfx::setState(BGFX_STATE_DEFAULT & ~BGFX_STATE_CULL_MASK);
 
 		// If we have a 2D renderer
 		if (antumbra != nullptr) {
@@ -229,7 +230,11 @@ namespace pen::core {
 		}
 
 		// Update Debug Text
-		pen::debug::updateConsole();
+		if (!(winStruct._penumbraFlags & PENUMBRA_NODEBUG)) {
+			bgfx::setDebug(BGFX_DEBUG_NONE);
+			// pen::debug::updateConsole();
+		}
+
 		// Advance to next frame. Process submitted rendering primitives.
 		bgfx::frame();
     }

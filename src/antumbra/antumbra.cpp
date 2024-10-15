@@ -64,6 +64,8 @@ namespace pen::antumbra {
                     0.1f, 100.0f,
                     bgfx::getCaps()->homogeneousDepth);
 
+        bgfx::setViewClear(view, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x1e093600, 1.0f, 0);
+
         bgfx::setViewTransform(view, viewMtx, projMtx);
 
         bgfx::setVertexBuffer(0, vbh);
@@ -73,7 +75,7 @@ namespace pen::antumbra {
         //     sprite->loadMatrix();
         //     bgfx::submit(view, shaders.at(0).getProgram());
         // }
-
+        
         bgfx::submit(view, shaders.at(0).getProgram());
     }
 
