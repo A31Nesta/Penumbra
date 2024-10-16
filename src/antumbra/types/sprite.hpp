@@ -21,8 +21,6 @@ namespace pen::antumbra {
         uint32_t textureID;
         uint32_t shaderID;
 
-        // I'm desperate to see something on the screen
-        // It's been hours :(
         float mtx[16];
     };
 }

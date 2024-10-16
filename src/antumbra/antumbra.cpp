@@ -20,8 +20,8 @@ namespace pen::antumbra {
         {-.5f, 0.5f, 0.0f,  0.0f, 1.0f} 	// top left
     };
     const uint16_t QUAD_IDX[] = {
-        0, 1, 3,
-        1, 2, 3
+        1, 0, 3,
+        2, 1, 3
     };
 
     Antumbra::Antumbra(std::string defaultShader) {
@@ -64,7 +64,7 @@ namespace pen::antumbra {
     // Draw a fucking scene
     void Antumbra::draw(uint32_t view, uint16_t width, uint16_t height) {
         const bx::Vec3 at  = { 0.0f, 0.0f, 0.0f };
-        const bx::Vec3 eye = { 0.0f, 0.0f, 2.0f };
+        const bx::Vec3 eye = { 0.0f, 0.0f, -2.0f };
 
         // Set view and projection matrix for view 0.
         float viewMtx[16];
@@ -79,15 +79,18 @@ namespace pen::antumbra {
 
         bgfx::setViewTransform(view, viewMtx, projMtx);
 
-        bgfx::setVertexBuffer(0, vbh);
-        bgfx::setIndexBuffer(ibh);
+        for (Sprite* sprite : sprites) {
+            sprite->loadMatrix();
 
-        // for (Sprite* sprite : sprites) {
-        //     sprite->loadMatrix();
-        //     bgfx::submit(view, shaders.at(0).getProgram());
-        // }
+            // Buffers
+            bgfx::setVertexBuffer(0, vbh);
+            bgfx::setIndexBuffer(ibh);
+            // Set render state and draw
+      	    bgfx::setState(BGFX_STATE_DEFAULT);
+            bgfx::submit(view, shaders.at(sprite->getShaderID()).getProgram());
+        }
 
-        bgfx::submit(view, shaders.at(0).getProgram());
+        // bgfx::submit(view, shaders.at(0).getProgram());
     }
 
 
@@ -97,9 +100,8 @@ namespace pen::antumbra {
     void Antumbra::initQuad() {
         const bgfx::VertexLayout vtxLayout = PosUvVertex::getVertexLayout();
         
-        // HACK: Rules out the posibility of buffers not being copied correctly. it should be makeRef
-        vbh = bgfx::createVertexBuffer(bgfx::copy(QUAD_VTX, sizeof(QUAD_VTX)), vtxLayout);
-        ibh = bgfx::createIndexBuffer(bgfx::copy(QUAD_IDX, sizeof(QUAD_IDX)));
+        vbh = bgfx::createVertexBuffer(bgfx::makeRef(QUAD_VTX, sizeof(QUAD_VTX)), vtxLayout);
+        ibh = bgfx::createIndexBuffer(bgfx::makeRef(QUAD_IDX, sizeof(QUAD_IDX)));
 
         debug::print("\n\nSIZEOF QUAD_VTX: "+std::to_string(sizeof(QUAD_VTX))+"\n");
     }

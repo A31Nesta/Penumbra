@@ -74,8 +74,9 @@ namespace pen::core {
 		antumbra = new antumbra::Antumbra(defaultShader);
 		debug::print("LOG: Antumbra renderer successfully created\n");
 		// TODO: Remember that this exists lol
-		// antumbra->addSprite("", Vec2(0, 0));
-		// debug::print("BEWARE! Example quad created! Remove this later!!!\n", debug::Color::DARK_GRAY, debug::Color::YELLOW);
+		antumbra->addSprite("", Vec2(-1, 0));
+		antumbra->addSprite("", Vec2(1, 0));
+		debug::print("BEWARE! Example quad created! Remove this later!!!\n", debug::Color::DARK_GRAY, debug::Color::YELLOW);
 	}
 
     // Normal functions
@@ -216,10 +217,6 @@ namespace pen::core {
     void Window::draw() {
         // This dummy draw call is here to make sure that view 0 is cleared if no other draw calls are submitted to view 0.
 		bgfx::touch(winStruct.view3D);
-
-		// Set render states.
-		// HACK: remove BGFX_STATE_CULL_MASK makes the library render back sides
-      	bgfx::setState(BGFX_STATE_DEFAULT & ~BGFX_STATE_CULL_MASK);
 
 		// If we have a 2D renderer
 		if (antumbra != nullptr) {
