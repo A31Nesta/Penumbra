@@ -56,6 +56,7 @@ namespace pen::antumbra {
 
         // Utitities
         Shader getShader(std::string shader);
+        Texture getTexture(std::string texture);
 
         std::vector<Sprite*> sprites;
         std::vector<Texture> textures;

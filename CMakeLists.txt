@@ -13,7 +13,7 @@ add_executable(penumbra
     src/utils/transform2D.cpp 
 
     src/antumbra/types/shader.cpp 
-    # src/antumbra/types/texture.cpp 
+    src/antumbra/types/texture.cpp 
     src/antumbra/types/sprite.cpp 
     src/antumbra/antumbra.cpp 
 

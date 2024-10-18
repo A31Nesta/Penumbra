@@ -2,6 +2,7 @@
 #include "antumbra/types/posUvVertex.hpp"
 #include "antumbra/types/shader.hpp"
 #include "antumbra/types/sprite.hpp"
+#include "antumbra/types/texture.hpp"
 #include "debug/log.hpp"
 #include "utils/vectors.hpp"
 
@@ -31,6 +32,9 @@ namespace pen::antumbra {
         defaultS.setPersistence(true);
         shaders.push_back(defaultS);
 
+        // Set texture stuff
+        
+
         initQuad();
     }
 
@@ -38,10 +42,13 @@ namespace pen::antumbra {
     Sprite* Antumbra::addSprite(std::string texture, Transform2D transform, std::string shader) {
         uint32_t id = sprites.size();
         Vec2 deform = 0;
-        uint32_t textureID = 0;
+
+        Texture t = getTexture(texture);
         Shader s = getShader(shader);
+        uint32_t textureID = t.isValid() ? t.getID() : 0;
+        uint32_t shaderID = s.getID();
         
-        Sprite* sprite = new Sprite(id, transform, deform, textureID, s.getID());
+        Sprite* sprite = new Sprite(id, transform, deform, textureID, shaderID);
         sprites.push_back(sprite);
         return sprite;
     }
@@ -117,5 +124,22 @@ namespace pen::antumbra {
         Shader newShader(shaders.size(), shader);
         shaders.push_back(newShader);
         return newShader;
+    }
+    Texture Antumbra::getTexture(std::string texture) {
+        for (Texture t : textures) {
+            if (t.getPath() == texture) {
+                t.incrementUsers();
+                return t;
+            }
+        }
+
+        Texture newTexture(textures.size(), texture);
+        
+        // Only add if it's Valid
+        if (newTexture.isValid()) {
+            textures.push_back(newTexture);
+        }
+
+        return newTexture;
     }
 }

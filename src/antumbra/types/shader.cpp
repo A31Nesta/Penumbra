@@ -7,7 +7,7 @@
 #include <stdexcept>
 #include <string>
 
-namespace pen::antumbra {
+namespace pen {
     Shader::Shader(uint32_t id, std::string shader) {
         this->id = id;
         path = shader;
@@ -21,6 +21,14 @@ namespace pen::antumbra {
         debug::print("SHADER PROGRAM CREATED! - "+std::to_string(program.idx)+"\n");
         if (!bgfx::isValid(program)) {
             debug::print("INVALID SHADER! FUUUUUUUUUUUCKKKK\n", debug::Color::WHITE, debug::Color::DARK_RED);
+        }
+    }
+
+    // TODO: Modify to separate Sampler uniform loading and other uniforms
+    void Shader::createUniform(std::string name, bgfx::UniformType::Enum type) {
+        bgfx::UniformHandle uniform = bgfx::createUniform(name.c_str(), type);
+        if (bgfx::isValid(uniform)) {
+            localUniforms.push_back(uniform);
         }
     }
 
