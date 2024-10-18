@@ -13,18 +13,27 @@ namespace pen {
 
         // Get Matrix
         operator float*();
+        float* getMatrix();
 
         Vec2 position;
         double rotation;
         Vec2 scale;
     private:
+        void calculateMatrix();
+        void forceCalculateMatrix();
+
         // Deform Value
         // Gets multiplied by the scale in order to correct
         // aspect ratios
         Vec2 deform = Vec2(1);
 
-        // Matrix
+        // Matrices
+        // MAIN
         float matrix[16];
+        // POS/ROT/SCALE
+        float _posMtx[16];
+        float _rotMtx[16];
+        float _sclMtx[16];
 
         // Last values used for matrix transform
         Vec2 _lastPos;

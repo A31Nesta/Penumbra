@@ -80,7 +80,7 @@ namespace pen::antumbra {
         bgfx::setViewTransform(view, viewMtx, projMtx);
 
         for (Sprite* sprite : sprites) {
-            sprite->loadMatrix();
+            bgfx::setTransform(sprite->transform);
 
             // Buffers
             bgfx::setVertexBuffer(0, vbh);

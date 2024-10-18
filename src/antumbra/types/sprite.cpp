@@ -9,19 +9,5 @@ namespace pen::antumbra {
         deform = df;
         textureID = tid;
         shaderID = sid;
-        prepareMatrix();
-    }
-
-    void Sprite::loadMatrix() {
-        bgfx::setTransform(mtx);
-    }
-
-    void Sprite::prepareMatrix() {
-        bx::mtxRotateY(mtx, transform.rotation);
-
-        // position x,y,z
-        mtx[12] = transform.position.x;
-        mtx[13] = transform.position.y;
-        mtx[14] = 0.0f;
     }
 }

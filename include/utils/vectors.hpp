@@ -22,6 +22,9 @@ namespace pen {
         // Convert to GLM vec2
         operator glm::dvec2();
 
+        // Compare Vectors
+        bool operator==(Vec2 v2);
+
         // Coords
         double x;
         double y;
@@ -43,6 +46,9 @@ namespace pen {
         void operator=(glm::dvec3 v);
         // Convert to GLM vec3
         operator glm::dvec3();
+
+        // Compare Vectors
+        bool operator==(Vec3 v3);
 
         // Coords
         double x;

@@ -35,6 +35,12 @@ namespace pen {
         return vector;
     }
 
+    // Compare Vectors
+    bool Vec2::operator==(Vec2 v2) {
+        return x == v2.x && y == v2.y;
+    }
+
+
     // Functions
     void Vec2::updateVector() {
         vector.x = x;
@@ -80,6 +86,11 @@ namespace pen {
     // Convert to GLM vec3
     Vec3::operator glm::dvec3() {
         return vector;
+    }
+
+    // Compare Vectors
+    bool Vec3::operator==(Vec3 v3) {
+        return x == v3.x && y == v3.y && z == v3.z;
     }
 
     // Functions
