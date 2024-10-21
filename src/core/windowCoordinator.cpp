@@ -36,6 +36,11 @@ namespace pen::core {
         windows.at(window)->createAntumbra(defaultShader);
     }
 
+    // Get Window
+    Window* getWindow(uint32_t window) {
+        return windows.at(window);
+    }
+
 
     void updateWindows() {
         uint32_t size = windows.size();

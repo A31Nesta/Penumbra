@@ -42,6 +42,21 @@ namespace pen {
     Vec2 Vec2::operator*(Vec2 v2) {
         return Vec2(x * v2.x, y * v2.y);
     }
+    Vec2 Vec2::operator*(double d) {
+        return Vec2(x * d, y * d);
+    }
+    Vec2 Vec2::operator+(Vec2 v2) {
+        return Vec2(x + v2.x, y + v2.y);
+    }
+    Vec2 Vec2::operator+(double d) {
+        return Vec2(x + d, y + d);
+    }
+    Vec2 Vec2::operator-(Vec2 v2) {
+        return Vec2(x - v2.x, y - v2.y);
+    }
+    Vec2 Vec2::operator-(double d) {
+        return Vec2(x - d, y - d);
+    }
 
 
     // Functions
@@ -97,6 +112,21 @@ namespace pen {
     }
     Vec3 Vec3::operator*(Vec3 v3) {
         return Vec3(x * v3.x, y * v3.y, z * v3.z);
+    }
+    Vec3 Vec3::operator*(double d) {
+        return Vec3(x * d, y * d, z * d);
+    }
+    Vec3 Vec3::operator+(Vec3 v3) {
+        return Vec3(x + v3.x, y + v3.y, z + v3.z);
+    }
+    Vec3 Vec3::operator+(double d) {
+        return Vec3(x + d, y + d, z + d);
+    }
+    Vec3 Vec3::operator-(Vec3 v3) {
+        return Vec3(x - v3.x, y - v3.y, z - v3.z);
+    }
+    Vec3 Vec3::operator-(double d) {
+        return Vec3(x - d, y - d, z - d);
     }
 
     // Functions

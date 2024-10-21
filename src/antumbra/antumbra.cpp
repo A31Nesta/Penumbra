@@ -89,9 +89,7 @@ namespace pen::antumbra {
 
         bgfx::setViewTransform(view, viewMtx, projMtx);
 
-        for (Sprite* sprite : sprites) {
-            sprite->transform.rotation += 0.001 * (sprite->getID()+1);
-            
+        for (Sprite* sprite : sprites) {            
             bgfx::setTransform(sprite->transform);
 
             // Buffers

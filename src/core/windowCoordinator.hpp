@@ -1,5 +1,6 @@
 #pragma once
 
+#include "core/window.hpp"
 #include <cstdint>
 #include <string>
 
@@ -9,6 +10,9 @@ namespace pen::core {
 
     // Create or set renderers for windows
     void createAntumbraForWindow(uint32_t window, std::string defaultShader);
+
+    // Get Window
+    Window* getWindow(uint32_t window);
 
     void updateWindows();
     void closeWindow(uint32_t window);

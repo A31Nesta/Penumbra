@@ -1,5 +1,6 @@
 #pragma once
 
+#include "core/window.hpp"
 #include <cstdint>
 #include <string>
 
@@ -9,4 +10,6 @@ namespace pen {
     void end();
     
     bool running();
+
+    core::Window* getWindow(uint32_t window = 0);
 }

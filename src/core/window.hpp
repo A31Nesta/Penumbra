@@ -35,10 +35,15 @@ namespace pen::core {
         // Create or set renderers
         void createAntumbra(std::string defaultShader);
 
+        // Access Renderers
+        antumbra::Antumbra* getAntumbra() { return antumbra; }
+
         // Normal functions
         void update();
         void end();
         bool running();
+
+        double getDeltaTime() { return deltaTime; }
 
         void setCurrent();
         WindowStruct& getWinStruct();
@@ -48,6 +53,13 @@ namespace pen::core {
         void draw();
 
 	    WindowStruct winStruct;
+
+        // Time
+        double lastTime = 0;
+        double currentTime = 0;
+
+        // Important Stuff
+        double deltaTime = 0;
 
         // Renderers
         antumbra::Antumbra* antumbra;

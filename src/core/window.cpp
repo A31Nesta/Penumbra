@@ -74,14 +74,15 @@ namespace pen::core {
 	void Window::createAntumbra(std::string defaultShader) {
 		antumbra = new antumbra::Antumbra(defaultShader);
 		debug::print("LOG: Antumbra renderer successfully created\n");
-		// TODO: Remember that this exists lol
-		antumbra->addSprite("pnmbr/images/sus.png", Vec2(-0.5, 0), M_PI);
-		antumbra->addSprite("pnmbr/images/sus.png", Vec2(0.5, 0), M_PI_4);
-		debug::print("BEWARE! Example quad created! Remove this later!!!\n", debug::Color::DARK_GRAY, debug::Color::YELLOW);
 	}
+
 
     // Normal functions
     void Window::update() {
+		currentTime = glfwGetTime();
+		deltaTime = currentTime - lastTime;
+		lastTime = currentTime;
+
 		draw();
     }
     void Window::end() {
@@ -213,6 +214,9 @@ namespace pen::core {
 
         // SET USER POINTER
         glfwSetWindowUserPointer(winStruct._window, this);
+		// SET TIME STUFF
+		currentTime = glfwGetTime();
+		lastTime = currentTime;
     }
 
     void Window::draw() {

@@ -25,6 +25,11 @@ namespace pen {
         // Compare Vectors
         bool operator==(Vec2 v2);
         Vec2 operator*(Vec2 v2);
+        Vec2 operator*(double d);
+        Vec2 operator+(Vec2 v2);
+        Vec2 operator+(double d);
+        Vec2 operator-(Vec2 v2);
+        Vec2 operator-(double d);
 
         // Coords
         double x;
@@ -51,6 +56,11 @@ namespace pen {
         // Compare Vectors
         bool operator==(Vec3 v3);
         Vec3 operator*(Vec3 v3);
+        Vec3 operator*(double d);
+        Vec3 operator+(Vec3 v3);
+        Vec3 operator+(double d);
+        Vec3 operator-(Vec3 v3);
+        Vec3 operator-(double d);
 
         // Coords
         double x;

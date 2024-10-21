@@ -34,4 +34,8 @@ namespace pen {
 	bool running() {
 		return core::running();
 	}
+
+	core::Window* getWindow(uint32_t window) {
+		return core::getWindow(window);
+	}
 }

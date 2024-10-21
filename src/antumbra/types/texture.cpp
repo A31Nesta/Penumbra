@@ -35,7 +35,7 @@ namespace pen {
         // Native BGFX format according to this realiable source:
         // https://github.com/beardsvibe/leengine/blob/master/src/render.c#L115
         size_t dotPos = path.find_last_of('.');
-        if (dotPos != std::string::npos && path.substr() == ".ktx") {
+        if (dotPos != std::string::npos && path.substr(dotPos) == ".ktx") {
             std::ifstream file(path);
             size_t fileSize;
 
@@ -56,6 +56,8 @@ namespace pen {
                 _bgfxTex = bgfx::createTexture(mem, BGFX_TEXTURE_NONE|BGFX_SAMPLER_NONE, 0, &texInfo);
                 width = texInfo.width;
                 height = texInfo.height;
+
+                std::cout << "Loaded texture with " << texInfo.numMips << " mips";
             }
         }
         else {
