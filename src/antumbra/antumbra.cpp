@@ -90,6 +90,8 @@ namespace pen::antumbra {
         bgfx::setViewTransform(view, viewMtx, projMtx);
 
         for (Sprite* sprite : sprites) {
+            sprite->transform.rotation += 0.001 * (sprite->getID()+1);
+            
             bgfx::setTransform(sprite->transform);
 
             // Buffers
@@ -100,7 +102,10 @@ namespace pen::antumbra {
             textures.at(sprite->getTextureID()).bindTexture();
 
             // Set render state and draw
-      	    bgfx::setState(BGFX_STATE_DEFAULT | BGFX_STATE_BLEND_ALPHA); // Enable Alpha
+      	    bgfx::setState(BGFX_STATE_DEFAULT // Use default
+                ^ BGFX_STATE_WRITE_Z // Remove Z
+                | BGFX_STATE_BLEND_ALPHA // Enable Alpha
+            );
             bgfx::submit(view, shaders.at(sprite->getShaderID()).getProgram());
         }
 

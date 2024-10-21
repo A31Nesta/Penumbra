@@ -11,6 +11,7 @@ namespace pen::antumbra {
 
         void setDeform(Vec2 deform);
         
+        uint32_t getID() { return id; }
         uint32_t getShaderID() { return shaderID; }
         uint32_t getTextureID() { return textureID; }
 

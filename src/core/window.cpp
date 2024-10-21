@@ -10,6 +10,7 @@
 #include <bgfx/platform.h>
 
 #include <GLFW/glfw3.h>
+#include <cmath>
 #if BX_PLATFORM_LINUX
 	// X11 Support
     #ifdef PENUMBRA_X11_COMPAT
@@ -48,7 +49,7 @@ namespace pen::core {
             bgfx::setViewRect(winStruct.view2D, 0, 0, bgfx::BackbufferRatio::Equal);
 
 			bgfx::setViewClear(winStruct.view3D, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, (winStruct._penumbraFlags & PENUMBRA_TRANSPARENT)?0x00000000:0x7e7189ff, 1.0f, 0);
-			bgfx::setViewClear(winStruct.view2D, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x1e093600, 1.0f, 0);
+			bgfx::setViewClear(winStruct.view2D, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, (winStruct._penumbraFlags & PENUMBRA_TRANSPARENT)?0x00000000:0x1e093600, 1.0f, 0);
         }
     }
 
@@ -74,8 +75,8 @@ namespace pen::core {
 		antumbra = new antumbra::Antumbra(defaultShader);
 		debug::print("LOG: Antumbra renderer successfully created\n");
 		// TODO: Remember that this exists lol
-		antumbra->addSprite("pnmbr/images/test.png", Vec2(-1, 0), M_PI, 2);
-		antumbra->addSprite("pnmbr/images/sus.png", Vec2(1, 0));
+		antumbra->addSprite("pnmbr/images/sus.png", Vec2(-0.5, 0), M_PI);
+		antumbra->addSprite("pnmbr/images/sus.png", Vec2(0.5, 0), M_PI_4);
 		debug::print("BEWARE! Example quad created! Remove this later!!!\n", debug::Color::DARK_GRAY, debug::Color::YELLOW);
 	}
 
@@ -202,7 +203,7 @@ namespace pen::core {
 		bgfx::setViewRect(winStruct.view3D, 0, 0, bgfx::BackbufferRatio::Equal);
 
 		// INFO: View Clear Disabled for 2D. Test
-        bgfx::setViewClear(winStruct.view2D, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, 0x1e093600, 1.0f, 0);
+        bgfx::setViewClear(winStruct.view2D, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, (winStruct._penumbraFlags & PENUMBRA_TRANSPARENT)?0x00000000:0x1e093600, 1.0f, 0);
 		bgfx::setViewRect(winStruct.view2D, 0, 0, bgfx::BackbufferRatio::Equal);
 
 		// Enable debug text.

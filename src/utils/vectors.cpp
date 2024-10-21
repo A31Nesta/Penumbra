@@ -39,6 +39,9 @@ namespace pen {
     bool Vec2::operator==(Vec2 v2) {
         return x == v2.x && y == v2.y;
     }
+    Vec2 Vec2::operator*(Vec2 v2) {
+        return Vec2(x * v2.x, y * v2.y);
+    }
 
 
     // Functions
@@ -91,6 +94,9 @@ namespace pen {
     // Compare Vectors
     bool Vec3::operator==(Vec3 v3) {
         return x == v3.x && y == v3.y && z == v3.z;
+    }
+    Vec3 Vec3::operator*(Vec3 v3) {
+        return Vec3(x * v3.x, y * v3.y, z * v3.z);
     }
 
     // Functions

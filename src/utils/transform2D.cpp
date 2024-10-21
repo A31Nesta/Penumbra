@@ -1,4 +1,5 @@
 #include "utils/transform2D.hpp"
+#include "utils/vectors.hpp"
 #include <bx/math.h>
 
 namespace pen {
@@ -44,23 +45,19 @@ namespace pen {
             bx::mtxRotateZ(_rotMtx, rotation);
         }
         // If the scale changed we calculate it
-        if (scale != _lastScl) {
+        if (scale != _lastScl || deform != _lastDef) {
             needsRecalc = true;
             _lastScl = scale;
-            bx::mtxScale(_sclMtx, scale.x, scale.y, 1.0f);
-        }
-        // If the deform changed we calculate it
-        if (deform != _lastDef) {
-            needsRecalc = true;
             _lastDef = deform;
-            bx::mtxScale(_defMtx, deform.x, deform.y, 1.0f);
+
+            Vec2 totalScale = scale * deform;
+            bx::mtxScale(_sclMtx, totalScale.x, totalScale.y, 1.0f);
         }
 
         // If the main matrix needs to be calculated, we calculate it
         if (needsRecalc) {
             bx::mtxIdentity(matrix);
-            bx::mtxMul(matrix, _sclMtx, _defMtx);
-            bx::mtxMul(matrix, matrix, _rotMtx);
+            bx::mtxMul(matrix, _sclMtx, _rotMtx);
             bx::mtxMul(matrix, matrix, _posMtx);
         }
     }
@@ -71,12 +68,9 @@ namespace pen {
         bx::mtxRotateZ(_rotMtx, rotation);
         _lastScl = scale;
         bx::mtxScale(_sclMtx, scale.x, scale.y, 1.0f);
-        _lastDef = deform;
-        bx::mtxScale(_defMtx, deform.x, deform.y, 1.0f);
 
         bx::mtxIdentity(matrix);
-        bx::mtxMul(matrix, _sclMtx, _defMtx);
-        bx::mtxMul(matrix, matrix, _rotMtx);
+        bx::mtxMul(matrix, _sclMtx, _rotMtx);
         bx::mtxMul(matrix, matrix, _posMtx);
     }
 }
