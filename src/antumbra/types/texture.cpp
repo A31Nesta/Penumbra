@@ -11,16 +11,42 @@
 #include "stbi/stb_image.h"
 
 namespace pen {
-    Texture::Texture(uint32_t id, std::string path) {
+    Texture::Texture(uint32_t id, std::string path, uint8_t type) {
         this->id = id;
         loadTexture(path);
+
+        textureType = type;
+
+        std::string uniformName = "s_color";
+        switch (type) {
+        case PENUMBRA_TEX_COLOR:
+            uniformName = "s_color";
+            break;
+        case PENUMBRA_TEX_NORMAL:
+            uniformName = "s_normal";
+            break;
+        case PENUMBRA_TEX_ROUGH:
+            uniformName = "s_rough";
+            break;
+        case PENUMBRA_TEX_METAL:
+            uniformName = "s_metal";
+            break;
+        }
+
+        bgfx::createUniform(uniformName.c_str(), bgfx::UniformType::Sampler);
+    }
+
+    void Texture::bindTexture() {
+        // Bind texture
+        bgfx::setTexture(textureType, uniform, _bgfxTex);
     }
 
     void Texture::loadTexture(std::string path) {
         // Khronos Texture
         // Native BGFX format according to this realiable source:
         // https://github.com/beardsvibe/leengine/blob/master/src/render.c#L115
-        if (path.substr(path.find_last_of('.')) == ".ktx") {
+        size_t dotPos = path.find_last_of('.');
+        if (dotPos != std::string::npos && path.substr() == ".ktx") {
             std::ifstream file(path);
             size_t fileSize;
 

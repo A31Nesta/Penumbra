@@ -24,13 +24,13 @@ namespace pen {
         }
     }
 
-    // TODO: Modify to separate Sampler uniform loading and other uniforms
-    void Shader::createUniform(std::string name, bgfx::UniformType::Enum type) {
-        bgfx::UniformHandle uniform = bgfx::createUniform(name.c_str(), type);
-        if (bgfx::isValid(uniform)) {
-            localUniforms.push_back(uniform);
-        }
-    }
+    // TO DO: Modify to separate Sampler uniform loading and other uniforms
+    // void Shader::createUniform(std::string name, bgfx::UniformType::Enum type) {
+    //     bgfx::UniformHandle uniform = bgfx::createUniform(name.c_str(), type);
+    //     if (bgfx::isValid(uniform)) {
+    //         localUniforms.push_back(uniform);
+    //     }
+    // }
 
     bgfx::ShaderHandle Shader::loadShader(std::string name) {
         char* data = new char[2048];

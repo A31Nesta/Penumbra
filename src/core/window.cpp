@@ -74,8 +74,8 @@ namespace pen::core {
 		antumbra = new antumbra::Antumbra(defaultShader);
 		debug::print("LOG: Antumbra renderer successfully created\n");
 		// TODO: Remember that this exists lol
-		antumbra->addSprite("", Vec2(-1, 0), M_PI, 2);
-		antumbra->addSprite("", Vec2(1, 0));
+		antumbra->addSprite("pnmbr/images/test.png", Vec2(-1, 0), M_PI, 2);
+		antumbra->addSprite("pnmbr/images/test.png", Vec2(1, 0));
 		debug::print("BEWARE! Example quad created! Remove this later!!!\n", debug::Color::DARK_GRAY, debug::Color::YELLOW);
 	}
 

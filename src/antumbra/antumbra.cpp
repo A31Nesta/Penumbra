@@ -31,10 +31,7 @@ namespace pen::antumbra {
         Shader defaultS(0, defaultShaderPath);
         defaultS.setPersistence(true);
         shaders.push_back(defaultS);
-
-        // Set texture stuff
         
-
         initQuad();
     }
 
@@ -92,6 +89,10 @@ namespace pen::antumbra {
             // Buffers
             bgfx::setVertexBuffer(0, vbh);
             bgfx::setIndexBuffer(ibh);
+
+            // Set Texture
+            textures.at(sprite->getTextureID()).bindTexture();
+
             // Set render state and draw
       	    bgfx::setState(BGFX_STATE_DEFAULT);
             bgfx::submit(view, shaders.at(sprite->getShaderID()).getProgram());

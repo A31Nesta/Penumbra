@@ -3,14 +3,14 @@
 #include <bgfx/bgfx.h>
 #include <cstdint>
 #include <string>
-#include <vector>
+// #include <vector>
 
 namespace pen {
     class Shader {
     public:
         Shader(uint32_t id, std::string shader);
 
-        void createUniform(std::string name, bgfx::UniformType::Enum type);
+        // void createUniform(std::string name, bgfx::UniformType::Enum type);
 
         void incrementUsers() { users++; }
         void decrementUsers() { users--; }
@@ -29,7 +29,7 @@ namespace pen {
         bgfx::ProgramHandle program;
 
         // Uniforms
-        std::vector<bgfx::UniformHandle> localUniforms;
+        // std::vector<bgfx::UniformHandle> localUniforms;
 
         std::string path;
         uint32_t users = 1; // Initialized to 1 because at the time of creation 1 object would be using it

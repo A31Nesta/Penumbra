@@ -4,13 +4,20 @@
 #include <cstdint>
 #include <string>
 
+#define PENUMBRA_TEX_COLOR 0
+#define PENUMBRA_TEX_NORMAL 1
+#define PENUMBRA_TEX_ROUGH 2
+#define PENUMBRA_TEX_METAL 3
+
 namespace pen {
     class Texture {
     public:
-        Texture(uint32_t id, std::string path);
+        Texture(uint32_t id, std::string path, uint8_t type = PENUMBRA_TEX_COLOR);
 
         void incrementUsers() { users++; }
         void decrementUsers() { users--; }
+
+        void bindTexture();
 
         bool isValid() { return valid; }
         uint32_t getID() { return id; }
@@ -28,6 +35,10 @@ namespace pen {
         // Texture Data
         bgfx::TextureHandle _bgfxTex;
         uint16_t width, height;
+        uint8_t textureType;
+
+        // Uniform
+        bgfx::UniformHandle uniform;
 
         uint32_t id;
     };
