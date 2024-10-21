@@ -1,6 +1,7 @@
 # Penumbra
 
-Simple general-purpose BGFX Renderer built for Selengine.
+Simple general-purpose BGFX Renderer built for Selengine.   
+Cross-platform but primarily tested and developed on Linux.
 
 ## What does it support?
 
@@ -32,8 +33,18 @@ The Antumbra (2D module) would be an annular eclipse, which also looks nice and 
 ~~Also, Ryu Ga Gotoku Studio's Judgment's Soundtrack is amazing and the track Penumbra goes way harder than it should.~~
 
 ## Dependencies
+### Utilities
+- bgfx-shaderc (included with BGFX)
+- toktx
 
-Who knows? Not me  
-We never source control  
-You're face to face  
-With the man who wrote the code
+### Libraries
+- BGFX
+- GLFW
+- GLM
+- STB Image (included)
+
+### Arch Linux Packages
+- bgfx-cmake-git
+- ktx_software-git
+- glfw
+- glm
