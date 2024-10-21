@@ -34,10 +34,12 @@ namespace pen {
         float _posMtx[16];
         float _rotMtx[16];
         float _sclMtx[16];
+        float _defMtx[16]; // Deform Matrix
 
         // Last values used for matrix transform
         Vec2 _lastPos;
         double _lastRot;
         Vec2 _lastScl;
+        Vec2 _lastDef; // Active deform Vector
     };
 }

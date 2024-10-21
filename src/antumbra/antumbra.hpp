@@ -67,5 +67,8 @@ namespace pen::antumbra {
         // Quad Vertex and Index Buffer Handles
         bgfx::VertexBufferHandle vbh;
         bgfx::IndexBufferHandle ibh;
+
+        // Uniform
+        bgfx::UniformHandle colorUniform;
     };
 }

@@ -1,39 +1,28 @@
 #include "texture.hpp"
 #include "debug/consoleColors.hpp"
 #include "debug/log.hpp"
+#include "utils/vectors.hpp"
+#include <algorithm>
 #include <bgfx/bgfx.h>
 #include <cstddef>
+#include <cstdint>
 #include <cstdlib>
 #include <fstream>
+#include <iostream>
 
 // STBI
 #define STB_IMAGE_IMPLEMENTATION
 #include "stbi/stb_image.h"
 
 namespace pen {
-    Texture::Texture(uint32_t id, std::string path, uint8_t type) {
+    Texture::Texture(uint32_t id, std::string path, uint8_t type, bgfx::UniformHandle uniform) {
         this->id = id;
         loadTexture(path);
 
         textureType = type;
-
-        std::string uniformName = "s_color";
-        switch (type) {
-        case PENUMBRA_TEX_COLOR:
-            uniformName = "s_color";
-            break;
-        case PENUMBRA_TEX_NORMAL:
-            uniformName = "s_normal";
-            break;
-        case PENUMBRA_TEX_ROUGH:
-            uniformName = "s_rough";
-            break;
-        case PENUMBRA_TEX_METAL:
-            uniformName = "s_metal";
-            break;
-        }
-
-        bgfx::createUniform(uniformName.c_str(), bgfx::UniformType::Sampler);
+        this->uniform = uniform;
+        
+        this->path = path;
     }
 
     void Texture::bindTexture() {
@@ -70,6 +59,8 @@ namespace pen {
             }
         }
         else {
+            stbi_set_flip_vertically_on_load(true);
+
             int x = 0;
             int y = 0;
             int channels = 0;
@@ -91,5 +82,10 @@ namespace pen {
             debug::print("Failed to load Texture: " + path + "\n", debug::Color::RED);
             bool valid = false;
         }
+
+        // calculate deform
+        uint16_t maxValue = std::max(width, height);
+        spriteDeform.x = float(width)/maxValue;
+        spriteDeform.y = float(height)/maxValue;
     }
 }

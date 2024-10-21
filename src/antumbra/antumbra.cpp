@@ -7,6 +7,7 @@
 #include "utils/vectors.hpp"
 
 #include <bgfx/bgfx.h>
+#include <bgfx/defines.h>
 #include <bx/math.h>
 
 #include <cstdint>
@@ -31,6 +32,10 @@ namespace pen::antumbra {
         Shader defaultS(0, defaultShaderPath);
         defaultS.setPersistence(true);
         shaders.push_back(defaultS);
+
+        // Create Uniforms
+        // TODO: Change magic string to defines
+        colorUniform = bgfx::createUniform("s_color", bgfx::UniformType::Sampler);
         
         initQuad();
     }
@@ -38,11 +43,12 @@ namespace pen::antumbra {
     // BASE ADD SPRITE
     Sprite* Antumbra::addSprite(std::string texture, Transform2D transform, std::string shader) {
         uint32_t id = sprites.size();
-        Vec2 deform = 0;
 
         Texture t = getTexture(texture);
         Shader s = getShader(shader);
         uint32_t textureID = t.isValid() ? t.getID() : 0;
+        Vec2 deform = t.isValid() ? t.getDeform() : 1;
+
         uint32_t shaderID = s.getID();
         
         Sprite* sprite = new Sprite(id, transform, deform, textureID, shaderID);
@@ -94,7 +100,7 @@ namespace pen::antumbra {
             textures.at(sprite->getTextureID()).bindTexture();
 
             // Set render state and draw
-      	    bgfx::setState(BGFX_STATE_DEFAULT);
+      	    bgfx::setState(BGFX_STATE_DEFAULT | BGFX_STATE_BLEND_ALPHA); // Enable Alpha
             bgfx::submit(view, shaders.at(sprite->getShaderID()).getProgram());
         }
 
@@ -115,7 +121,7 @@ namespace pen::antumbra {
     }
 
     Shader Antumbra::getShader(std::string shader) {
-        for (Shader s : shaders) {
+        for (Shader& s : shaders) {
             if (s.getPath() == shader) {
                 s.incrementUsers();
                 return s;
@@ -127,14 +133,14 @@ namespace pen::antumbra {
         return newShader;
     }
     Texture Antumbra::getTexture(std::string texture) {
-        for (Texture t : textures) {
+        for (Texture& t : textures) {
             if (t.getPath() == texture) {
                 t.incrementUsers();
                 return t;
             }
         }
 
-        Texture newTexture(textures.size(), texture);
+        Texture newTexture(textures.size(), texture, PENUMBRA_TEX_COLOR, colorUniform);
         
         // Only add if it's Valid
         if (newTexture.isValid()) {

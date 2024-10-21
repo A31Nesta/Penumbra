@@ -1,5 +1,6 @@
 #pragma once
 
+#include "utils/vectors.hpp"
 #include <bgfx/bgfx.h>
 #include <cstdint>
 #include <string>
@@ -12,7 +13,7 @@
 namespace pen {
     class Texture {
     public:
-        Texture(uint32_t id, std::string path, uint8_t type = PENUMBRA_TEX_COLOR);
+        Texture(uint32_t id, std::string path, uint8_t type, bgfx::UniformHandle uniform);
 
         void incrementUsers() { users++; }
         void decrementUsers() { users--; }
@@ -22,6 +23,8 @@ namespace pen {
         bool isValid() { return valid; }
         uint32_t getID() { return id; }
         std::string getPath() { return path; }
+
+        Vec2 getDeform() { return spriteDeform; }
 
     private:
         void loadTexture(std::string path);
@@ -35,6 +38,7 @@ namespace pen {
         // Texture Data
         bgfx::TextureHandle _bgfxTex;
         uint16_t width, height;
+        Vec2 spriteDeform;
         uint8_t textureType;
 
         // Uniform

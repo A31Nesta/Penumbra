@@ -12,8 +12,9 @@ namespace pen {
     }
 
     // set Deform
-    void setDeform(Vec2 def = Vec2(1)) {
-        // TODO: Implement Deform
+    void Transform2D::setDeform(Vec2 def) {
+        deform = def;
+        calculateMatrix();
     }
 
     Transform2D::operator float*() {
@@ -46,13 +47,20 @@ namespace pen {
         if (scale != _lastScl) {
             needsRecalc = true;
             _lastScl = scale;
-            bx::mtxScale(_sclMtx, scale.x, scale.y, 0.0f);
+            bx::mtxScale(_sclMtx, scale.x, scale.y, 1.0f);
+        }
+        // If the deform changed we calculate it
+        if (deform != _lastDef) {
+            needsRecalc = true;
+            _lastDef = deform;
+            bx::mtxScale(_defMtx, deform.x, deform.y, 1.0f);
         }
 
         // If the main matrix needs to be calculated, we calculate it
         if (needsRecalc) {
             bx::mtxIdentity(matrix);
-            bx::mtxMul(matrix, _sclMtx, _rotMtx);
+            bx::mtxMul(matrix, _sclMtx, _defMtx);
+            bx::mtxMul(matrix, matrix, _rotMtx);
             bx::mtxMul(matrix, matrix, _posMtx);
         }
     }
@@ -62,10 +70,13 @@ namespace pen {
         _lastRot = rotation;
         bx::mtxRotateZ(_rotMtx, rotation);
         _lastScl = scale;
-        bx::mtxScale(_sclMtx, scale.x, scale.y, 0.0f);
+        bx::mtxScale(_sclMtx, scale.x, scale.y, 1.0f);
+        _lastDef = deform;
+        bx::mtxScale(_defMtx, deform.x, deform.y, 1.0f);
 
         bx::mtxIdentity(matrix);
-        bx::mtxMul(matrix, _sclMtx, _rotMtx);
+        bx::mtxMul(matrix, _sclMtx, _defMtx);
+        bx::mtxMul(matrix, matrix, _rotMtx);
         bx::mtxMul(matrix, matrix, _posMtx);
     }
 }
