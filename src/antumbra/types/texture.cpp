@@ -58,12 +58,10 @@ namespace pen {
                 width = texInfo.width;
                 height = texInfo.height;
 
-                std::cout << "Loaded texture with " << std::to_string(texInfo.numMips) << " mips";
+                std::cout << "Loaded texture with " << std::to_string(texInfo.numMips) << " mips\n";
             }
         }
         else {
-            stbi_set_flip_vertically_on_load(true);
-
             int x = 0;
             int y = 0;
             int channels = 0;
