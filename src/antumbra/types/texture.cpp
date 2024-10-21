@@ -9,6 +9,7 @@
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
+#include <string>
 
 // STBI
 #define STB_IMAGE_IMPLEMENTATION
@@ -57,7 +58,7 @@ namespace pen {
                 width = texInfo.width;
                 height = texInfo.height;
 
-                std::cout << "Loaded texture with " << texInfo.numMips << " mips";
+                std::cout << "Loaded texture with " << std::to_string(texInfo.numMips) << " mips";
             }
         }
         else {
