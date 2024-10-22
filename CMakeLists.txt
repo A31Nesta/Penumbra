@@ -4,23 +4,7 @@ project(penumbra VERSION 0.1.0 LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_library(penumbra STATIC
-    src/utils/vectors.cpp 
-    src/utils/transform2D.cpp 
-
-    src/antumbra/types/shader.cpp 
-    src/antumbra/types/texture.cpp 
-    src/antumbra/types/sprite.cpp 
-    src/antumbra/antumbra.cpp 
-
-    src/debug/consoleColors.cpp
-    src/debug/log.cpp
-    src/core/window.cpp
-    src/utils/config.cpp
-    src/penumbra.cpp
-)
-
-# add_executable(penumbra
+# add_library(penumbra STATIC
 #     src/utils/vectors.cpp 
 #     src/utils/transform2D.cpp 
 
@@ -34,9 +18,25 @@ add_library(penumbra STATIC
 #     src/core/window.cpp
 #     src/utils/config.cpp
 #     src/penumbra.cpp
-
-#     testEntry.cpp
 # )
+
+add_executable(penumbra
+    src/utils/vectors.cpp 
+    src/utils/transform2D.cpp 
+
+    src/antumbra/types/shader.cpp 
+    src/antumbra/types/texture.cpp 
+    src/antumbra/types/sprite.cpp 
+    src/antumbra/antumbra.cpp 
+
+    src/debug/consoleColors.cpp
+    src/debug/log.cpp
+    src/core/window.cpp
+    src/utils/config.cpp
+    src/penumbra.cpp
+
+    testEntry.cpp
+)
 
 option(LINUX_X11 "Linux Only. Enables X11 support. [Recommended]" ON)
 option(LINUX_WAYLAND "Linux Only. Enables Wayland support. [Recommended if Wayland is installed]" ON)
