@@ -40,10 +40,10 @@ namespace pen::antumbra {
     public:
         Antumbra(std::string defaultShader);
 
-        Sprite* addSprite(std::string texture, Transform2D transform);
-        Sprite* addSprite(std::string texture, Transform2D transform, std::string shader);
-        Sprite* addSprite(std::string texture, Vec2 position, double rotation = 0, Vec2 scale = Vec2(1));
-        Sprite* addSprite(std::string texture, Vec2 position, double rotation, Vec2 scale, std::string shader);
+        Sprite* createSprite(std::string texture, Transform2D transform);
+        Sprite* createSprite(std::string texture, Transform2D transform, std::string shader);
+        Sprite* createSprite(std::string texture, Vec2 position, double rotation = 0, Vec2 scale = Vec2(1));
+        Sprite* createSprite(std::string texture, Vec2 position, double rotation, Vec2 scale, std::string shader);
 
         void removeSprite(Sprite sprite);
         void removeSprite(uint32_t sprite);

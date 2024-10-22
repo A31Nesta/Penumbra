@@ -41,7 +41,7 @@ namespace pen::antumbra {
     }
 
     // BASE ADD SPRITE
-    Sprite* Antumbra::addSprite(std::string texture, Transform2D transform, std::string shader) {
+    Sprite* Antumbra::createSprite(std::string texture, Transform2D transform, std::string shader) {
         uint32_t id = sprites.size();
 
         Texture t = getTexture(texture);
@@ -56,14 +56,14 @@ namespace pen::antumbra {
         return sprite;
     }
     // OTHER ADD SPRITES
-    Sprite* Antumbra::addSprite(std::string texture, Transform2D transform) {
-        return addSprite(texture, transform, defaultShaderPath);
+    Sprite* Antumbra::createSprite(std::string texture, Transform2D transform) {
+        return createSprite(texture, transform, defaultShaderPath);
     }
-    Sprite* Antumbra::addSprite(std::string texture, Vec2 position, double rotation, Vec2 scale) {
-        return addSprite(texture, Transform2D(position, rotation, scale), defaultShaderPath);
+    Sprite* Antumbra::createSprite(std::string texture, Vec2 position, double rotation, Vec2 scale) {
+        return createSprite(texture, Transform2D(position, rotation, scale), defaultShaderPath);
     }
-    Sprite* Antumbra::addSprite(std::string texture, Vec2 position, double rotation, Vec2 scale, std::string shader) {
-        return addSprite(texture, Transform2D(position, rotation, scale), shader);
+    Sprite* Antumbra::createSprite(std::string texture, Vec2 position, double rotation, Vec2 scale, std::string shader) {
+        return createSprite(texture, Transform2D(position, rotation, scale), shader);
     }
     // REMOVE SPRITES
     // TODO: IMLEMENT REMOVE SPRITE!
