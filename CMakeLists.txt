@@ -38,6 +38,12 @@ add_library(penumbra STATIC
 #     testEntry.cpp
 # )
 
+set_target_properties(${PROJECT_NAME} PROPERTIES
+    VERSION ${PROJECT_VERSION}
+    SOVERSION ${PROJECT_VERSION_MAJOR}
+    POSITION_INDEPENDENT_CODE TRUE
+)
+
 option(LINUX_X11 "Linux Only. Enables X11 support. [Recommended]" ON)
 option(LINUX_WAYLAND "Linux Only. Enables Wayland support. [Recommended if Wayland is installed]" ON)
 
