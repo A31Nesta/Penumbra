@@ -20,7 +20,6 @@ add_executable(penumbra
     src/debug/consoleColors.cpp
     src/debug/log.cpp
     src/core/window.cpp
-    src/core/windowCoordinator.cpp
     src/utils/config.cpp
     src/penumbra.cpp
 

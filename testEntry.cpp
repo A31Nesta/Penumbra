@@ -51,10 +51,9 @@ void putDebugShit(uint32_t flags) {
 
 int main(int argc, char** argv) {
     uint32_t flags = pen::getFlagsFromArguments(argc, argv);
-    pen::init("Penumbra", 1280, 720, flags);
+    pen::core::Window* window = pen::init("Penumbra", 1280, 720, flags);
 
-    pen::core::Window* window = pen::getWindow();
-    pen::antumbra::Antumbra* antumbra = window->getAntumbra();
+    pen::antumbra::Antumbra* antumbra = pen::getAntumbra();
 
     pen::antumbra::Sprite* magic_1 = antumbra->addSprite("pnmbr/images/hexta.ktx", pen::Vec2(0, 0), 0, 0.6);
     pen::antumbra::Sprite* magic = antumbra->addSprite("pnmbr/images/hexta.ktx", pen::Vec2(0, 0), 0, 1.125);
