@@ -1,27 +1,28 @@
 #! /bin/bash
 
+# Get output path (current directory by default)
 outPath="$1"
+if [ ! -d "$outPath" ]; then
+    outPath="."
+fi
 
 for FILE in *; do
     fileNoExtension="${FILE%%.*}"
 
-    # Get actual file paths
-    vtxShader="v-$fileNoExtension.sc"
-    frgShader="f-$fileNoExtension.sc"
+    # Ignore varying.def.sc
+    if [ "$FILE" = "varying.def.sc" ]; then
+        echo "varying.def.sc file detected, ignoring..."
+        continue
+    fi
 
-    echo "$vtxShader | $frgShader"
-
-    # if [ ! -d "$outPath" ]; then
-    #     echo "ERROR: The output path does not exist."
-    #     exit 1
-    # fi
-
-    # if [ -f "$vtxShader" ]; then
-    #     echo "Compiling Vertex Shader..."
-    #     bgfx-shaderc -f "$vtxShader" -o "$outPath/$1.vs" --profile spirv --type vertex -i /usr/include/bgfx
-    # fi
-    # if [ -f "$frgShader" ]; then
-    #     echo "Compiling Fragment Shader..."
-    #     bgfx-shaderc -f "$frgShader" -o "$outPath/$1.fs" --profile spirv --type fragment -i /usr/include/bgfx
-    # fi
+    if [ ${fileNoExtension:0:2} = "v-" ]; then
+        echo "$FILE: Compiling Vertex Shader..."
+        bgfx-shaderc -f "$FILE" -o "$outPath/${fileNoExtension:2}.vs" --profile spirv --type vertex -i /usr/include/bgfx
+        echo "Saving to: $outPath/${fileNoExtension:2}.vs"
+    fi
+    if [ ${fileNoExtension:0:2} = "f-" ]; then
+        echo "$FILE: Compiling Fragment Shader..."
+        bgfx-shaderc -f "$frgShader" -o "$outPath/${fileNoExtension:2}.fs" --profile spirv --type fragment -i /usr/include/bgfx
+        echo "Saving to: $outPath/${fileNoExtension:2}.fs"
+    fi
 done
