@@ -56,15 +56,20 @@ int main(int argc, char** argv) {
     pen::core::Window* window = pen::getWindow();
     pen::antumbra::Antumbra* antumbra = window->getAntumbra();
 
-    pen::antumbra::Sprite* magic = antumbra->addSprite("pnmbr/images/hexta.ktx", pen::Vec2(0, 0), 0, 2);
-    pen::antumbra::Sprite* resonator = antumbra->addSprite("pnmbr/images/resonance.ktx", pen::Vec2(0, 0), 0, 2);
+    pen::antumbra::Sprite* magic_1 = antumbra->addSprite("pnmbr/images/hexta.ktx", pen::Vec2(0, 0), 0, 0.6);
+    pen::antumbra::Sprite* magic = antumbra->addSprite("pnmbr/images/hexta.ktx", pen::Vec2(0, 0), 0, 1.125);
+    pen::antumbra::Sprite* magic2 = antumbra->addSprite("pnmbr/images/hexta.ktx", pen::Vec2(0, 0), 0, 2);
+    pen::antumbra::Sprite* magic3 = antumbra->addSprite("pnmbr/images/hexta.ktx", pen::Vec2(0, 0), 0, 3.5);
 
     putDebugShit(flags);
 
     // Run Program
     while (pen::running()) {
         const double dt = window->getDeltaTime();
-        magic->transform.rotation += dt * 0.5;
+        magic_1->transform.rotation += dt * 1.0;
+        magic->transform.rotation -= dt * 0.75;
+        magic2->transform.rotation += dt * 0.5;
+        magic3->transform.rotation -= dt * 0.25;
 
         pen::update();
     }
