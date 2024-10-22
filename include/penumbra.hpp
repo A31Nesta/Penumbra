@@ -7,7 +7,8 @@
 #include <string>
 
 namespace pen {
-    core::Window* init(std::string title, int width, int height, uint32_t penumbra_flags);
+    core::Window* createWindow(std::string title, int width, int height, uint32_t penumbra_flags);
+    antumbra::Antumbra* createAntumbra(std::string defaultShader);
     void update();
     void end();
     

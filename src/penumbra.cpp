@@ -18,12 +18,14 @@ namespace pen {
 	core::Window* win;
 	antumbra::Antumbra* ant;
 
-	core::Window* init(std::string title, int width, int height, uint32_t penumbra_flags) {
+	core::Window* createWindow(std::string title, int width, int height, uint32_t penumbra_flags) {
 		win = new core::Window(title, width, height, penumbra_flags, 0, 1);
-		win->createAntumbra("pnmbr/shaders-2D/default");
-
-		ant = win->getAntumbra();
 		return win;
+	}
+	antumbra::Antumbra* createAntumbra(std::string defaultShader) {
+		win->createAntumbra(defaultShader);
+		ant = win->getAntumbra();
+		return ant;
 	}
 	void update() {
 		if (!win->running()) {
