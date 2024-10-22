@@ -29,8 +29,8 @@ namespace pen::antumbra {
     Antumbra::Antumbra(std::string defaultShader) {
         defaultShaderPath = defaultShader;
 
-        Shader defaultS(0, defaultShaderPath);
-        defaultS.setPersistence(true);
+        Shader* defaultS = new Shader(0, defaultShaderPath);
+        defaultS->setPersistence(true);
         shaders.push_back(defaultS);
 
         // Create Uniforms
@@ -39,17 +39,44 @@ namespace pen::antumbra {
         
         initQuad();
     }
+    Antumbra::~Antumbra() {
+        // Delete Sprites
+        for (Sprite* sprite : sprites) {
+            if (sprite != nullptr) {
+                delete sprite;
+            }
+        }
+
+        // Delete Shaders
+        for (Shader* shader : shaders) {
+            if (shader != nullptr) {
+                delete shader;
+            }
+        }
+
+        // Delete Textures
+        for (Texture* texture : textures) {
+            if (texture != nullptr) {
+                delete texture;
+            }
+        }
+
+        // Delete BGFX objects
+        bgfx::destroy(colorUniform);
+        bgfx::destroy(vbh);
+        bgfx::destroy(ibh);
+    }
 
     // BASE ADD SPRITE
     Sprite* Antumbra::createSprite(std::string texture, Transform2D transform, std::string shader) {
         uint32_t id = sprites.size();
 
-        Texture t = getTexture(texture);
-        Shader s = getShader(shader);
-        uint32_t textureID = t.isValid() ? t.getID() : 0;
-        Vec2 deform = t.isValid() ? t.getDeform() : 1;
+        Texture* t = getTexture(texture);
+        Shader* s = getShader(shader);
+        uint32_t textureID = t->isValid() ? t->getID() : 0;
+        Vec2 deform = t->isValid() ? t->getDeform() : 1;
 
-        uint32_t shaderID = s.getID();
+        uint32_t shaderID = s->getID();
         
         Sprite* sprite = new Sprite(id, transform, deform, textureID, shaderID);
         sprites.push_back(sprite);
@@ -97,14 +124,14 @@ namespace pen::antumbra {
             bgfx::setIndexBuffer(ibh);
 
             // Set Texture
-            textures.at(sprite->getTextureID()).bindTexture();
+            textures.at(sprite->getTextureID())->bindTexture();
 
             // Set render state and draw
       	    bgfx::setState(BGFX_STATE_DEFAULT // Use default
                 ^ BGFX_STATE_WRITE_Z // Remove Z
                 | BGFX_STATE_BLEND_ALPHA // Enable Alpha
             );
-            bgfx::submit(view, shaders.at(sprite->getShaderID()).getProgram());
+            bgfx::submit(view, shaders.at(sprite->getShaderID())->getProgram());
         }
 
         // bgfx::submit(view, shaders.at(0).getProgram());
@@ -123,30 +150,30 @@ namespace pen::antumbra {
         debug::print("\n\nSIZEOF QUAD_VTX: "+std::to_string(sizeof(QUAD_VTX))+"\n");
     }
 
-    Shader Antumbra::getShader(std::string shader) {
-        for (Shader& s : shaders) {
-            if (s.getPath() == shader) {
-                s.incrementUsers();
+    Shader* Antumbra::getShader(std::string shader) {
+        for (Shader* s : shaders) {
+            if (s->getPath() == shader) {
+                s->incrementUsers();
                 return s;
             }
         }
 
-        Shader newShader(shaders.size(), shader);
+        Shader* newShader = new Shader(shaders.size(), shader);
         shaders.push_back(newShader);
         return newShader;
     }
-    Texture Antumbra::getTexture(std::string texture) {
-        for (Texture& t : textures) {
-            if (t.getPath() == texture) {
-                t.incrementUsers();
+    Texture* Antumbra::getTexture(std::string texture) {
+        for (Texture* t : textures) {
+            if (t->getPath() == texture) {
+                t->incrementUsers();
                 return t;
             }
         }
 
-        Texture newTexture(textures.size(), texture, PENUMBRA_TEX_COLOR, colorUniform);
+        Texture* newTexture = new Texture(textures.size(), texture, PENUMBRA_TEX_COLOR, colorUniform);
         
         // Only add if it's Valid
-        if (newTexture.isValid()) {
+        if (newTexture->isValid()) {
             textures.push_back(newTexture);
         }
 

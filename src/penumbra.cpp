@@ -36,6 +36,8 @@ namespace pen {
 		win->update();
 	}
 	void end() {
+		delete win;
+
 		debug::clearAll();
 		bgfx::shutdown();
 		glfwTerminate();

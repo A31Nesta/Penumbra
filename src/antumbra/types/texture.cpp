@@ -25,6 +25,11 @@ namespace pen {
         
         this->path = path;
     }
+    Texture::~Texture() {
+        // DO NOT DESTROY UNIFORM
+        // That's Antumbra's job, not ours, we just delete our texture
+        bgfx::destroy(_bgfxTex);
+    }
 
     void Texture::bindTexture() {
         // Bind texture
