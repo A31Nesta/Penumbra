@@ -6,8 +6,6 @@
 
 #include "consoleColors.hpp"
 
-// TODO: Delete messages that go out of screen
-// TODO: In positioned messages, re-use deleted spaces in vector
 // TODO: Error handling for when a Value Message loses its reference
 namespace pen::debug {
     // Updates the console, this is what actually writes to the screen

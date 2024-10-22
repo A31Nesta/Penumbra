@@ -25,10 +25,7 @@ std::string exec(std::string cmd) {
     return result;
 }
 
-int main(int argc, char** argv) {
-    uint32_t flags = pen::getFlagsFromArguments(argc, argv);
-    pen::init("Penumbra", 1280, 720, flags);
-
+void putDebugShit(uint32_t flags) {
     // Set Debug Stuff
     pen::debug::printPositioned(" RENDERER ", 0, 0, false, false, pen::debug::Color::DARK_GRAY, pen::debug::Color::WHITE);
     pen::debug::printPositioned(" -  Debug Version ", 10, 0, false, false, pen::debug::Color::WHITE, pen::debug::Color::DARK_GRAY);
@@ -45,22 +42,31 @@ int main(int argc, char** argv) {
             pen::debug::printPositioned(" Default - "+renderer+" ", 0, 1, false, true, pen::debug::Color::WHITE, pen::debug::Color::DARK_BLUE);
         }
     #endif
-    // Frame Counter
-    long counter = 0;
-    pen::debug::printPositioned("Frame: ", 0, 2, false, true, pen::debug::Color::YELLOW, pen::debug::Color::DARK_GRAY);
-    pen::debug::printPositionedValue(counter, 7, 2, false, true, pen::debug::Color::YELLOW, pen::debug::Color::DARK_GRAY);
-
+    
     pen::debug::debugCursorPosition();
+}
+
+int main(int argc, char** argv) {
+    uint32_t flags = pen::getFlagsFromArguments(argc, argv);
+    pen::core::Window* window = pen::init("Penumbra", 1280, 720, flags);
+
+    pen::antumbra::Antumbra* antumbra = pen::getAntumbra();
+
+    pen::antumbra::Sprite* magic_1 = pen::createSprite("pnmbr/images/hexta.ktx", pen::Vec2(0, 0), 0, 0.6);
+    pen::antumbra::Sprite* magic = pen::createSprite("pnmbr/images/hexta.ktx", pen::Vec2(0, 0), 0, 1.125);
+    pen::antumbra::Sprite* magic2 = pen::createSprite("pnmbr/images/hexta.ktx", pen::Vec2(0, 0), 0, 2);
+    pen::antumbra::Sprite* magic3 = pen::createSprite("pnmbr/images/hexta.ktx", pen::Vec2(0, 0), 0, 3.5);
+
+    putDebugShit(flags);
 
     // Run Program
     while (pen::running()) {
-        counter++;
+        const double dt = pen::getDeltaTime();
+        magic_1->transform.rotation += dt * 1.0;
+        magic->transform.rotation -= dt * 0.75;
+        magic2->transform.rotation += dt * 0.5;
+        magic3->transform.rotation -= dt * 0.25;
 
-        if (counter % 500 == 0) {
-            // Test without icles for real for real no cap
-            pen::debug::print(std::to_string(counter)+"\n");
-        }
-        
         pen::update();
     }
 

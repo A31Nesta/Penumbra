@@ -6,7 +6,7 @@
 
 #define PENUMBRA_WAYLAND        UINT32_C(1)
 #define PENUMBRA_TRANSPARENT    UINT32_C(2)
-#define PENUMBRA_NODEBUG        UINT32_C(4)
+#define PENUMBRA_DEBUG        UINT32_C(4)
 #define PENUMBRA_VSYNC          UINT32_C(8)
 
 namespace pen {
@@ -14,7 +14,7 @@ namespace pen {
     const std::unordered_map<std::string, uint32_t> CLI_INIT_FLAGS = {
         {"-wayland", PENUMBRA_WAYLAND}, // Linux only, it forces Penumbra to create a Wayland window instead of X11
         {"-transparent", PENUMBRA_TRANSPARENT}, // Creates a transparent window. Experimental and most likely unstable
-        {"-nodebug", PENUMBRA_NODEBUG}, // Disables debug log
+        {"-debug", PENUMBRA_DEBUG}, // Enables debug log (exclusive with rendering. Either you enable rendering or you don't)
         {"-vsync", PENUMBRA_VSYNC} // Enables VSync
     };
 

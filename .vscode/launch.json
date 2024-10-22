@@ -15,6 +15,16 @@
         {
             "type": "lldb",
             "request": "launch",
+            "name": "Debug with DBG Text",
+            "program": "${workspaceFolder}/build/penumbra",
+            "args": [
+                "-debug"
+            ],
+            "cwd": "${workspaceFolder}/build/"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
             "name": "Debug Wayland",
             "program": "${workspaceFolder}/build/penumbra",
             "args": [

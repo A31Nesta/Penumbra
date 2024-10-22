@@ -1,4 +1,6 @@
 #include "window.hpp"
+#include "antumbra/antumbra.hpp"
+#include "core/windowStruct.hpp"
 #include "debug/log.hpp"
 #include "utils/config.hpp"
 
@@ -8,6 +10,7 @@
 #include <bgfx/platform.h>
 
 #include <GLFW/glfw3.h>
+#include <cmath>
 #if BX_PLATFORM_LINUX
 	// X11 Support
     #ifdef PENUMBRA_X11_COMPAT
@@ -44,6 +47,9 @@ namespace pen::core {
             bgfx::reset((uint32_t)winStruct._width, (uint32_t)winStruct._height, winStruct._resetFlags);
             bgfx::setViewRect(winStruct.view3D, 0, 0, bgfx::BackbufferRatio::Equal);
             bgfx::setViewRect(winStruct.view2D, 0, 0, bgfx::BackbufferRatio::Equal);
+
+			bgfx::setViewClear(winStruct.view3D, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, (winStruct._penumbraFlags & PENUMBRA_TRANSPARENT)?0x00000000:0x7e7189ff, 1.0f, 0);
+			bgfx::setViewClear(winStruct.view2D, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, (winStruct._penumbraFlags & PENUMBRA_TRANSPARENT)?0x00000000:0x1e093600, 1.0f, 0);
         }
     }
 
@@ -64,8 +70,19 @@ namespace pen::core {
         return canClose;
     }
 
+	// Create or set renderers
+	void Window::createAntumbra(std::string defaultShader) {
+		antumbra = new antumbra::Antumbra(defaultShader);
+		debug::print("LOG: Antumbra renderer successfully created\n");
+	}
+
+
     // Normal functions
     void Window::update() {
+		currentTime = glfwGetTime();
+		deltaTime = currentTime - lastTime;
+		lastTime = currentTime;
+
 		draw();
     }
     void Window::end() {
@@ -126,7 +143,10 @@ namespace pen::core {
 			glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 		}
 
-		winStruct._window = glfwCreateWindow(1280, 720, "Penumbra", NULL, NULL);
+		winStruct._penumbraFlags = penumbra_flags;
+		winStruct._width = width;
+		winStruct._height = height;
+		winStruct._window = glfwCreateWindow(width, height, "Penumbra", NULL, NULL);
 		if (!winStruct._window) {
 			throw std::runtime_error("PENUMBRA: Error during window creation");
 		}
@@ -180,26 +200,44 @@ namespace pen::core {
 		}
 
 		// Set view 0 to the same dimensions as the window and to clear the color buffer.
-		bgfx::setViewClear(winStruct.view3D, BGFX_CLEAR_COLOR, (penumbra_flags & PENUMBRA_TRANSPARENT)?0x00000000:0x7e7189ff);
+		bgfx::setViewClear(winStruct.view3D, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, (penumbra_flags & PENUMBRA_TRANSPARENT)?0x00000000:0x7e7189ff, 1.0f, 0);
 		bgfx::setViewRect(winStruct.view3D, 0, 0, bgfx::BackbufferRatio::Equal);
 
 		// INFO: View Clear Disabled for 2D. Test
-        // bgfx::setViewClear(winStruct.view2D, BGFX_CLEAR_COLOR, 0x00000000);
+        bgfx::setViewClear(winStruct.view2D, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, (winStruct._penumbraFlags & PENUMBRA_TRANSPARENT)?0x00000000:0x1e093600, 1.0f, 0);
 		bgfx::setViewRect(winStruct.view2D, 0, 0, bgfx::BackbufferRatio::Equal);
 
 		// Enable debug text.
-		if (!(penumbra_flags & PENUMBRA_NODEBUG)) {
-			bgfx::setDebug(BGFX_DEBUG_TEXT);
+		if (penumbra_flags & PENUMBRA_DEBUG) {
+			winStruct.debugging = true;
 		}
 
         // SET USER POINTER
         glfwSetWindowUserPointer(winStruct._window, this);
+		// SET TIME STUFF
+		currentTime = glfwGetTime();
+		lastTime = currentTime;
     }
 
     void Window::draw() {
         // This dummy draw call is here to make sure that view 0 is cleared if no other draw calls are submitted to view 0.
 		bgfx::touch(winStruct.view3D);
-		bgfx::touch(winStruct.view2D);
+
+		// If we have a 2D renderer
+		if (antumbra != nullptr) {
+			antumbra->draw(winStruct.view2D, winStruct._width, winStruct._height);
+		} else {
+			// bgfx::touch(winStruct.view2D);
+		}
+
+		// Debug Text
+		// TODO: Only set when changing state
+		if (winStruct.debugging) {
+			bgfx::setDebug(BGFX_DEBUG_WIREFRAME);
+		} else {
+			bgfx::setDebug(BGFX_DEBUG_NONE);
+		}
+
 		// Update Debug Text
 		pen::debug::updateConsole();
 		// Advance to next frame. Process submitted rendering primitives.
