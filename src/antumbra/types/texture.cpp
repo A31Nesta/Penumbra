@@ -58,7 +58,7 @@ namespace pen {
                 width = texInfo.width;
                 height = texInfo.height;
 
-                std::cout << "Loaded texture with " << std::to_string(texInfo.numMips) << " mips\n";
+                std::cout << "Loaded texture with " << std::to_string(texInfo.numMips) << " mips.\tTexture Type: " << std::to_string(texInfo.format) << "\n";
             }
         }
         else {

@@ -1,5 +1,11 @@
 #! /bin/bash
 
+# SHADER COMPILE ALL
+# by A31Nesta
+
+# DEPENDENCIES:
+# - bgfx-shaderc
+
 # Get output path (current directory by default)
 outPath="$1"
 if [ ! -d "$outPath" ]; then

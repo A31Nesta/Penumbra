@@ -1,5 +1,11 @@
 #! /bin/bash
 
+# SHADER COMPILE
+# by A31Nesta
+
+# DEPENDENCIES:
+# - bgfx-shaderc
+
 inShader="$1"
 outPath="$2"
 
