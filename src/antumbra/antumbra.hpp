@@ -28,7 +28,7 @@
 
 #include "antumbra/types/shader.hpp"
 #include "antumbra/types/texture.hpp"
-#include "types/sprite.hpp"
+#include "antumbra/types/sprite.hpp"
 #include "utils/transform2D.hpp"
 #include "utils/vectors.hpp"
 
