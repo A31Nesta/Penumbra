@@ -28,7 +28,7 @@
 
 #include "antumbra/types/shader.hpp"
 #include "antumbra/types/texture.hpp"
-#include "types/sprite.hpp"
+#include "antumbra/types/sprite.hpp"
 #include "utils/transform2D.hpp"
 #include "utils/vectors.hpp"
 
@@ -39,6 +39,7 @@ namespace pen::antumbra {
     class Antumbra {
     public:
         Antumbra(std::string defaultShader);
+        ~Antumbra();
 
         Sprite* createSprite(std::string texture, Transform2D transform);
         Sprite* createSprite(std::string texture, Transform2D transform, std::string shader);
@@ -55,12 +56,12 @@ namespace pen::antumbra {
         void initQuad();
 
         // Utitities
-        Shader getShader(std::string shader);
-        Texture getTexture(std::string texture);
+        Shader* getShader(std::string shader);
+        Texture* getTexture(std::string texture);
 
         std::vector<Sprite*> sprites;
-        std::vector<Texture> textures;
-        std::vector<Shader> shaders;
+        std::vector<Texture*> textures;
+        std::vector<Shader*> shaders;
 
         std::string defaultShaderPath;
 

@@ -14,14 +14,22 @@ namespace pen {
 
         debug::print("\n\n--- LOADING SHADER: "+shader+" ---\n");
 
-        vsh = loadShader(shader+".vs");
-        fsh = loadShader(shader+".fs");
-        program = bgfx::createProgram(vsh, fsh, true);
+        bgfx::ShaderHandle vsh = loadShader(shader+".vs");
+        bgfx::ShaderHandle fsh = loadShader(shader+".fs");
+        program = bgfx::createProgram(vsh, fsh, false);
+        
+        // Destroy shaders (not program) immediately
+        bgfx::destroy(vsh);
+        bgfx::destroy(fsh);
 
         debug::print("SHADER PROGRAM CREATED! - "+std::to_string(program.idx)+"\n");
         if (!bgfx::isValid(program)) {
             debug::print("INVALID SHADER! FUUUUUUUUUUUCKKKK\n", debug::Color::WHITE, debug::Color::DARK_RED);
         }
+    }
+    Shader::~Shader() {
+        // Delete program
+        bgfx::destroy(program);
     }
 
     // TO DO: Modify to separate Sampler uniform loading and other uniforms

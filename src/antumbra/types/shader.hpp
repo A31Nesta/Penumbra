@@ -9,6 +9,7 @@ namespace pen {
     class Shader {
     public:
         Shader(uint32_t id, std::string shader);
+        ~Shader();
 
         // void createUniform(std::string name, bgfx::UniformType::Enum type);
 
@@ -24,8 +25,6 @@ namespace pen {
         bgfx::ShaderHandle loadShader(std::string name);
 
         // BGFX Shader things
-        bgfx::ShaderHandle vsh;
-        bgfx::ShaderHandle fsh;
         bgfx::ProgramHandle program;
 
         // Uniforms

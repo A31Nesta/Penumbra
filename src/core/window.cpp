@@ -59,6 +59,10 @@ namespace pen::core {
         init(title, width, height, penumbra_flags);
     }
 	Window::~Window() {
+		// We won't necessarily be using antumbra, if we are, delete it
+		if (antumbra != nullptr) {
+			delete antumbra;
+		}
 		glfwDestroyWindow(winStruct._window);
 	}
     

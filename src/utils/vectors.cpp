@@ -6,34 +6,34 @@ namespace pen {
     Vec2::Vec2() {
         x = 0;
         y = 0;
-        updateVector();
+        // updateVector();
     }
     Vec2::Vec2(double xy) {
         x = xy;
         y = xy;
-        updateVector();
+        // updateVector();
     }
     Vec2::Vec2(double x, double y) {
         this->x = x;
         this->y = y;
-        updateVector();
+        // updateVector();
     }
-    Vec2::Vec2(glm::dvec2 vec) {
-        x = vec.x;
-        y = vec.y;
-        vector = vec;
-    }
+    // Vec2::Vec2(glm::dvec2 vec) {
+    //     x = vec.x;
+    //     y = vec.y;
+    //     vector = vec;
+    // }
 
     // Convert from GLM vec2
-    void Vec2::operator=(glm::dvec2 v) {
-        x = v.x;
-        y = v.y;
-        vector = v;
-    }
+    // void Vec2::operator=(glm::dvec2 v) {
+    //     x = v.x;
+    //     y = v.y;
+    //     vector = v;
+    // }
     // Convert to GLM vec2
-    Vec2::operator glm::dvec2() {
-        return vector;
-    }
+    // Vec2::operator glm::dvec2() {
+    //     return vector;
+    // }
 
     // Compare Vectors
     bool Vec2::operator==(Vec2 v2) {
@@ -60,10 +60,10 @@ namespace pen {
 
 
     // Functions
-    void Vec2::updateVector() {
-        vector.x = x;
-        vector.y = y;
-    }
+    // void Vec2::updateVector() {
+    //     vector.x = x;
+    //     vector.y = y;
+    // }
 
     // END VECTOR 2
 
@@ -73,38 +73,38 @@ namespace pen {
         x = 0;
         y = 0;
         z = 0;
-        updateVector();
+        // updateVector();
     }
     Vec3::Vec3(double xyz) {
         this->x = xyz;
         this->y = xyz;
         this->z = xyz;
-        updateVector();
+        // updateVector();
     }
     Vec3::Vec3(double x, double y, double z) {
         this->x = x;
         this->y = y;
         this->z = z;
-        updateVector();
+        // updateVector();
     }
-    Vec3::Vec3(glm::dvec3 vec) {
-        this->x = vec.x;
-        this->y = vec.y;
-        this->z = vec.z;
-        vector = vec;
-    }
+    // Vec3::Vec3(glm::dvec3 vec) {
+    //     this->x = vec.x;
+    //     this->y = vec.y;
+    //     this->z = vec.z;
+    //     vector = vec;
+    // }
 
     // Convert from GLM vec3
-    void Vec3::operator=(glm::dvec3 v) {
-        x = v.x;
-        y = v.y;
-        z = v.z;
-        vector = v;
-    }
+    // void Vec3::operator=(glm::dvec3 v) {
+    //     x = v.x;
+    //     y = v.y;
+    //     z = v.z;
+    //     vector = v;
+    // }
     // Convert to GLM vec3
-    Vec3::operator glm::dvec3() {
-        return vector;
-    }
+    // Vec3::operator glm::dvec3() {
+    //     return vector;
+    // }
 
     // Compare Vectors
     bool Vec3::operator==(Vec3 v3) {
@@ -130,10 +130,10 @@ namespace pen {
     }
 
     // Functions
-    void Vec3::updateVector() {
-        vector.x = x;
-        vector.y = y;
-        vector.z = z;
-    }
+    // void Vec3::updateVector() {
+    //     vector.x = x;
+    //     vector.y = y;
+    //     vector.z = z;
+    // }
     // END VECTOR 3
 }

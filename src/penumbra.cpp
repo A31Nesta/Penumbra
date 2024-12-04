@@ -18,12 +18,12 @@ namespace pen {
 	core::Window* win;
 	antumbra::Antumbra* ant;
 
-	core::Window* init(std::string title, int width, int height, uint32_t penumbra_flags) {
+	void createWindow(std::string title, int width, int height, uint32_t penumbra_flags) {
 		win = new core::Window(title, width, height, penumbra_flags, 0, 1);
-		win->createAntumbra("pnmbr/shaders-2D/default");
-
+	}
+	void createAntumbra(std::string defaultShader) {
+		win->createAntumbra(defaultShader);
 		ant = win->getAntumbra();
-		return win;
 	}
 	void update() {
 		if (!win->running()) {
@@ -34,6 +34,8 @@ namespace pen {
 		win->update();
 	}
 	void end() {
+		delete win;
+
 		debug::clearAll();
 		bgfx::shutdown();
 		glfwTerminate();
@@ -62,13 +64,5 @@ namespace pen {
 	}
     antumbra::Sprite* createSprite(std::string texture, Vec2 position, double rotation, Vec2 scale, std::string shader) {
 		return ant->createSprite(texture, position, rotation, scale, shader);
-	}
-
-    // Get objects. Not recommended
-	core::Window* getWindow() {
-		return win;
-	}
-	antumbra::Antumbra* getAntumbra() {
-		return ant;
 	}
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "utils/vectors.hpp"
+#include "vectors.hpp"
 
 namespace pen {
     class Transform2D {

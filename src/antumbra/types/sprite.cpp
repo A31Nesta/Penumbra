@@ -1,4 +1,4 @@
-#include "sprite.hpp"
+#include "antumbra/types/sprite.hpp"
 #include <bgfx/bgfx.h>
 #include <bx/math.h>
 

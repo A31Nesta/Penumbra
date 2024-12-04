@@ -14,6 +14,7 @@ namespace pen {
     class Texture {
     public:
         Texture(uint32_t id, std::string path, uint8_t type, bgfx::UniformHandle uniform);
+        ~Texture();
 
         void incrementUsers() { users++; }
         void decrementUsers() { users--; }
