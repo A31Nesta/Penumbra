@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.20.0)
 option(LINUX_X11 "Linux Only. Enables X11 support. [Recommended]" ON)
 option(LINUX_WAYLAND "Linux Only. Enables Wayland support. [Recommended if Wayland is installed]" ON)
 
-# INFO: To develop WGPU, disable building with BGFX and enable building with WGPU
+# INFO: To develop WGPU backend, disable building with BGFX and enable building with WGPU
 option(BACKEND_BGFX "Use BGFX as Backend" ON)
 option(BACKEND_WGPU "Use WebGPU Native as Backend" OFF)
 

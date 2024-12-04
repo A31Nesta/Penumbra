@@ -2,19 +2,16 @@
 
 /**
     Window class.
-    Uses BGFX and GLFW to create the window and context
-    ---------------------------------------------------
+    Uses the Backend Interface to create the window and context
+    -----------------------------------------------------------
     
-    It provides functions that interact with the underlying GLFW and BGFX stuff
+    It provides functions that interact with the backend to create a cross-platform window
     This class is not responsible for rendering. That's the renderer's job
 
-    This class does hold a pointer to a renderer of each type. It can be 
+    This class holds a pointer to a renderer of each type. It can be 
     created along with the window or set manually. Setting the renderer manually
     allows you to share a renderer between windows for stuff like multi-window
-    rendering.
-
-    This doesn't mean that it's supported but the possibility that it gets implemented
-    at some point is not 0 either.
+    rendering. (Not planned for now)
 */
 
 #include "antumbra/antumbra.hpp"
