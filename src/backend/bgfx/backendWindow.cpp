@@ -132,10 +132,14 @@ namespace pen::backend {
             _resetFlags = _resetFlags | BGFX_RESET_VSYNC;
         }
 
-        // INFO: Cursed cast
-        glfwGetWindowSize(window, (int*)&width, (int*)&height);
-        init.resolution.width = (uint32_t)width;
-        init.resolution.height = (uint32_t)height;
+        int newWidth;
+        int newHeight;
+        glfwGetWindowSize(window, &newWidth, &newHeight);
+        width = newWidth;
+        height = newHeight;
+
+        init.resolution.width = (uint32_t)newWidth;
+        init.resolution.height = (uint32_t)newHeight;
         init.resolution.reset = _resetFlags;
 
         // Choose Vulkan backend

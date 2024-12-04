@@ -96,21 +96,21 @@ endif(LINUX)
 project(penumbra-tests VERSION 0.1.0 LANGUAGES C CXX)
 
 add_executable(${PROJECT_NAME}
-src/utils/vectors.cpp 
-src/utils/transform2D.cpp 
+    src/utils/vectors.cpp 
+    src/utils/transform2D.cpp 
 
-src/antumbra/types/shader.cpp 
-src/antumbra/types/texture.cpp 
-src/antumbra/types/sprite.cpp 
-src/antumbra/antumbra.cpp 
+    src/antumbra/types/shader.cpp 
+    src/antumbra/types/texture.cpp 
+    src/antumbra/types/sprite.cpp 
+    src/antumbra/antumbra.cpp 
 
-src/debug/consoleColors.cpp
-src/debug/log.cpp
-src/core/window.cpp
-src/utils/config.cpp
-src/penumbra.cpp
+    src/debug/consoleColors.cpp
+    src/debug/log.cpp
+    src/core/window.cpp
+    src/utils/config.cpp
+    src/penumbra.cpp
 
-testEntry.cpp
+    testEntry.cpp
 )
 
 # Backend-specific sources
