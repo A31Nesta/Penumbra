@@ -15,53 +15,40 @@
 */
 
 #include "antumbra/antumbra.hpp"
-#include "core/windowStruct.hpp"
+#include "backend/backendWindow.hpp"
 #include <cstdint>
 #include <string>
 
 namespace pen::core {
     class Window {
     public:
-        Window(std::string title, int width, int height, uint32_t penumbra_flags, uint16_t view3D, uint16_t view2D);
+        Window(std::string title, int width, int height, uint32_t penumbraFlags);
         ~Window();
 
-        // Set behavior properties
-        void setWindowCanClose(bool canClose);
-        bool windowCanClose();
+        // Tells the window to close after this update is done
+        void closeWindow();
+        // Returns false if closeWindow() was closed at any point and true otherwise
+        bool running();
 
-        // Create or set renderers
+        // Create Renderers
         void createAntumbra(std::string defaultShader);
 
         // Access Renderers
         antumbra::Antumbra* getAntumbra() { return antumbra; }
 
-        // Normal functions
+        // Update window and draw
         void update();
-        void end();
-        bool running();
 
-        double getDeltaTime() { return deltaTime; }
-
-        void setCurrent();
-        WindowStruct& getWinStruct();
+        // Gets delta time from window
+        double getDeltaTime();
 
     private:
-        void init(std::string title, int width, int height, uint32_t penumbra_flags);
         void draw();
 
-	    WindowStruct winStruct;
-
-        // Time
-        double lastTime = 0;
-        double currentTime = 0;
-
-        // Important Stuff
-        double deltaTime = 0;
+        // Backend Window
+        backend::BackendWindow window;
 
         // Renderers
         antumbra::Antumbra* antumbra;
-
-        // Behavior Properties
-        bool canClose = true;
     };
 }

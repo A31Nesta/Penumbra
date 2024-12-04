@@ -40,6 +40,15 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 
 add_compile_definitions(BX_CONFIG_DEBUG=$<CONFIG:Debug>)
 
+# Add defines for backends
+if(BACKEND_BGFX)
+    add_compile_definitions(PENUMBRA_BACKEND_BGFX)
+endif(BACKEND_BGFX)
+if(BACKEND_WGPU)
+    add_compile_definitions(PENUMBRA_BACKEND_WGPU)
+endif(BACKEND_WGPU)
+
+
 # Define PENUMBRA_X11_COMPAT and PENUMBRA_WL_COMPAT
 if(LINUX)
     if(LINUX_X11)
@@ -87,24 +96,40 @@ endif(LINUX)
 project(penumbra-tests VERSION 0.1.0 LANGUAGES C CXX)
 
 add_executable(${PROJECT_NAME}
-    src/utils/vectors.cpp 
-    src/utils/transform2D.cpp 
+src/utils/vectors.cpp 
+src/utils/transform2D.cpp 
 
-    src/antumbra/types/shader.cpp 
-    src/antumbra/types/texture.cpp 
-    src/antumbra/types/sprite.cpp 
-    src/antumbra/antumbra.cpp 
+src/antumbra/types/shader.cpp 
+src/antumbra/types/texture.cpp 
+src/antumbra/types/sprite.cpp 
+src/antumbra/antumbra.cpp 
 
-    src/debug/consoleColors.cpp
-    src/debug/log.cpp
-    src/core/window.cpp
-    src/utils/config.cpp
-    src/penumbra.cpp
+src/debug/consoleColors.cpp
+src/debug/log.cpp
+src/core/window.cpp
+src/utils/config.cpp
+src/penumbra.cpp
 
-    testEntry.cpp
+testEntry.cpp
 )
 
+# Backend-specific sources
+if(BACKEND_BGFX)
+    target_sources(${PROJECT_NAME}
+        PRIVATE src/backend/bgfx/backendWindow.cpp
+    )
+endif(BACKEND_BGFX)
+
+
 add_compile_definitions(BX_CONFIG_DEBUG=$<CONFIG:Debug>)
+
+# Add defines for backends
+if(BACKEND_BGFX)
+    add_compile_definitions(PENUMBRA_BACKEND_BGFX)
+endif(BACKEND_BGFX)
+if(BACKEND_WGPU)
+    add_compile_definitions(PENUMBRA_BACKEND_WGPU)
+endif(BACKEND_WGPU)
 
 # Define PENUMBRA_X11_COMPAT and PENUMBRA_WL_COMPAT
 if(LINUX)

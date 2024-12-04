@@ -19,7 +19,7 @@ namespace pen {
 	antumbra::Antumbra* ant;
 
 	void createWindow(std::string title, int width, int height, uint32_t penumbra_flags) {
-		win = new core::Window(title, width, height, penumbra_flags, 0, 1);
+		win = new core::Window(title, width, height, penumbra_flags);
 	}
 	void createAntumbra(std::string defaultShader) {
 		win->createAntumbra(defaultShader);
