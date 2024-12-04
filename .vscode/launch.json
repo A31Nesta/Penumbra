@@ -8,7 +8,7 @@
             "type": "lldb",
             "request": "launch",
             "name": "Debug",
-            "program": "${workspaceFolder}/build/penumbra",
+            "program": "${workspaceFolder}/build/penumbra-tests",
             "args": [],
             "cwd": "${workspaceFolder}/build/"
         },
@@ -16,7 +16,7 @@
             "type": "lldb",
             "request": "launch",
             "name": "Debug with DBG Text",
-            "program": "${workspaceFolder}/build/penumbra",
+            "program": "${workspaceFolder}/build/penumbra-tests",
             "args": [
                 "-debug"
             ],
@@ -26,7 +26,7 @@
             "type": "lldb",
             "request": "launch",
             "name": "Debug Wayland",
-            "program": "${workspaceFolder}/build/penumbra",
+            "program": "${workspaceFolder}/build/penumbra-tests",
             "args": [
                 "-wayland"
             ],
@@ -36,7 +36,7 @@
             "type": "lldb",
             "request": "launch",
             "name": "Debug Transparency",
-            "program": "${workspaceFolder}/build/penumbra",
+            "program": "${workspaceFolder}/build/penumbra-tests",
             "args": [
                 "-transparent"
             ],
@@ -46,7 +46,7 @@
             "type": "lldb",
             "request": "launch",
             "name": "Debug WL+Tr",
-            "program": "${workspaceFolder}/build/penumbra",
+            "program": "${workspaceFolder}/build/penumbra-tests",
             "args": [
                 "-transparent",
                 "-wayland"

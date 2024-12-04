@@ -86,12 +86,13 @@ namespace pen {
         // Le fnuui error handling
         if (!bgfx::isValid(_bgfxTex) || width == 0 || height == 0) {
             debug::print("Failed to load Texture: " + path + "\n", debug::Color::RED);
-            bool valid = false;
+            valid = false;
+        } else {
+            // calculate deform
+            uint16_t maxValue = std::max(width, height);
+            spriteDeform.x = float(width)/maxValue;
+            spriteDeform.y = float(height)/maxValue;
         }
 
-        // calculate deform
-        uint16_t maxValue = std::max(width, height);
-        spriteDeform.x = float(width)/maxValue;
-        spriteDeform.y = float(height)/maxValue;
     }
 }
