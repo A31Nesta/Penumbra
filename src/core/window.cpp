@@ -22,7 +22,7 @@ namespace pen::core {
 	void Window::closeWindow() {
 		window.closeWindow();
 	}
-	// Returns false if closeWindow() was closed at any point and true otherwise
+	// Returns false if window should close
 	bool Window::running() {
 		return window.running();
 	}

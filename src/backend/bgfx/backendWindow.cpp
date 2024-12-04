@@ -159,8 +159,7 @@ namespace pen::backend {
         lastTime = currentTime;
     }
 
-    // Creates a framebuffer and stores its ID (the Framebuffer
-    // is in GPU memory probably)
+    // Creates a framebuffer and stores its ID (the Framebuffer is in GPU memory probably)
     void BackendWindow::createFramebuffers() {
         // Set view 0 to the same dimensions as the window and to clear the color buffer.
         bgfx::setViewClear(framebuffer3D, BGFX_CLEAR_COLOR | BGFX_CLEAR_DEPTH, (penumbraFlags & PENUMBRA_TRANSPARENT)?0x00000000:0x7e7189ff, 1.0f, 0);

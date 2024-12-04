@@ -57,9 +57,9 @@ namespace pen::backend {
         double getDeltaTime() { return deltaTime; }
 
         // After this update ends, the window will be closed
-        void closeWindow() { isRunning = false; }
+        void closeWindow() { glfwSetWindowShouldClose(window, true); }
         // Returns false if closeWindow() was closed at any point and true otherwise
-        bool running() { return isRunning; }
+        bool running() { return !glfwWindowShouldClose(window); }
 
         // Get 2D Framebuffer. Pass this to the 2D renderer
         uint16_t get2DFramebuffer() { return framebuffer2D; }
@@ -164,9 +164,6 @@ namespace pen::backend {
         uint32_t penumbraFlags;
         // Linux-specific
         bool isWayland = false;
-
-        // Is set to false when closeWindow() is called
-        bool isRunning = true;
 
         // Framebuffers
         // (views in the case of BGFX)
