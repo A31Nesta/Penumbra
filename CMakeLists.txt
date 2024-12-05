@@ -5,8 +5,8 @@ option(LINUX_X11 "Linux Only. Enables X11 support. [Recommended]" ON)
 option(LINUX_WAYLAND "Linux Only. Enables Wayland support. [Recommended if Wayland is installed]" ON)
 
 # INFO: To develop WGPU backend, disable building with BGFX and enable building with WGPU
-option(BACKEND_BGFX "Use BGFX as Backend" OFF)
-option(BACKEND_WGPU "Use WebGPU Native as Backend" ON)
+option(BACKEND_BGFX "Use BGFX as Backend" ON)
+option(BACKEND_WGPU "Use WebGPU Native as Backend" OFF)
 
 # Set C++ Standard
 set(CMAKE_CXX_STANDARD 20)

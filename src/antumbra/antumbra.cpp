@@ -46,12 +46,15 @@ namespace pen::antumbra {
 
         // Create Uniforms
         // HACK: With BGFX Backend we manually create the Uniform here
+
         // EXPLANATION: backend::createUniform() crashes or for whatever reason creates
         // a uniform that is invalid and curses the entire code. Creating a uniform with
         // backend::createUniform() makes things like deleting BackendVertexBuffer crash
         // with a "free(): invalid pointer". Something sussy is going on with BGFX.
         // This strange band-aid solution appears to "solve" it.
         // Literally a coconut.vtf moment.
+        // EDIT: Editing the backend::createUniform() function to take 0 parameters
+        // makes it work. What the fuck?
 
         // TODO: Investigate issue with BGFX Shader Uniform Creation
         #ifdef PENUMBRA_BACKEND_BGFX
