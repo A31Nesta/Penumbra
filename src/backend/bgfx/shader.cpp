@@ -1,4 +1,4 @@
-#include "shader.hpp"
+#include "../shader.hpp"
 #include "debug/consoleColors.hpp"
 #include "debug/log.hpp"
 
@@ -14,33 +14,25 @@ namespace pen {
 
         debug::print("\n\n--- LOADING SHADER: "+shader+" ---\n");
 
-        bgfx::ShaderHandle vsh = loadShader(shader+".vs");
-        bgfx::ShaderHandle fsh = loadShader(shader+".fs");
-        program = bgfx::createProgram(vsh, fsh, false);
+        bgfx::ShaderHandle vsh = (bgfx::ShaderHandle)loadShader(shader+".vs");
+        bgfx::ShaderHandle fsh = (bgfx::ShaderHandle)loadShader(shader+".fs");
+        program = bgfx::createProgram(vsh, fsh, false).idx;
         
         // Destroy shaders (not program) immediately
         bgfx::destroy(vsh);
         bgfx::destroy(fsh);
 
-        debug::print("SHADER PROGRAM CREATED! - "+std::to_string(program.idx)+"\n");
-        if (!bgfx::isValid(program)) {
+        debug::print("SHADER PROGRAM CREATED! - "+std::to_string(program)+"\n");
+        if (!bgfx::isValid((bgfx::ProgramHandle)program)) {
             debug::print("INVALID SHADER! FUUUUUUUUUUUCKKKK\n", debug::Color::WHITE, debug::Color::DARK_RED);
         }
     }
     Shader::~Shader() {
         // Delete program
-        bgfx::destroy(program);
+        bgfx::destroy((bgfx::ProgramHandle)program);
     }
 
-    // TO DO: Modify to separate Sampler uniform loading and other uniforms
-    // void Shader::createUniform(std::string name, bgfx::UniformType::Enum type) {
-    //     bgfx::UniformHandle uniform = bgfx::createUniform(name.c_str(), type);
-    //     if (bgfx::isValid(uniform)) {
-    //         localUniforms.push_back(uniform);
-    //     }
-    // }
-
-    bgfx::ShaderHandle Shader::loadShader(std::string name) {
+    uint16_t Shader::loadShader(std::string name) {
         char* data = new char[2048];
         std::ifstream file;
         size_t fileSize;
@@ -53,7 +45,7 @@ namespace pen {
             file.close();
         }
         else {
-            throw std::runtime_error("ANTUMBRA_ERROR: Couldn't open Shader "+name);
+            throw std::runtime_error("PENUMBRA_ERROR: Couldn't open Shader "+name);
         }
 
         const bgfx::Memory* mem = bgfx::copy(data,fileSize+1);
@@ -67,6 +59,6 @@ namespace pen {
             debug::print("INVALID SHADER! ("+name+" = "+std::to_string(handle.idx)+")\n", debug::Color::WHITE, debug::Color::DARK_RED);
         }
 
-        return handle;
+        return handle.idx;
     }
 }

@@ -5,16 +5,23 @@
     ------------------------------------
 */
 
-#include "backend/backendIdxBuffer.hpp"
-#include "backend/backendVtxBuffer.hpp"
+#include "shader.hpp"
+#include "backendIdxBuffer.hpp"
+#include "backendVtxBuffer.hpp"
 
 #include <cstdint>
 
 namespace pen::backend {
+    // Framebuffer Stuff
+    void bindFramebuffer(uint32_t framebufferID);
+
     // General
-    void setViewTransform(uint32_t framebuffer, float* viewMtx, float* projMtx);
+    void setViewTransform(float* viewMtx, float* projMtx);
 
     // Models
     void setModelTransform(float* modelMtx);
     void setBuffers(BackendVtxBuffer* bvb, BackendIdxBuffer* bib);
+
+    // Draw Element
+    void drawCurrent(Shader* shader);
 }

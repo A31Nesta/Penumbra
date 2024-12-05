@@ -26,9 +26,9 @@
         - Functions to set uniforms
  */
 
-#include "antumbra/types/shader.hpp"
 #include "antumbra/types/sprite.hpp"
 
+#include "backend/shader.hpp"
 #include "backend/texture.hpp"
 #include "backend/backendIdxBuffer.hpp"
 #include "backend/backendVtxBuffer.hpp"
@@ -38,6 +38,10 @@
 
 #include <cstdint>
 #include <vector>
+
+// BGFX. The Ultimate Goal is to delete this line:
+#include <bgfx/bgfx.h>
+
 namespace pen::antumbra {
     class Antumbra {
     public:

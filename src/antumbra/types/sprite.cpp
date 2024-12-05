@@ -1,6 +1,4 @@
 #include "antumbra/types/sprite.hpp"
-#include <bgfx/bgfx.h>
-#include <bx/math.h>
 
 namespace pen::antumbra {
     Sprite::Sprite(uint32_t id, Transform2D tr, Vec2 df, uint32_t tid, uint32_t sid) {

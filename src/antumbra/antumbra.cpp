@@ -1,9 +1,6 @@
 #include "antumbra.hpp"
 
-#include "antumbra/types/shader.hpp"
 #include "antumbra/types/sprite.hpp"
-
-#include "backend/texture.hpp"
 
 #include "backend/backendRender.hpp"
 #include "backend/backendVtxLayout.hpp"
@@ -107,8 +104,7 @@ namespace pen::antumbra {
     void Antumbra::removeSprite(Sprite sprite) {}
     void Antumbra::removeSprite(uint32_t sprite) {}
 
-    // The Final Boss.
-    // Draw a fucking scene
+    // Draw the scene
     void Antumbra::draw(uint32_t framebuffer, uint16_t width, uint16_t height) {
         const glm::vec3 at(0.0f, 0.0f, 0.0f);
         const glm::vec3 eye(0.0f, 0.0f, 2.0f);
@@ -123,7 +119,10 @@ namespace pen::antumbra {
         // );
         glm::mat4 projMtx = glm::perspective(glm::radians(60.0f), float(width)/float(height), 0.1f, 100.f);
 
-        backend::setViewTransform(framebuffer, &viewMtx[0][0], &projMtx[0][0]);
+        // Set Framebuffer
+        backend::bindFramebuffer(framebuffer);
+        // Set View and Projection
+        backend::setViewTransform(&viewMtx[0][0], &projMtx[0][0]);
 
         for (Sprite* sprite : sprites) {
             backend::setModelTransform(sprite->transform);
@@ -134,21 +133,15 @@ namespace pen::antumbra {
             // Set Texture
             textures.at(sprite->getTextureID())->bindTexture();
 
-            // Set render state and draw
-      	    bgfx::setState(BGFX_STATE_DEFAULT // Use default
-                ^ BGFX_STATE_WRITE_Z // Remove Z
-                | BGFX_STATE_BLEND_ALPHA // Enable Alpha
-            );
-            bgfx::submit(framebuffer, shaders.at(sprite->getShaderID())->getProgram());
+            // Draw
+            backend::drawCurrent(shaders.at(sprite->getShaderID()));
         }
-
-        // bgfx::submit(view, shaders.at(0).getProgram());
     }
 
 
     // Private
 
-    // Inits the bgfx objects and loads the default shader
+    // Inits the Vertex and Index Buffers and loads the default shader
     void Antumbra::initQuad() {
         backend::BackendVtxLayout vtxLayout;
         vtxLayout.addVtxAttrib(backend::Position);
