@@ -4,6 +4,7 @@
 #include "antumbra/types/sprite.hpp"
 #include "antumbra/types/texture.hpp"
 
+#include "backend/backendIdxBuffer.hpp"
 #include "backend/backendVtxBuffer.hpp"
 #include "backend/backendVtxLayout.hpp"
 #include "debug/log.hpp"
@@ -25,7 +26,7 @@ namespace pen::antumbra {
         -.5f, -.5f, 0.0f,  0.0f, 0.0f,	// bottom left
         -.5f, 0.5f, 0.0f,  0.0f, 1.0f 	// top left
     };
-    const uint16_t QUAD_IDX[] = {
+    const std::vector<uint16_t> QUAD_IDX {
         1, 0, 3,
         2, 1, 3
     };
@@ -68,7 +69,7 @@ namespace pen::antumbra {
         // Delete BGFX objects
         bgfx::destroy(colorUniform);
         delete bvb;
-        bgfx::destroy((bgfx::IndexBufferHandle)bib);
+        delete bib;
     }
 
     // BASE ADD SPRITE
@@ -125,8 +126,9 @@ namespace pen::antumbra {
 
             // Buffers
             uint16_t vbhID = bvb->getID();
+            uint16_t ibhID = bib->getID();
             bgfx::setVertexBuffer(0, (bgfx::VertexBufferHandle)vbhID);
-            bgfx::setIndexBuffer((bgfx::IndexBufferHandle)bib);
+            bgfx::setIndexBuffer((bgfx::IndexBufferHandle)ibhID);
 
             // Set Texture
             textures.at(sprite->getTextureID())->bindTexture();
@@ -150,7 +152,7 @@ namespace pen::antumbra {
         backend::BackendVtxLayout vtxLayout = PosUvVertex::getVertexLayout();
 
         bvb = new backend::BackendVtxBuffer(QUAD_VTX, vtxLayout);
-        bib = bgfx::createIndexBuffer(bgfx::makeRef(QUAD_IDX, sizeof(QUAD_IDX))).idx;
+        bib = new backend::BackendIdxBuffer(QUAD_IDX);
 
         debug::print("\n\nSIZEOF QUAD_VTX: "+std::to_string(QUAD_VTX.size() * sizeof(float))+"\n");
     }

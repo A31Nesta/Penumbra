@@ -29,6 +29,7 @@
 #include "antumbra/types/shader.hpp"
 #include "antumbra/types/texture.hpp"
 #include "antumbra/types/sprite.hpp"
+#include "backend/backendIdxBuffer.hpp"
 #include "backend/backendVtxBuffer.hpp"
 #include "utils/transform2D.hpp"
 #include "utils/vectors.hpp"
@@ -73,8 +74,7 @@ namespace pen::antumbra {
         backend::BackendVtxBuffer* bvb;
 
         // Backend Index Buffer
-        // BGFX Equivalent: IndexBufferHandle
-        uint16_t bib;
+        backend::BackendIdxBuffer* bib;
 
         // Uniform
         bgfx::UniformHandle colorUniform;
