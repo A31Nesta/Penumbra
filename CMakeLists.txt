@@ -114,6 +114,20 @@ if(BACKEND_BGFX)
     )
 endif(BACKEND_BGFX)
 
+if(BACKEND_WGPU)
+    target_sources(${PROJECT_NAME}
+        PRIVATE src/backend/wgpu/backendRender.cpp
+        
+        PRIVATE src/backend/wgpu/shader.cpp 
+        PRIVATE src/backend/wgpu/texture.cpp
+        
+        PRIVATE src/backend/wgpu/backendWindow.cpp
+        PRIVATE src/backend/wgpu/backendVtxLayout.cpp
+        PRIVATE src/backend/wgpu/backendVtxBuffer.cpp
+        PRIVATE src/backend/wgpu/backendIdxBuffer.cpp
+    )
+endif(BACKEND_WGPU)
+
 target_sources(${PROJECT_NAME}
     PRIVATE src/utils/vectors.cpp 
     PRIVATE src/utils/transform2D.cpp 

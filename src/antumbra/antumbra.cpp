@@ -152,7 +152,9 @@ namespace pen::antumbra {
             backend::setBuffers(bvb, bib);
 
             // Set Texture
-            textures.at(sprite->getTextureID())->bindTexture();
+            if (textures.size() > sprite->getTextureID()) {
+                textures.at(sprite->getTextureID())->bindTexture();
+            }
 
             // Draw
             backend::drawCurrent(shaders.at(sprite->getShaderID()));

@@ -5,8 +5,10 @@
 #include "debug/consoleColors.hpp"
 #include "debug/message.hpp"
 
+
 // HACK: Disable Debug log when not using BGFX
 #ifdef PENUMBRA_BACKEND_BGFX
+    #include <string>
     #include <bgfx/bgfx.h>
 #endif
 
