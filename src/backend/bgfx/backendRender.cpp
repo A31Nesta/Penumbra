@@ -6,6 +6,33 @@ namespace pen::backend {
     // Global variables
     uint32_t framebuffer = 0; // In this case it is the view ID
 
+    // FUNCTIONS
+    // ---------
+
+    // Shading and Uniforms
+    // INFO: For some very cursed reason, it is impossible to make this function work
+    uint16_t createUniform(std::string name, UniformType type) {
+        // bgfx::UniformType::Enum uType;
+
+        // switch (type) {
+        // case UniformType::Sampler:
+        //     uType = bgfx::UniformType::Sampler;
+        //     break;
+
+        // case UniformType::Vec4:
+        // case UniformType::Mat3:
+        // case UniformType::Mat4:
+        //     throw std::runtime_error("PENUMBRA_ERROR [BGFX]: Only Sampler Uniform is supported for now");
+        //     break;
+        // }
+
+        // bgfx::UniformHandle uniform = bgfx::createUniform("s_color", bgfx::UniformType::Sampler);
+        return bgfx::createUniform("s_color", bgfx::UniformType::Sampler).idx;
+    }
+    void deleteUniform(uint16_t uniform) {
+        bgfx::destroy((bgfx::UniformHandle)uniform);
+    }
+
     // Framebuffer Stuff
     void bindFramebuffer(uint32_t framebufferID) {
         framebuffer = framebufferID;

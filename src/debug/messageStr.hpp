@@ -1,12 +1,15 @@
 #pragma once
 
-#include <bgfx/bgfx.h>
 #include <cstdint>
 #include <string>
 
 #include "debug/consoleColors.hpp"
 #include "debug/message.hpp"
 
+// HACK: Disable Debug log when not using BGFX
+#ifdef PENUMBRA_BACKEND_BGFX
+    #include <bgfx/bgfx.h>
+#endif
 namespace pen::debug::log {
     class MessageStr : public Message {
     public:
@@ -25,7 +28,9 @@ namespace pen::debug::log {
                 posY = consoleY - posY;
             }
 
-            bgfx::dbgTextPrintf(posX, posY, color, msg.c_str());
+            #ifdef PENUMBRA_BACKEND_BGFX
+                bgfx::dbgTextPrintf(posX, posY, color, msg.c_str());
+            #endif
         }
 
     private:

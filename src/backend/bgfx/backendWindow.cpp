@@ -163,6 +163,11 @@ namespace pen::backend {
         lastTime = currentTime;
     }
 
+    // Deinitializes Backend
+    void BackendWindow::deinitBackend() {
+        bgfx::shutdown();
+    }
+
     // Creates a framebuffer and stores its ID (the Framebuffer is in GPU memory probably)
     void BackendWindow::createFramebuffers() {
         // Set view 0 to the same dimensions as the window and to clear the color buffer.

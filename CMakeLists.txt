@@ -5,8 +5,8 @@ option(LINUX_X11 "Linux Only. Enables X11 support. [Recommended]" ON)
 option(LINUX_WAYLAND "Linux Only. Enables Wayland support. [Recommended if Wayland is installed]" ON)
 
 # INFO: To develop WGPU backend, disable building with BGFX and enable building with WGPU
-option(BACKEND_BGFX "Use BGFX as Backend" ON)
-option(BACKEND_WGPU "Use WebGPU Native as Backend" OFF)
+option(BACKEND_BGFX "Use BGFX as Backend" OFF)
+option(BACKEND_WGPU "Use WebGPU Native as Backend" ON)
 
 # Set C++ Standard
 set(CMAKE_CXX_STANDARD 20)
@@ -96,35 +96,37 @@ endif(LINUX)
 project(penumbra-tests VERSION 0.1.0 LANGUAGES C CXX)
 
 add_executable(${PROJECT_NAME}
-    src/utils/vectors.cpp 
-    src/utils/transform2D.cpp 
-
-    src/antumbra/types/sprite.cpp 
-    src/antumbra/antumbra.cpp 
-
-    src/debug/consoleColors.cpp
-    src/debug/log.cpp
-    src/core/window.cpp
-    src/utils/config.cpp
-    src/penumbra.cpp
-
     testEntry.cpp
 )
 
 # Backend-specific sources
 if(BACKEND_BGFX)
     target_sources(${PROJECT_NAME}
+        PRIVATE src/backend/bgfx/backendRender.cpp
+        
         PRIVATE src/backend/bgfx/shader.cpp 
         PRIVATE src/backend/bgfx/texture.cpp
-
+        
         PRIVATE src/backend/bgfx/backendWindow.cpp
         PRIVATE src/backend/bgfx/backendVtxLayout.cpp
         PRIVATE src/backend/bgfx/backendVtxBuffer.cpp
         PRIVATE src/backend/bgfx/backendIdxBuffer.cpp
-
-        PRIVATE src/backend/bgfx/backendRender.cpp
     )
 endif(BACKEND_BGFX)
+
+target_sources(${PROJECT_NAME}
+    PRIVATE src/utils/vectors.cpp 
+    PRIVATE src/utils/transform2D.cpp 
+
+    PRIVATE src/antumbra/types/sprite.cpp 
+    PRIVATE src/antumbra/antumbra.cpp 
+
+    PRIVATE src/debug/consoleColors.cpp
+    PRIVATE src/debug/log.cpp
+    PRIVATE src/core/window.cpp
+    PRIVATE src/utils/config.cpp
+    PRIVATE src/penumbra.cpp
+)
 
 
 add_compile_definitions(BX_CONFIG_DEBUG=$<CONFIG:Debug>)

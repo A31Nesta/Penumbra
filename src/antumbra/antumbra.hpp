@@ -81,6 +81,6 @@ namespace pen::antumbra {
         backend::BackendIdxBuffer* bib;
 
         // Uniform
-        bgfx::UniformHandle colorUniform;
+        uint16_t colorUniform;
     };
 }

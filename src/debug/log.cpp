@@ -4,12 +4,16 @@
 #include "debug/messageNum.hpp"
 
 #include <algorithm>
-#include <bgfx/bgfx.h>
 #include <cstdint>
 #include <sstream>
 #include <string>
 #include <utility>
 #include <vector>
+
+#ifdef PENUMBRA_BACKEND_BGFX
+    // HACK: Disable Logging for now. Enable it only when using BGFX
+    #include <bgfx/bgfx.h>
+#endif
 
 namespace pen::debug {
     // Console Data
@@ -44,7 +48,9 @@ namespace pen::debug {
         }
 
         // Clear
-        bgfx::dbgTextClear();
+        #ifdef PENUMBRA_BACKEND_BGFX
+            bgfx::dbgTextClear();
+        #endif
 
         // Console Log
         for (log::Message* msg : _consoleLog) {
@@ -75,8 +81,12 @@ namespace pen::debug {
 
     // Get Console size
     std::pair<uint16_t, uint16_t> getConsoleSize() {
-        const bgfx::Stats* stats = bgfx::getStats();
-        return {stats->textWidth, stats->textHeight};
+        #ifdef PENUMBRA_BACKEND_BGFX
+            const bgfx::Stats* stats = bgfx::getStats();
+            return {stats->textWidth, stats->textHeight};
+        #else
+            return {0,0};
+        #endif
     }
 
     // UTILITIES (PRIVATE)

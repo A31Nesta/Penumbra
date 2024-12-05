@@ -12,13 +12,22 @@
 #include <cstdint>
 
 namespace pen::backend {
+    enum class UniformType {
+        Sampler,
+        Vec4,
+        Mat3,
+        Mat4
+    };
+
+    // Shading and Uniforms
+    uint16_t createUniform(std::string name, UniformType type);
+    void deleteUniform(uint16_t uniform);
+
     // Framebuffer Stuff
     void bindFramebuffer(uint32_t framebufferID);
 
-    // General
+    // Transform and Model
     void setViewTransform(float* viewMtx, float* projMtx);
-
-    // Models
     void setModelTransform(float* modelMtx);
     void setBuffers(BackendVtxBuffer* bvb, BackendIdxBuffer* bib);
 

@@ -20,6 +20,10 @@
 #include <string>
 #include <vector>
 
+#ifdef PENUMBRA_BACKEND_BGFX
+    #include <bgfx/bgfx.h>
+#endif
+
 namespace pen::antumbra {
     // Same for every object. Everything is based on squares in 2D
     const std::vector<float> QUAD_VTX {
@@ -41,8 +45,22 @@ namespace pen::antumbra {
         shaders.push_back(defaultS);
 
         // Create Uniforms
-        // TODO: Change magic string to defines
-        colorUniform = bgfx::createUniform("s_color", bgfx::UniformType::Sampler);
+        // HACK: With BGFX Backend we manually create the Uniform here
+        // EXPLANATION: backend::createUniform() crashes or for whatever reason creates
+        // a uniform that is invalid and curses the entire code. Creating a uniform with
+        // backend::createUniform() makes things like deleting BackendVertexBuffer crash
+        // with a "free(): invalid pointer". Something sussy is going on with BGFX.
+        // This strange band-aid solution appears to "solve" it.
+        // Literally a coconut.vtf moment.
+
+        // TODO: Investigate issue with BGFX Shader Uniform Creation
+        #ifdef PENUMBRA_BACKEND_BGFX
+            // TODO: Change magic string to defines
+            // colorUniform = backend::createUniform("s_color", backend::UniformType::Sampler);
+            colorUniform = bgfx::createUniform("s_color", bgfx::UniformType::Sampler).idx;
+        #else
+            colorUniform = backend::createUniform("s_color", backend::UniformType::Sampler);
+        #endif
         
         initQuad();
     }
@@ -69,7 +87,7 @@ namespace pen::antumbra {
         }
 
         // Delete BGFX objects
-        bgfx::destroy(colorUniform);
+        backend::deleteUniform(colorUniform);
         delete bvb;
         delete bib;
     }
@@ -173,7 +191,7 @@ namespace pen::antumbra {
             }
         }
 
-        Texture* newTexture = new Texture(textures.size(), texture, PENUMBRA_TEX_COLOR, colorUniform.idx);
+        Texture* newTexture = new Texture(textures.size(), texture, PENUMBRA_TEX_COLOR, colorUniform);
         
         // Only add if it's Valid
         if (newTexture->isValid()) {

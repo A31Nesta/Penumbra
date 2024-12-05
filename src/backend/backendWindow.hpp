@@ -52,6 +52,9 @@ namespace pen::backend {
         ~BackendWindow() {
             glfwDestroyWindow(window);
             std::cout << "PENUMBRA: Destroyed Window Correctly\n";
+
+            // DeinitBackend
+            deinitBackend();
         }
 
         // Returns the time passed since the last time that update() was called.
@@ -152,6 +155,9 @@ namespace pen::backend {
         // implement GLFW callbacks as well as initialize the
         // rendering backend
         void initBackendSpecific();
+
+        // Deinitializes Backend
+        void deinitBackend();
 
         // Creates a framebuffer and stores its ID (the Framebuffer
         // is in GPU memory probably)

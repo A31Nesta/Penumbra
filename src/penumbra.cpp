@@ -30,10 +30,11 @@ namespace pen {
 		win->update();
 	}
 	void end() {
+		debug::clearAll();
+		
+		// Also deletes backend-specific data
 		delete win;
 
-		debug::clearAll();
-		bgfx::shutdown();
 		glfwTerminate();
 	}
 
