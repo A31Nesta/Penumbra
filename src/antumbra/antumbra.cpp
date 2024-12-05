@@ -1,20 +1,26 @@
 #include "antumbra.hpp"
-#include "antumbra/types/posUvVertex.hpp"
+
 #include "antumbra/types/shader.hpp"
 #include "antumbra/types/sprite.hpp"
 #include "antumbra/types/texture.hpp"
 
 #include "backend/backendIdxBuffer.hpp"
+#include "backend/backendRender.hpp"
 #include "backend/backendVtxBuffer.hpp"
 #include "backend/backendVtxLayout.hpp"
 #include "debug/log.hpp"
 #include "utils/vectors.hpp"
 
-#include <bgfx/bgfx.h>
-#include <bgfx/defines.h>
 #include <bx/math.h>
+#include <glm/ext/matrix_clip_space.hpp>
+#include <glm/ext/matrix_float4x4.hpp>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtc/quaternion.hpp>
 
 #include <cstdint>
+#include <glm/matrix.hpp>
 #include <string>
 #include <vector>
 
@@ -105,30 +111,51 @@ namespace pen::antumbra {
     // The Final Boss.
     // Draw a fucking scene
     void Antumbra::draw(uint32_t framebuffer, uint16_t width, uint16_t height) {
-        const bx::Vec3 at  = { 0.0f, 0.0f, 0.0f };
-        const bx::Vec3 eye = { 0.0f, 0.0f, -2.0f };
+        const glm::vec3 at(0.0f, 0.0f, 0.0f);
+        const glm::vec3 eye(0.0f, 0.0f, 2.0f);
 
         // Set view and projection matrix for view 0.
-        float viewMtx[16];
-        bx::mtxLookAt(viewMtx, eye, at);
+        glm::mat4 viewMtx = glm::lookAt(eye, at, glm::vec3(0, 1, 0));
+        // glm::mat4 projMtx = glm::ortho(
+        //     -float(width)/float(height), float(width)/float(height),
+        //     -float(height)/float(height), float(height)/float(height),
+        //     0.1f, 100.0f
+        // );
+        glm::mat4 projMtx = glm::perspective(glm::radians(60.0f), float(width)/float(height), 0.1f, 100.f);
 
-        float projMtx[16];
-        bx::mtxProj(projMtx,
-                    60.0f,
-                    float(width)/float(height),
-                    0.1f, 100.0f,
-                    bgfx::getCaps()->homogeneousDepth);
+        // glm::mat4 transposedView = glm::transpose(viewMtx);
+        // glm::mat4 transposedProj = glm::transpose(projMtx);
+        // backend::setViewTransform(framebuffer, glm::value_ptr(transposedView), glm::value_ptr(transposedProj));
+        backend::setViewTransform(framebuffer, &viewMtx[0][0], &projMtx[0][0]);
 
-        bgfx::setViewTransform(framebuffer, viewMtx, projMtx);
+        // const bx::Vec3 at  = { 0.0f, 0.0f, 0.0f };
+        // const bx::Vec3 eye = { 0.0f, 0.0f, -4.0f };
 
-        for (Sprite* sprite : sprites) {            
-            bgfx::setTransform(sprite->transform);
+        // // Set view and projection matrix for view 0.
+        // float viewMtx[16];
+        // bx::mtxLookAt(viewMtx, eye, at);
+
+        // float projMtx[16];
+        // // bx::mtxProj(projMtx,
+        // //             60.0f,
+        // //             float(width)/float(height),
+        // //             0.1f, 100.0f,
+        // //             bgfx::getCaps()->homogeneousDepth);
+        // bx::mtxOrtho(projMtx,
+        //     -float(width)/float(height), float(width)/float(height),
+        //     -float(height)/float(height), float(height)/float(height),
+        //     0.1f, 100.0f,
+        //     0,
+        //     bgfx::getCaps()->homogeneousDepth
+        // );
+
+        // backend::setViewTransform(framebuffer, (viewMtx), (projMtx));
+
+        for (Sprite* sprite : sprites) {
+            backend::setModelTransform(sprite->transform);
 
             // Buffers
-            uint16_t vbhID = bvb->getID();
-            uint16_t ibhID = bib->getID();
-            bgfx::setVertexBuffer(0, (bgfx::VertexBufferHandle)vbhID);
-            bgfx::setIndexBuffer((bgfx::IndexBufferHandle)ibhID);
+            backend::setBuffers(bvb, bib);
 
             // Set Texture
             textures.at(sprite->getTextureID())->bindTexture();
@@ -149,7 +176,9 @@ namespace pen::antumbra {
 
     // Inits the bgfx objects and loads the default shader
     void Antumbra::initQuad() {
-        backend::BackendVtxLayout vtxLayout = PosUvVertex::getVertexLayout();
+        backend::BackendVtxLayout vtxLayout;
+        vtxLayout.addVtxAttrib(backend::Position);
+        vtxLayout.addVtxAttrib(backend::TexCoord0);
 
         bvb = new backend::BackendVtxBuffer(QUAD_VTX, vtxLayout);
         bib = new backend::BackendIdxBuffer(QUAD_IDX);

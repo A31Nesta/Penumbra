@@ -34,7 +34,6 @@
 #include "utils/transform2D.hpp"
 #include "utils/vectors.hpp"
 
-#include <bgfx/bgfx.h>
 #include <cstdint>
 #include <vector>
 namespace pen::antumbra {

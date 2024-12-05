@@ -120,6 +120,8 @@ if(BACKEND_BGFX)
         PRIVATE src/backend/bgfx/backendVtxLayout.cpp
         PRIVATE src/backend/bgfx/backendVtxBuffer.cpp
         PRIVATE src/backend/bgfx/backendIdxBuffer.cpp
+
+        PRIVATE src/backend/bgfx/backendRender.cpp
     )
 endif(BACKEND_BGFX)
 

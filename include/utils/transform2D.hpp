@@ -2,6 +2,10 @@
 
 #include "vectors.hpp"
 
+#include <glm/glm.hpp>
+#include <glm/ext/matrix_transform.hpp>
+#include <glm/ext/matrix_float4x4.hpp>
+
 namespace pen {
     class Transform2D {
     public:
@@ -29,11 +33,11 @@ namespace pen {
 
         // Matrices
         // MAIN
-        float matrix[16];
+        glm::mat4 matrix;
         // POS/ROT/SCALE
-        float _posMtx[16];
-        float _rotMtx[16];
-        float _sclMtx[16];
+        glm::mat4 _posMtx;
+        glm::mat4 _rotMtx;
+        glm::mat4 _sclMtx;
 
         // Last values used for matrix transform
         Vec2 _lastPos;

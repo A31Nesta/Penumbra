@@ -1,7 +1,8 @@
 #include "utils/transform2D.hpp"
 #include "utils/vectors.hpp"
-#include <bx/math.h>
-// TODO: Calculate matrix with GLM and not BX
+
+#include <glm/ext/matrix_float4x4.hpp>
+#include <glm/ext/vector_float3.hpp>
 
 namespace pen {
     Transform2D::Transform2D() : position(), scale() {
@@ -21,11 +22,11 @@ namespace pen {
 
     Transform2D::operator float*() {
         calculateMatrix();
-        return matrix;
+        return &matrix[0][0];
     }
     float* Transform2D::getMatrix() {
         calculateMatrix();
-        return matrix;
+        return &matrix[0][0];
     }
 
 
@@ -37,13 +38,13 @@ namespace pen {
         if (position != _lastPos) {
             needsRecalc = true;
             _lastPos = position;
-            bx::mtxTranslate(_posMtx, position.x, position.y, 0.0f);
+            _posMtx = glm::translate(glm::mat4(1), glm::vec3(position.x, position.y, 0.0f));
         }
         // If the rotation changed we calculate it
         if (rotation != _lastRot) {
             needsRecalc = true;
             _lastRot = rotation;
-            bx::mtxRotateZ(_rotMtx, rotation);
+            _rotMtx = glm::rotate(glm::mat4(1), float(rotation), glm::vec3(0, 0, 1));
         }
         // If the scale changed we calculate it
         if (scale != _lastScl || deform != _lastDef) {
@@ -52,26 +53,22 @@ namespace pen {
             _lastDef = deform;
 
             Vec2 totalScale = scale * deform;
-            bx::mtxScale(_sclMtx, totalScale.x, totalScale.y, 1.0f);
+            _sclMtx = glm::scale(glm::mat4(1), glm::vec3(totalScale.x, totalScale.y, 1.0f));
         }
 
         // If the main matrix needs to be calculated, we calculate it
         if (needsRecalc) {
-            bx::mtxIdentity(matrix);
-            bx::mtxMul(matrix, _sclMtx, _rotMtx);
-            bx::mtxMul(matrix, matrix, _posMtx);
+            matrix = _sclMtx * _rotMtx * _posMtx;
         }
     }
     void Transform2D::forceCalculateMatrix() {
         _lastPos = position;
-        bx::mtxTranslate(_posMtx, position.x, position.y, 0.0f);
+        _posMtx = glm::translate(glm::mat4(1), glm::vec3(position.x, position.y, 0.0f));
         _lastRot = rotation;
-        bx::mtxRotateZ(_rotMtx, rotation);
+        _rotMtx = glm::rotate(glm::mat4(1), float(rotation), glm::vec3(0, 0, 1));
         _lastScl = scale;
-        bx::mtxScale(_sclMtx, scale.x, scale.y, 1.0f);
+        _sclMtx = glm::scale(glm::mat4(1), glm::vec3(scale.x, scale.y, 1.0f));
 
-        bx::mtxIdentity(matrix);
-        bx::mtxMul(matrix, _sclMtx, _rotMtx);
-        bx::mtxMul(matrix, matrix, _posMtx);
+        matrix = _sclMtx * _rotMtx * _posMtx;
     }
 }
