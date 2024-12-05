@@ -1,9 +1,5 @@
 #include "penumbra.hpp"
 
-// Libs
-#include <GLFW/glfw3.h>
-#include <bgfx/bgfx.h>
-
 // STD
 #include <cstring>
 #include <string>

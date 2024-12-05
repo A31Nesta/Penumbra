@@ -51,6 +51,7 @@ namespace pen::backend {
         }
         ~BackendWindow() {
             glfwDestroyWindow(window);
+            std::cout << "PENUMBRA: Destroyed Window Correctly\n";
         }
 
         // Returns the time passed since the last time that update() was called.

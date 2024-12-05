@@ -1,6 +1,6 @@
 #pragma once
 
-#include <bgfx/bgfx.h>
+#include "backend/backendVtxLayout.hpp"
 namespace pen::antumbra {
     struct PosUvVertex {
         float x;
@@ -10,13 +10,12 @@ namespace pen::antumbra {
         float u;
         float v;
 
-        static bgfx::VertexLayout getVertexLayout() {
+        static backend::BackendVtxLayout getVertexLayout() {
             // Init vertex attributes
-            bgfx::VertexLayout vertexLayout;
-            vertexLayout.begin()
-            .add(bgfx::Attrib::Position, 3, bgfx::AttribType::Float)
-            .add(bgfx::Attrib::TexCoord0, 2, bgfx::AttribType::Float)
-            .end();
+            backend::BackendVtxLayout vertexLayout;
+            vertexLayout.addVtxAttrib(backend::Position);
+            vertexLayout.addVtxAttrib(backend::TexCoord0);
+            
             return vertexLayout;
         }
     };

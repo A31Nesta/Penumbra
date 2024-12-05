@@ -117,6 +117,8 @@ add_executable(${PROJECT_NAME}
 if(BACKEND_BGFX)
     target_sources(${PROJECT_NAME}
         PRIVATE src/backend/bgfx/backendWindow.cpp
+        PRIVATE src/backend/bgfx/backendVtxLayout.cpp
+        PRIVATE src/backend/bgfx/backendVtxBuffer.cpp
     )
 endif(BACKEND_BGFX)
 

@@ -1,6 +1,7 @@
 #include "utils/transform2D.hpp"
 #include "utils/vectors.hpp"
 #include <bx/math.h>
+// TODO: Calculate matrix with GLM and not BX
 
 namespace pen {
     Transform2D::Transform2D() : position(), scale() {

@@ -3,6 +3,9 @@
 #include "antumbra/types/shader.hpp"
 #include "antumbra/types/sprite.hpp"
 #include "antumbra/types/texture.hpp"
+
+#include "backend/backendVtxBuffer.hpp"
+#include "backend/backendVtxLayout.hpp"
 #include "debug/log.hpp"
 #include "utils/vectors.hpp"
 
@@ -12,14 +15,15 @@
 
 #include <cstdint>
 #include <string>
+#include <vector>
 
 namespace pen::antumbra {
     // Same for every object. Everything is based on squares in 2D
-    const PosUvVertex QUAD_VTX[] = {
-        {0.5f, 0.5f, 0.0f,  1.0f, 1.0f},	// top right
-        {0.5f, -.5f, 0.0f,  1.0f, 0.0f},	// bottom right
-        {-.5f, -.5f, 0.0f,  0.0f, 0.0f},	// bottom left
-        {-.5f, 0.5f, 0.0f,  0.0f, 1.0f} 	// top left
+    const std::vector<float> QUAD_VTX {
+        0.5f, 0.5f, 0.0f,  1.0f, 1.0f,	// top right
+        0.5f, -.5f, 0.0f,  1.0f, 0.0f,	// bottom right
+        -.5f, -.5f, 0.0f,  0.0f, 0.0f,	// bottom left
+        -.5f, 0.5f, 0.0f,  0.0f, 1.0f 	// top left
     };
     const uint16_t QUAD_IDX[] = {
         1, 0, 3,
@@ -63,8 +67,8 @@ namespace pen::antumbra {
 
         // Delete BGFX objects
         bgfx::destroy(colorUniform);
-        bgfx::destroy(vbh);
-        bgfx::destroy(ibh);
+        delete bvb;
+        bgfx::destroy((bgfx::IndexBufferHandle)bib);
     }
 
     // BASE ADD SPRITE
@@ -99,7 +103,7 @@ namespace pen::antumbra {
 
     // The Final Boss.
     // Draw a fucking scene
-    void Antumbra::draw(uint32_t view, uint16_t width, uint16_t height) {
+    void Antumbra::draw(uint32_t framebuffer, uint16_t width, uint16_t height) {
         const bx::Vec3 at  = { 0.0f, 0.0f, 0.0f };
         const bx::Vec3 eye = { 0.0f, 0.0f, -2.0f };
 
@@ -114,14 +118,14 @@ namespace pen::antumbra {
                     0.1f, 100.0f,
                     bgfx::getCaps()->homogeneousDepth);
 
-        bgfx::setViewTransform(view, viewMtx, projMtx);
+        bgfx::setViewTransform(framebuffer, viewMtx, projMtx);
 
         for (Sprite* sprite : sprites) {            
             bgfx::setTransform(sprite->transform);
 
             // Buffers
-            bgfx::setVertexBuffer(0, vbh);
-            bgfx::setIndexBuffer(ibh);
+            bgfx::setVertexBuffer(0, (bgfx::VertexBufferHandle)bvb->getID());
+            bgfx::setIndexBuffer((bgfx::IndexBufferHandle)bib);
 
             // Set Texture
             textures.at(sprite->getTextureID())->bindTexture();
@@ -131,7 +135,7 @@ namespace pen::antumbra {
                 ^ BGFX_STATE_WRITE_Z // Remove Z
                 | BGFX_STATE_BLEND_ALPHA // Enable Alpha
             );
-            bgfx::submit(view, shaders.at(sprite->getShaderID())->getProgram());
+            bgfx::submit(framebuffer, shaders.at(sprite->getShaderID())->getProgram());
         }
 
         // bgfx::submit(view, shaders.at(0).getProgram());
@@ -142,12 +146,13 @@ namespace pen::antumbra {
 
     // Inits the bgfx objects and loads the default shader
     void Antumbra::initQuad() {
-        const bgfx::VertexLayout vtxLayout = PosUvVertex::getVertexLayout();
-        
-        vbh = bgfx::createVertexBuffer(bgfx::makeRef(QUAD_VTX, sizeof(QUAD_VTX)), vtxLayout);
-        ibh = bgfx::createIndexBuffer(bgfx::makeRef(QUAD_IDX, sizeof(QUAD_IDX)));
+        backend::BackendVtxLayout vtxLayout = PosUvVertex::getVertexLayout();
+        vtxLayout.getBackendSpecificData();
 
-        debug::print("\n\nSIZEOF QUAD_VTX: "+std::to_string(sizeof(QUAD_VTX))+"\n");
+        bvb = new backend::BackendVtxBuffer(QUAD_VTX, vtxLayout);
+        bib = bgfx::createIndexBuffer(bgfx::makeRef(QUAD_IDX, sizeof(QUAD_IDX))).idx;
+
+        debug::print("\n\nSIZEOF QUAD_VTX: "+std::to_string(QUAD_VTX.size() * sizeof(float))+"\n");
     }
 
     Shader* Antumbra::getShader(std::string shader) {

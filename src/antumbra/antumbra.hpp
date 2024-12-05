@@ -29,6 +29,7 @@
 #include "antumbra/types/shader.hpp"
 #include "antumbra/types/texture.hpp"
 #include "antumbra/types/sprite.hpp"
+#include "backend/backendVtxBuffer.hpp"
 #include "utils/transform2D.hpp"
 #include "utils/vectors.hpp"
 
@@ -49,7 +50,7 @@ namespace pen::antumbra {
         void removeSprite(Sprite sprite);
         void removeSprite(uint32_t sprite);
 
-        void draw(uint32_t view, uint16_t width, uint16_t height);
+        void draw(uint32_t framebuffer, uint16_t width, uint16_t height);
         
     private:
         // Inits the bgfx objects and loads the default shader
@@ -66,8 +67,14 @@ namespace pen::antumbra {
         std::string defaultShaderPath;
 
         // Quad Vertex and Index Buffer Handles
-        bgfx::VertexBufferHandle vbh;
-        bgfx::IndexBufferHandle ibh;
+        // ------------------------------------
+
+        // Backend Vertex Buffer
+        backend::BackendVtxBuffer* bvb;
+
+        // Backend Index Buffer
+        // BGFX Equivalent: IndexBufferHandle
+        uint16_t bib;
 
         // Uniform
         bgfx::UniformHandle colorUniform;
