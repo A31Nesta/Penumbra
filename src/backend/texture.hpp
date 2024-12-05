@@ -1,7 +1,7 @@
 #pragma once
 
 #include "utils/vectors.hpp"
-#include <bgfx/bgfx.h>
+
 #include <cstdint>
 #include <string>
 
@@ -13,7 +13,7 @@
 namespace pen {
     class Texture {
     public:
-        Texture(uint32_t id, std::string path, uint8_t type, bgfx::UniformHandle uniform);
+        Texture(uint32_t id, std::string path, uint8_t type, uint16_t uniform);
         ~Texture();
 
         void incrementUsers() { users++; }
@@ -37,13 +37,13 @@ namespace pen {
         bool persistent = false;
 
         // Texture Data
-        bgfx::TextureHandle _bgfxTex;
+        uint32_t _textureHandle;
         uint16_t width, height;
         Vec2 spriteDeform;
         uint8_t textureType;
 
         // Uniform
-        bgfx::UniformHandle uniform;
+        uint16_t uniform;
 
         uint32_t id;
     };

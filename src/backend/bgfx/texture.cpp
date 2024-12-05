@@ -1,9 +1,9 @@
-#include "texture.hpp"
+#include "../texture.hpp"
 #include "debug/consoleColors.hpp"
 #include "debug/log.hpp"
 #include "utils/vectors.hpp"
+
 #include <algorithm>
-#include <bgfx/bgfx.h>
 #include <cstddef>
 #include <cstdint>
 #include <cstdlib>
@@ -11,12 +11,14 @@
 #include <iostream>
 #include <string>
 
+#include <bgfx/bgfx.h>
+
 // STBI
 #define STB_IMAGE_IMPLEMENTATION
 #include "stbi/stb_image.h"
 
 namespace pen {
-    Texture::Texture(uint32_t id, std::string path, uint8_t type, bgfx::UniformHandle uniform) {
+    Texture::Texture(uint32_t id, std::string path, uint8_t type, uint16_t uniform) {
         this->id = id;
         loadTexture(path);
 
@@ -28,12 +30,12 @@ namespace pen {
     Texture::~Texture() {
         // DO NOT DESTROY UNIFORM
         // That's Antumbra's job, not ours, we just delete our texture
-        bgfx::destroy(_bgfxTex);
+        bgfx::destroy((bgfx::TextureHandle)_textureHandle);
     }
 
     void Texture::bindTexture() {
         // Bind texture
-        bgfx::setTexture(textureType, uniform, _bgfxTex);
+        bgfx::setTexture(textureType, (bgfx::UniformHandle)uniform, (bgfx::TextureHandle)_textureHandle);
     }
 
     void Texture::loadTexture(std::string path) {
@@ -46,6 +48,7 @@ namespace pen {
             size_t fileSize;
 
             // TODO: Test cast bgfx memory uint8_t* into char*
+            // What the fuck does this mean???
             if (file.is_open()) {
                 file.seekg(0, std::ios::end);
                 fileSize = file.tellg();
@@ -59,7 +62,7 @@ namespace pen {
                 free(data); // free data pointer
 
                 bgfx::TextureInfo texInfo;
-                _bgfxTex = bgfx::createTexture(mem, BGFX_TEXTURE_NONE|BGFX_SAMPLER_NONE, 0, &texInfo);
+                _textureHandle = bgfx::createTexture(mem, BGFX_TEXTURE_NONE|BGFX_SAMPLER_NONE, 0, &texInfo).idx;
                 width = texInfo.width;
                 height = texInfo.height;
 
@@ -75,8 +78,8 @@ namespace pen {
             if (bytes) {
                 // Totally not yoinked from here:
                 // https://github.com/beardsvibe/leengine/blob/master/src/render.c#L115
-                // TODO: Try to understand why we do x*y*4 here lmao
-                _bgfxTex = bgfx::createTexture2D(x, y, false, 1, bgfx::TextureFormat::RGBA8, BGFX_TEXTURE_NONE|BGFX_SAMPLER_NONE, bgfx::copy(bytes, x * y * 4));
+                // We do x*y*4 here because per pixel we have RGB and A
+                _textureHandle = bgfx::createTexture2D(x, y, false, 1, bgfx::TextureFormat::RGBA8, BGFX_TEXTURE_NONE|BGFX_SAMPLER_NONE, bgfx::copy(bytes, x * y * 4)).idx;
                 width = x;
                 height = y;
                 stbi_image_free(bytes);
@@ -84,7 +87,7 @@ namespace pen {
         }
 
         // Le fnuui error handling
-        if (!bgfx::isValid(_bgfxTex) || width == 0 || height == 0) {
+        if (!bgfx::isValid((bgfx::TextureHandle)_textureHandle) || width == 0 || height == 0) {
             debug::print("Failed to load Texture: " + path + "\n", debug::Color::RED);
             valid = false;
         } else {

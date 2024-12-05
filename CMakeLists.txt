@@ -20,7 +20,7 @@ add_library(${PROJECT_NAME} STATIC
     src/utils/transform2D.cpp 
 
     src/antumbra/types/shader.cpp 
-    src/antumbra/types/texture.cpp 
+    # src/antumbra/types/texture.cpp 
     src/antumbra/types/sprite.cpp 
     src/antumbra/antumbra.cpp 
 
@@ -100,7 +100,6 @@ add_executable(${PROJECT_NAME}
     src/utils/transform2D.cpp 
 
     src/antumbra/types/shader.cpp 
-    src/antumbra/types/texture.cpp 
     src/antumbra/types/sprite.cpp 
     src/antumbra/antumbra.cpp 
 
@@ -116,6 +115,8 @@ add_executable(${PROJECT_NAME}
 # Backend-specific sources
 if(BACKEND_BGFX)
     target_sources(${PROJECT_NAME}
+        PRIVATE src/backend/bgfx/texture.cpp
+
         PRIVATE src/backend/bgfx/backendWindow.cpp
         PRIVATE src/backend/bgfx/backendVtxLayout.cpp
         PRIVATE src/backend/bgfx/backendVtxBuffer.cpp

@@ -27,10 +27,12 @@
  */
 
 #include "antumbra/types/shader.hpp"
-#include "antumbra/types/texture.hpp"
 #include "antumbra/types/sprite.hpp"
+
+#include "backend/texture.hpp"
 #include "backend/backendIdxBuffer.hpp"
 #include "backend/backendVtxBuffer.hpp"
+
 #include "utils/transform2D.hpp"
 #include "utils/vectors.hpp"
 
@@ -71,7 +73,6 @@ namespace pen::antumbra {
 
         // Backend Vertex Buffer
         backend::BackendVtxBuffer* bvb;
-
         // Backend Index Buffer
         backend::BackendIdxBuffer* bib;
 

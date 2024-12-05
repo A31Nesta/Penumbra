@@ -2,25 +2,24 @@
 
 #include "antumbra/types/shader.hpp"
 #include "antumbra/types/sprite.hpp"
-#include "antumbra/types/texture.hpp"
 
-#include "backend/backendIdxBuffer.hpp"
+#include "backend/texture.hpp"
+
 #include "backend/backendRender.hpp"
-#include "backend/backendVtxBuffer.hpp"
 #include "backend/backendVtxLayout.hpp"
+
 #include "debug/log.hpp"
 #include "utils/vectors.hpp"
 
-#include <bx/math.h>
+#include <glm/glm.hpp>
+#include <glm/matrix.hpp>
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/ext/matrix_float4x4.hpp>
-#include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/quaternion.hpp>
 
 #include <cstdint>
-#include <glm/matrix.hpp>
 #include <string>
 #include <vector>
 
@@ -181,7 +180,7 @@ namespace pen::antumbra {
             }
         }
 
-        Texture* newTexture = new Texture(textures.size(), texture, PENUMBRA_TEX_COLOR, colorUniform);
+        Texture* newTexture = new Texture(textures.size(), texture, PENUMBRA_TEX_COLOR, colorUniform.idx);
         
         // Only add if it's Valid
         if (newTexture->isValid()) {
