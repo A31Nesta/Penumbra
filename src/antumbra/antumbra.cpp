@@ -124,7 +124,8 @@ namespace pen::antumbra {
             bgfx::setTransform(sprite->transform);
 
             // Buffers
-            bgfx::setVertexBuffer(0, (bgfx::VertexBufferHandle)bvb->getID());
+            uint16_t vbhID = bvb->getID();
+            bgfx::setVertexBuffer(0, (bgfx::VertexBufferHandle)vbhID);
             bgfx::setIndexBuffer((bgfx::IndexBufferHandle)bib);
 
             // Set Texture
@@ -147,7 +148,6 @@ namespace pen::antumbra {
     // Inits the bgfx objects and loads the default shader
     void Antumbra::initQuad() {
         backend::BackendVtxLayout vtxLayout = PosUvVertex::getVertexLayout();
-        vtxLayout.getBackendSpecificData();
 
         bvb = new backend::BackendVtxBuffer(QUAD_VTX, vtxLayout);
         bib = bgfx::createIndexBuffer(bgfx::makeRef(QUAD_IDX, sizeof(QUAD_IDX))).idx;

@@ -10,10 +10,13 @@ namespace pen::backend {
     : vtxLayout(vtxLayout) {
         this->vtxArr = vtxArr;
 
+        // Get Vertex Layout
+        bgfx::VertexLayout layout = *(bgfx::VertexLayout*)this->vtxLayout.getBackendSpecificData();
+
         // Create Vertex Buffer
         id = bgfx::createVertexBuffer(
-            bgfx::makeRef(vtxArr.data(), vtxArr.size() * sizeof(float)),
-            *(bgfx::VertexLayout*)this->vtxLayout.getBackendSpecificData())
+            bgfx::makeRef(this->vtxArr.data(), this->vtxArr.size() * sizeof(float)),
+            layout)
             .idx
         ;
     }
