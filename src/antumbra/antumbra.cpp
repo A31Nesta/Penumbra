@@ -116,6 +116,7 @@ namespace pen::antumbra {
 
         // Set view and projection matrix for view 0.
         glm::mat4 viewMtx = glm::lookAt(eye, at, glm::vec3(0, 1, 0));
+        // TODO: Make ortho camera work. At least with BGFX Backend it doesn't work
         // glm::mat4 projMtx = glm::ortho(
         //     -float(width)/float(height), float(width)/float(height),
         //     -float(height)/float(height), float(height)/float(height),
@@ -123,33 +124,7 @@ namespace pen::antumbra {
         // );
         glm::mat4 projMtx = glm::perspective(glm::radians(60.0f), float(width)/float(height), 0.1f, 100.f);
 
-        // glm::mat4 transposedView = glm::transpose(viewMtx);
-        // glm::mat4 transposedProj = glm::transpose(projMtx);
-        // backend::setViewTransform(framebuffer, glm::value_ptr(transposedView), glm::value_ptr(transposedProj));
         backend::setViewTransform(framebuffer, &viewMtx[0][0], &projMtx[0][0]);
-
-        // const bx::Vec3 at  = { 0.0f, 0.0f, 0.0f };
-        // const bx::Vec3 eye = { 0.0f, 0.0f, -4.0f };
-
-        // // Set view and projection matrix for view 0.
-        // float viewMtx[16];
-        // bx::mtxLookAt(viewMtx, eye, at);
-
-        // float projMtx[16];
-        // // bx::mtxProj(projMtx,
-        // //             60.0f,
-        // //             float(width)/float(height),
-        // //             0.1f, 100.0f,
-        // //             bgfx::getCaps()->homogeneousDepth);
-        // bx::mtxOrtho(projMtx,
-        //     -float(width)/float(height), float(width)/float(height),
-        //     -float(height)/float(height), float(height)/float(height),
-        //     0.1f, 100.0f,
-        //     0,
-        //     bgfx::getCaps()->homogeneousDepth
-        // );
-
-        // backend::setViewTransform(framebuffer, (viewMtx), (projMtx));
 
         for (Sprite* sprite : sprites) {
             backend::setModelTransform(sprite->transform);
