@@ -48,6 +48,10 @@ namespace pen::backend {
             initBackendSpecific();
             // Create Framebuffers
             createFramebuffers();
+
+            // Update time things
+            currentTime = glfwGetTime();
+            lastTime = currentTime;
         }
         ~BackendWindow() {
             glfwDestroyWindow(window);
@@ -55,9 +59,11 @@ namespace pen::backend {
 
             // DeinitBackend
             deinitBackend();
+            std::cout << "PENUMBRA: Deinitialized Backend\n";
 
             // Terminate GLFW
             glfwTerminate();
+            std::cout << "PENUMBRA: Terminated GLFW\n";
         }
 
         // Returns the time passed since the last time that update() was called.
@@ -154,15 +160,18 @@ namespace pen::backend {
             }
 
             // TODO: Remove this flag. It is only done for now on the WGPU Backend
-            #ifdef PENUMBRA_BACKEND_WGPU
-                glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-            #endif
+            // #ifdef PENUMBRA_BACKEND_WGPU
+            //     glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+            // #endif
 
             // Create GLFW Window
             window = glfwCreateWindow(width, height, windowTitle.c_str(), NULL, NULL);
             if (!window) {
                 throw std::runtime_error("PENUMBRA_ERROR: Couldn't create GLFW Window");
             }
+
+            // Set this object as Window User Pointer
+            glfwSetWindowUserPointer(window, this);
         }
 
         // Backend Specific code called during window creation.

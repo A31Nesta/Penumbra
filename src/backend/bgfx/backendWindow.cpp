@@ -59,9 +59,7 @@ namespace pen::backend {
     // Shows the framebuffers used (2D and/or 3D) to the screen
     // and polls events
     void BackendWindow::update() {
-        glfwPollEvents();
-
-		// TODO: Only set when changing state
+        // TODO: Only set when changing state
         if (debugging) {
             // Set Debug mode to BGFX_DEBUG_WIREFRAME or BGFX_DEBUG_TEXT
             bgfx::setDebug(BGFX_DEBUG_TEXT);
@@ -156,13 +154,6 @@ namespace pen::backend {
         if (penumbraFlags & PENUMBRA_DEBUG) {
             debugging = true;
         }
-
-        // Set this object as Window User Pointer
-        glfwSetWindowUserPointer(window, this);
-
-        // Set time stuff
-        currentTime = glfwGetTime();
-        lastTime = currentTime;
     }
 
     // Deinitializes Backend

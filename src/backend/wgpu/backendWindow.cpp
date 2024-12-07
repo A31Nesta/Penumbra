@@ -8,6 +8,7 @@
 #include <cmath>
 #include <cstdint>
 #include <cstdlib>
+#include <iostream>
 #include <stdexcept>
 
 // WGPU
@@ -38,6 +39,37 @@ namespace pen::backend {
     WGPUDevice device;
     WGPUQueue queue;
     WGPUSurface surface;
+    WGPUSurfaceCapabilities surfaceCapabilities;
+    WGPUSurfaceConfiguration config;
+
+    // WGPU Helper Variables
+    // ---------------------
+    WGPUTextureView getNextSurfaceTextureView() {
+        WGPUSurfaceTexture surfaceTexture;
+        wgpuSurfaceGetCurrentTexture(surface, &surfaceTexture);
+
+        if (surfaceTexture.status != WGPUSurfaceGetCurrentTextureStatus_Success) {
+            return nullptr;
+        }
+
+        // Sussy magic
+        WGPUTextureViewDescriptor viewDescriptor;
+        viewDescriptor.nextInChain = nullptr;
+        viewDescriptor.label = "Surface texture view";
+        viewDescriptor.format = wgpuTextureGetFormat(surfaceTexture.texture);
+        viewDescriptor.dimension = WGPUTextureViewDimension_2D;
+        viewDescriptor.baseMipLevel = 0;
+        viewDescriptor.mipLevelCount = 1;
+        viewDescriptor.baseArrayLayer = 0;
+        viewDescriptor.arrayLayerCount = 1;
+        viewDescriptor.aspect = WGPUTextureAspect_All;
+        WGPUTextureView targetView = wgpuTextureCreateView(surfaceTexture.texture, &viewDescriptor);
+
+        // Apparently we shouldn't do this in WGPU-Native
+        // wgpuTextureRelease(surfaceTexture.texture);
+
+        return targetView;
+    }
 
 
     // PUBLIC:
@@ -45,9 +77,20 @@ namespace pen::backend {
     // Shows the framebuffers used (2D and/or 3D) to the screen
     // and polls events
     void BackendWindow::update() {
-        glfwPollEvents();
+        // For now we put things here and ignore the things we're actually supposed to render lol
+        WGPUTextureView targetView = getNextSurfaceTextureView();
+        if (!targetView) return; // A bit spaghetti because we don't update the time
 
-		wgpuDevicePoll(device, false, nullptr);
+
+        // Release the texture view
+        wgpuTextureViewRelease(targetView);
+        // Present the next texture of the swap chain, yay!
+        #ifndef __EMSCRIPTEN__
+            wgpuSurfacePresent(surface);
+        #endif
+
+        // WGPU Device Poll (AKA WGPU Device Tick in Dawn)
+        wgpuDevicePoll(device, false, nullptr);
 
         currentTime = glfwGetTime();
 		deltaTime = currentTime - lastTime;
@@ -60,9 +103,9 @@ namespace pen::backend {
         width = x;
         height = y;
 
-        // config.width = width;
-        // config.height = height;
-        // wgpuSurfaceConfigure(surface, &config);
+        config.width = width;
+        config.height = height;
+        wgpuSurfaceConfigure(surface, &config);
     }
 
     // PRIVATE:
@@ -100,58 +143,85 @@ namespace pen::backend {
         // Request device
         device = requestDeviceSync(adapter, &deviceDesc);
 
-        // Release the adapter because we have a device
-        wgpuAdapterRelease(adapter);
-
         // Get WebGPU Queue
         queue = wgpuDeviceGetQueue(device);
+
+        // Configure Surface
+        // -----------------
+        config = {};
+        config.nextInChain = nullptr;
+
+        // Swap chain size
+        int currentW, currentH;
+        glfwGetWindowSize(window, &currentW, &currentH);
+        config.width = currentW;
+        config.height = currentH;
+
+        // Set surface format to whatever the surface uses
+        surfaceCapabilities = {};
+        wgpuSurfaceGetCapabilities(surface, adapter, &surfaceCapabilities);
+        config.format = surfaceCapabilities.formats[0];
+        // And we do not need any particular view format
+        config.viewFormatCount = 0;
+        config.viewFormats = nullptr;
+
+        // Set swapchain texture as render attachment and set device
+        config.usage = WGPUTextureUsage_RenderAttachment;
+        config.device = device;
         
-
-        // Linux and BSD (BSD was in a BGFX example when I started this project so...)
-        // Code for these defines totally not yoinked from BX's platform.h
-        #if    defined(__linux__)          \
-            || defined(__FreeBSD__)        \
-            || defined(__FreeBSD_kernel__) \
-            || defined(__NetBSD__)         \
-            || defined(__OpenBSD__)        \
-            || defined(__DragonFly__)
-            if (isWayland) {
-            #ifdef PENUMBRA_WL_COMPAT // We check because wl_surface wouldn't exist if we don't have this macro
-                // IMPLEMENT
-            #endif
-            } else {
-            #ifdef PENUMBRA_X11_COMPAT
-                // IMPLEMENT
-            #endif
-            }
-        #elif defined(__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__)
-            // IMPLEMENT
-        #elif defined(_WIN32) || defined(_WIN64)
-            // IMPLEMENT
-        #endif
-
-        // Get VSync from PenumbraFlags
+        // Get Present Mode from PenumbraFlags (FIFO, Mailbox or VSync)
         if (penumbraFlags & PENUMBRA_VSYNC) {
-            // Set VSync Here...
+            std::cout << "PENUMBRA [WGPU]: Set FIFO Present Mode (VSync)\n";
+            config.presentMode = WGPUPresentMode_Fifo;
+        } else {
+            std::cout << "PENUMBRA [WGPU]: Set Immediate Present Mode (Tearing)\n";
+            config.presentMode = WGPUPresentMode_Immediate;
+        }
+        // TODO: Add config flag to enable Mailbox
+
+        // Set Alpha Mode according to configuration
+        if (penumbraFlags & PENUMBRA_TRANSPARENT) {
+            // Check if surface supports transparency
+            bool supportsTransparency = false;
+            for (uint8_t i = 0; i < surfaceCapabilities.alphaModeCount; i++) {
+                if (surfaceCapabilities.alphaModes[i] == WGPUCompositeAlphaMode_Premultiplied) {
+                    supportsTransparency = true;
+                }
+            }
+            // Apply transparency if supported, default otherwise
+            if (supportsTransparency) {
+                // You can set Premultiplied or Postmultiplied.
+                // Source: https://docs.rs/wgpu/latest/wgpu/enum.CompositeAlphaMode.html
+                // TODO: Investigate this further.
+                config.alphaMode = WGPUCompositeAlphaMode_Premultiplied;
+                std::cout << "PENUMBRA [WGPU]: Created Transparent Window with Premultiplied Alpha\n";
+            } else {
+                config.alphaMode = WGPUCompositeAlphaMode_Auto;
+                std::cout << "PENUMBRA [WGPU]: Tried to create Transparent Window but Surface doesn't support it. Using default...\n";
+            }
+        } else {
+            config.alphaMode = WGPUCompositeAlphaMode_Auto;
         }
 
-        // Continue Initializing...
+        // Set the current configuration
+        wgpuSurfaceConfigure(surface, &config);
 
         // Enable debug text.
         if (penumbraFlags & PENUMBRA_DEBUG) {
             debugging = true;
         }
 
-        // Set this object as Window User Pointer
-        glfwSetWindowUserPointer(window, this);
-
-        // Set time stuff
-        currentTime = glfwGetTime();
-        lastTime = currentTime;
+        // Release the adapter at the end
+        wgpuAdapterRelease(adapter);
     }
 
     // Deinitializes Backend
     void BackendWindow::deinitBackend() {
+        // Unconfigure the surface
+        wgpuSurfaceUnconfigure(surface);
+        // Free members
+        wgpuSurfaceCapabilitiesFreeMembers(surfaceCapabilities);
+        // Release
         wgpuQueueRelease(queue);
         wgpuSurfaceRelease(surface);
         wgpuDeviceRelease(device);

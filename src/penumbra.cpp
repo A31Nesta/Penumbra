@@ -26,6 +26,7 @@ namespace pen {
 			return;
 		}
 
+		glfwPollEvents(); // Poll events is here so that all inputs are received just before they're processed instead of in the next frame
 		win->update();
 	}
 	void end() {
