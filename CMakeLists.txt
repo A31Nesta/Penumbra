@@ -5,8 +5,12 @@ option(LINUX_X11 "Linux Only. Enables X11 support. [Recommended]" ON)
 option(LINUX_WAYLAND "Linux Only. Enables Wayland support. [Recommended if Wayland is installed]" ON)
 
 # INFO: To develop WGPU backend, disable building with BGFX and enable building with WGPU
-option(BACKEND_BGFX "Use BGFX as Backend" ON)
-option(BACKEND_WGPU "Use WebGPU Native as Backend" OFF)
+option(BACKEND_BGFX "Use BGFX as Backend" OFF)
+option(BACKEND_WGPU "Use WebGPU Native as Backend" ON)
+# Since I never got Emscripten to work with CMake I'll just say that there's a macro:
+# WGPU_EMSCRIPTEN
+# That I use for emscripten-specific code while using WGPU. Define it when compiling for Web
+# In Emscripten we should also use the -sASYNCIFY option
 
 # Set C++ Standard
 set(CMAKE_CXX_STANDARD 20)
@@ -99,47 +103,55 @@ add_executable(${PROJECT_NAME}
     testEntry.cpp
 )
 
+# Add compile warnings. 
+if (MSVC)
+    target_compile_options(${PROJECT_NAME} PRIVATE /W4)
+else()
+    target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -pedantic)
+endif()
+
 # Backend-specific sources
 if(BACKEND_BGFX)
-    target_sources(${PROJECT_NAME}
-        PRIVATE src/backend/bgfx/backendRender.cpp
-        
-        PRIVATE src/backend/bgfx/shader.cpp 
-        PRIVATE src/backend/bgfx/texture.cpp
-        
-        PRIVATE src/backend/bgfx/backendWindow.cpp
-        PRIVATE src/backend/bgfx/backendVtxLayout.cpp
-        PRIVATE src/backend/bgfx/backendVtxBuffer.cpp
-        PRIVATE src/backend/bgfx/backendIdxBuffer.cpp
+    target_sources(${PROJECT_NAME} PRIVATE 
+        src/backend/bgfx/backendRender.cpp
+    
+        src/backend/bgfx/shader.cpp 
+        src/backend/bgfx/texture.cpp
+    
+        src/backend/bgfx/backendWindow.cpp
+        src/backend/bgfx/backendVtxLayout.cpp
+        src/backend/bgfx/backendVtxBuffer.cpp
+        src/backend/bgfx/backendIdxBuffer.cpp
     )
 endif(BACKEND_BGFX)
 
 if(BACKEND_WGPU)
-    target_sources(${PROJECT_NAME}
-        PRIVATE src/backend/wgpu/backendRender.cpp
+    target_sources(${PROJECT_NAME} PRIVATE 
+        src/backend/wgpu/backendRender.cpp
+        src/backend/wgpu/wgpuutils/init.cpp
         
-        PRIVATE src/backend/wgpu/shader.cpp 
-        PRIVATE src/backend/wgpu/texture.cpp
+        src/backend/wgpu/shader.cpp 
+        src/backend/wgpu/texture.cpp
         
-        PRIVATE src/backend/wgpu/backendWindow.cpp
-        PRIVATE src/backend/wgpu/backendVtxLayout.cpp
-        PRIVATE src/backend/wgpu/backendVtxBuffer.cpp
-        PRIVATE src/backend/wgpu/backendIdxBuffer.cpp
+        src/backend/wgpu/backendWindow.cpp
+        src/backend/wgpu/backendVtxLayout.cpp
+        src/backend/wgpu/backendVtxBuffer.cpp
+        src/backend/wgpu/backendIdxBuffer.cpp
     )
 endif(BACKEND_WGPU)
 
-target_sources(${PROJECT_NAME}
-    PRIVATE src/utils/vectors.cpp 
-    PRIVATE src/utils/transform2D.cpp 
+target_sources(${PROJECT_NAME} PRIVATE 
+    src/utils/vectors.cpp 
+    src/utils/transform2D.cpp 
 
-    PRIVATE src/antumbra/types/sprite.cpp 
-    PRIVATE src/antumbra/antumbra.cpp 
+    src/antumbra/types/sprite.cpp 
+    src/antumbra/antumbra.cpp 
 
-    PRIVATE src/debug/consoleColors.cpp
-    PRIVATE src/debug/log.cpp
-    PRIVATE src/core/window.cpp
-    PRIVATE src/utils/config.cpp
-    PRIVATE src/penumbra.cpp
+    src/debug/consoleColors.cpp
+    src/debug/log.cpp
+    src/core/window.cpp
+    src/utils/config.cpp
+    src/penumbra.cpp
 )
 
 
@@ -169,6 +181,35 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     src
 )
 
+# WARNING: Linux Only!
+if(BACKEND_WGPU)
+    target_include_directories(${PROJECT_NAME} PRIVATE
+        $<$<CONFIG:Debug>:${CMAKE_CURRENT_SOURCE_DIR}/external/wgpu-native/linux-debug/include>
+        $<$<CONFIG:RelWithDebInfo>:${CMAKE_CURRENT_SOURCE_DIR}/external/wgpu-native/linux-debug/include>
+        $<$<CONFIG:Release>:${CMAKE_CURRENT_SOURCE_DIR}/external/wgpu-native/linux-release/include>
+        $<$<CONFIG:MinSizeRel>:${CMAKE_CURRENT_SOURCE_DIR}/external/wgpu-native/linux-release/include>
+
+        # Fix sussy issue where wgpu.h can't find the webgpu.h header
+        $<$<CONFIG:Debug>:${CMAKE_CURRENT_SOURCE_DIR}/external/wgpu-native/linux-debug/include/webgpu>
+        $<$<CONFIG:RelWithDebInfo>:${CMAKE_CURRENT_SOURCE_DIR}/external/wgpu-native/linux-debug/include/webgpu>
+        $<$<CONFIG:Release>:${CMAKE_CURRENT_SOURCE_DIR}/external/wgpu-native/linux-release/include/webgpu>
+        $<$<CONFIG:MinSizeRel>:${CMAKE_CURRENT_SOURCE_DIR}/external/wgpu-native/linux-release/include/webgpu>
+    )
+    target_link_directories(${PROJECT_NAME} PRIVATE
+        $<$<CONFIG:Debug>:${CMAKE_CURRENT_SOURCE_DIR}/external/wgpu-native/linux-debug/lib>
+        $<$<CONFIG:RelWithDebInfo>:${CMAKE_CURRENT_SOURCE_DIR}/external/wgpu-native/linux-debug/lib>
+        $<$<CONFIG:Release>:${CMAKE_CURRENT_SOURCE_DIR}/external/wgpu-native/linux-release/lib>
+        $<$<CONFIG:MinSizeRel>:${CMAKE_CURRENT_SOURCE_DIR}/external/wgpu-native/linux-release/lib>
+
+        # Fix sussy issue where wgpu.h can't find the webgpu.h header
+        $<$<CONFIG:Debug>:${CMAKE_CURRENT_SOURCE_DIR}/external/wgpu-native/linux-debug/lib/webgpu>
+        $<$<CONFIG:RelWithDebInfo>:${CMAKE_CURRENT_SOURCE_DIR}/external/wgpu-native/linux-debug/lib/webgpu>
+        $<$<CONFIG:Release>:${CMAKE_CURRENT_SOURCE_DIR}/external/wgpu-native/linux-release/lib/webgpu>
+        $<$<CONFIG:MinSizeRel>:${CMAKE_CURRENT_SOURCE_DIR}/external/wgpu-native/linux-release/lib/webgpu>
+    )
+endif(BACKEND_WGPU)
+
+
 if(BACKEND_BGFX)
     target_link_libraries(${PROJECT_NAME}
         bgfx
@@ -176,6 +217,12 @@ if(BACKEND_BGFX)
         bx
     )
 endif(BACKEND_BGFX)
+
+if(BACKEND_WGPU)
+    target_link_libraries(${PROJECT_NAME}
+        libwgpu_native.a
+    )
+endif(BACKEND_WGPU)
 
 target_link_libraries(${PROJECT_NAME}
     glfw

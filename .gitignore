@@ -1,2 +1,6 @@
 build/
 .cache/
+
+# WGPU precompiled libraries are comically large
+external/wgpu-native/linux-debug/lib/
+external/wgpu-native/linux-release/lib/

@@ -1,26 +1,22 @@
 #include "../backendWindow.hpp"
+#include "wgpu/wgpu.h"
+#include "webgpu/webgpu.h"
 
 #include <GLFW/glfw3.h>
 
+#include <cassert>
 #include <cmath>
 #include <cstdint>
 #include <cstdlib>
-#if BX_PLATFORM_LINUX
-	// X11 Support
-    #ifdef PENUMBRA_X11_COMPAT
-		#define GLFW_EXPOSE_NATIVE_X11
-	#endif
-	// Wayland Support
-	#ifdef PENUMBRA_WL_COMPAT
-		#include <wayland-egl.h>
-		#define GLFW_EXPOSE_NATIVE_WAYLAND
-	#endif
-#elif BX_PLATFORM_WINDOWS
-    #define GLFW_EXPOSE_NATIVE_WIN32
-#elif BX_PLATFORM_OSX
-    #define GLFW_EXPOSE_NATIVE_COCOA
-#endif
-#include <GLFW/glfw3native.h>
+#include <stdexcept>
+
+// WGPU
+#include "wgpuutils/init.hpp"
+
+#ifdef __EMSCRIPTEN__
+    #include <emscripten.h>
+#endif // __EMSCRIPTEN__
+
 
 /**
     BGFX Implementation of Backend Window
@@ -39,6 +35,9 @@ namespace pen::backend {
 
     // WGPU Global Variables
     // ---------------------
+    WGPUDevice device;
+    WGPUQueue queue;
+    WGPUSurface surface;
 
 
     // PUBLIC:
@@ -46,7 +45,9 @@ namespace pen::backend {
     // Shows the framebuffers used (2D and/or 3D) to the screen
     // and polls events
     void BackendWindow::update() {
-		// Update Code Here...
+        glfwPollEvents();
+
+		wgpuDevicePoll(device, false, nullptr);
 
         currentTime = glfwGetTime();
 		deltaTime = currentTime - lastTime;
@@ -59,9 +60,9 @@ namespace pen::backend {
         width = x;
         height = y;
 
-        // Code called when resizing...
-        
-        createFramebuffers();
+        // config.width = width;
+        // config.height = height;
+        // wgpuSurfaceConfigure(surface, &config);
     }
 
     // PRIVATE:
@@ -72,7 +73,39 @@ namespace pen::backend {
         // TODO: Set GLFW Input Callbacks
         // Set GLFW Input callbacks
 
-        // Init WGPU Here...
+        // Create WGPU Instance
+        WGPUInstance instance = createWGPUInstance();
+        if (!instance) {
+            throw std::runtime_error("PENUMBRA_ERROR [WGPU]: Could not initialize WebGPU!");
+        }
+
+        // Get Window Surface
+        surface = getSurfaceFromGLFWWindow(window, instance);
+
+        // Request Adapter
+        WGPURequestAdapterOptions adapterOpts = {};
+        adapterOpts.nextInChain = nullptr;
+        adapterOpts.compatibleSurface = surface;
+        WGPUAdapter adapter = requestAdapterSync(instance, &adapterOpts);
+
+        // We have the adapter, we can release the instance
+        wgpuInstanceRelease(instance);
+        std::cout << "PENUMBRA [WGPU]: Got adapter: " << adapter << std::endl;
+
+        // Show adapter info (Useful to see what GPU is being used and what graphics API is being used)
+        showAdapterProperties(adapter);
+
+        // Create Descriptor
+        WGPUDeviceDescriptor deviceDesc = getDeviceDescriptor();
+        // Request device
+        device = requestDeviceSync(adapter, &deviceDesc);
+
+        // Release the adapter because we have a device
+        wgpuAdapterRelease(adapter);
+
+        // Get WebGPU Queue
+        queue = wgpuDeviceGetQueue(device);
+        
 
         // Linux and BSD (BSD was in a BGFX example when I started this project so...)
         // Code for these defines totally not yoinked from BX's platform.h
@@ -119,7 +152,9 @@ namespace pen::backend {
 
     // Deinitializes Backend
     void BackendWindow::deinitBackend() {
-        // Delete WGPU-related stuff here...
+        wgpuQueueRelease(queue);
+        wgpuSurfaceRelease(surface);
+        wgpuDeviceRelease(device);
     }
 
     // Creates a framebuffer and stores its ID (the Framebuffer is in GPU memory probably)

@@ -59,6 +59,8 @@ namespace pen::backend {
     // Shows the framebuffers used (2D and/or 3D) to the screen
     // and polls events
     void BackendWindow::update() {
+        glfwPollEvents();
+
 		// TODO: Only set when changing state
         if (debugging) {
             // Set Debug mode to BGFX_DEBUG_WIREFRAME or BGFX_DEBUG_TEXT

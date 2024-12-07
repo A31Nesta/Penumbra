@@ -68,8 +68,8 @@ namespace pen::backend {
     void drawCurrent(Shader* shader) {
         // Set render state. Default without Z and with Alpha
         // Disabling Z makes alpha work properly
-        bgfx::setState(BGFX_STATE_DEFAULT // Use default
-            ^ BGFX_STATE_WRITE_Z // Remove Z
+        bgfx::setState((BGFX_STATE_DEFAULT // Use default
+            ^ BGFX_STATE_WRITE_Z) // Remove Z
             | BGFX_STATE_BLEND_ALPHA // Enable Alpha
         );
 

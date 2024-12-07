@@ -55,6 +55,9 @@ namespace pen::backend {
 
             // DeinitBackend
             deinitBackend();
+
+            // Terminate GLFW
+            glfwTerminate();
         }
 
         // Returns the time passed since the last time that update() was called.
@@ -136,12 +139,24 @@ namespace pen::backend {
             // Set Flags
             if (penumbraFlags & PENUMBRA_TRANSPARENT) {
                 glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
-                std::cout << "PENUMBRA_WARNING: Transparency Enabled. Bugs WILL happen\n";
+
+                // Yep. It's exactly as cursed as it looks.
+                // We don't set this when creating a transparent window in BGFX
+                #ifdef PENUMBRA_BACKEND_BGFX
+                    std::cout << "PENUMBRA_WARNING: Transparency Enabled. Bugs WILL happen\n";
+                #else
+                    std::cout << "PENUMBRA: Transparency Enabled. Who knows what will happen?\n";
+                    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+                #endif
             } else {
-                // Yep. It's exactly as cursed as it looks like.
-                // We don't set this when creating a transparent window.
+                // We always create a GLFW_NO_API window if we don't set transparency
                 glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
             }
+
+            // TODO: Remove this flag. It is only done for now on the WGPU Backend
+            #ifdef PENUMBRA_BACKEND_WGPU
+                glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+            #endif
 
             // Create GLFW Window
             window = glfwCreateWindow(width, height, windowTitle.c_str(), NULL, NULL);

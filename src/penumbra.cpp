@@ -26,7 +26,6 @@ namespace pen {
 			return;
 		}
 
-		glfwPollEvents();
 		win->update();
 	}
 	void end() {
@@ -34,8 +33,6 @@ namespace pen {
 		
 		// Also deletes backend-specific data
 		delete win;
-
-		glfwTerminate();
 	}
 
 	bool running() {
