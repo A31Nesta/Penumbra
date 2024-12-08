@@ -1,4 +1,5 @@
 #include "../backendWindow.hpp"
+#include "utils/config.hpp"
 #include "wgpu/wgpu.h"
 #include "webgpu/webgpu.h"
 
@@ -81,6 +82,53 @@ namespace pen::backend {
         WGPUTextureView targetView = getNextSurfaceTextureView();
         if (!targetView) return; // A bit spaghetti because we don't update the time
 
+        // Create Command Encoder
+        WGPUCommandEncoderDescriptor encoderDescriptor = {};
+        encoderDescriptor.nextInChain = nullptr;
+        encoderDescriptor.label = "Command Encoder";
+        WGPUCommandEncoder encoder = wgpuDeviceCreateCommandEncoder(device, &encoderDescriptor);
+
+        // Create Render Pass Descriptor and Attachments
+        WGPURenderPassDescriptor renderPassDescriptor = {};
+        renderPassDescriptor.nextInChain = nullptr;
+
+        WGPURenderPassColorAttachment renderPassColorAttachment = {};
+
+        renderPassColorAttachment.view = targetView; // We draw directly to the window texture. Post processing passes/other framebuffers would need to change this
+        renderPassColorAttachment.resolveTarget = nullptr; // A second target texture view. Apparently used for multisampling
+        renderPassColorAttachment.loadOp = WGPULoadOp_Clear; // Before starting the render pass we clear the screen
+        renderPassColorAttachment.storeOp = WGPUStoreOp_Store; // We can store or discard the render pass (?)
+        if (penumbraFlags & PENUMBRA_TRANSPARENT) {
+            renderPassColorAttachment.clearValue = WGPUColor{0, 0, 0, 0}; // Clear Color
+        } else {
+            renderPassColorAttachment.clearValue = WGPUColor{0.117647058824, 0.0352941176471, 0.211764705882, 1.0}; // Clear Color
+        }
+
+        // Apparently this is not supported by WGPU Native
+        // renderPassColorAttachment.depthSlice = WGPU_DEPTH_SLICE_UNDEFINED;
+
+        renderPassDescriptor.colorAttachmentCount = 1;
+        renderPassDescriptor.colorAttachments = &renderPassColorAttachment;
+
+        renderPassDescriptor.depthStencilAttachment = nullptr; // We don't use depth or stencil
+        renderPassDescriptor.timestampWrites = nullptr; // We do not measure performance
+
+        // Create Render pass
+        WGPURenderPassEncoder renderPass = wgpuCommandEncoderBeginRenderPass(encoder, &renderPassDescriptor);
+
+        // Finish render pass
+        wgpuRenderPassEncoderEnd(renderPass);
+        wgpuRenderPassEncoderRelease(renderPass);
+
+        // Encode and submit the render pass
+        WGPUCommandBufferDescriptor cmdBufferDescriptor = {};
+        cmdBufferDescriptor.nextInChain = nullptr;
+        cmdBufferDescriptor.label = "Command buffer";
+        WGPUCommandBuffer command = wgpuCommandEncoderFinish(encoder, &cmdBufferDescriptor);
+        wgpuCommandEncoderRelease(encoder);
+
+        wgpuQueueSubmit(queue, 1, &command);
+	    wgpuCommandBufferRelease(command);
 
         // Release the texture view
         wgpuTextureViewRelease(targetView);
