@@ -24,7 +24,7 @@ namespace pen::backend {
     void deleteUniform(uint16_t uniform);
 
     // Framebuffer Stuff
-    void bindFramebuffer(uint32_t framebufferID);
+    void bindFramebuffer(void* framebufferID);
 
     // Transform and Model
     void setViewTransform(float* viewMtx, float* projMtx);

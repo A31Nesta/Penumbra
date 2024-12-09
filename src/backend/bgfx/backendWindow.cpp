@@ -1,5 +1,6 @@
 #include "../backendWindow.hpp"
 
+#include "backend/backendRender.hpp"
 #include "debug/log.hpp"
 
 #include <GLFW/glfw3.h>
@@ -55,6 +56,15 @@ namespace pen::backend {
 
 
     // PUBLIC:
+
+    // Sets the 2D Framebuffer or otherwise starts the 2D Render Pass
+    void BackendWindow::begin2DPass() {
+        bindFramebuffer(reinterpret_cast<void*>(&framebuffer2D));
+    }
+    // Sets the 3D Render Pass
+    void BackendWindow::begin3DPass() {
+        bindFramebuffer(reinterpret_cast<void*>(&framebuffer3D));
+    }
 
     // Shows the framebuffers used (2D and/or 3D) to the screen
     // and polls events

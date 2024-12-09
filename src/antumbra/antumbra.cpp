@@ -126,7 +126,7 @@ namespace pen::antumbra {
     void Antumbra::removeSprite(uint32_t sprite) {}
 
     // Draw the scene
-    void Antumbra::draw(uint32_t framebuffer, uint16_t width, uint16_t height) {
+    void Antumbra::draw(uint16_t width, uint16_t height) {
         const glm::vec3 at(0.0f, 0.0f, 0.0f);
         const glm::vec3 eye(0.0f, 0.0f, 2.0f);
 
@@ -140,8 +140,6 @@ namespace pen::antumbra {
         // );
         glm::mat4 projMtx = glm::perspective(glm::radians(60.0f), float(width)/float(height), 0.1f, 100.f);
 
-        // Set Framebuffer
-        backend::bindFramebuffer(framebuffer);
         // Set View and Projection
         backend::setViewTransform(&viewMtx[0][0], &projMtx[0][0]);
 

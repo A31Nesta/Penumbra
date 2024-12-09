@@ -50,7 +50,8 @@ namespace pen::core {
     void Window::draw() {
 		// If we have a 2D renderer
 		if (antumbra != nullptr) {
-			antumbra->draw(window.get2DFramebuffer(), window.getWidth(), window.getHeight());
+			window.begin2DPass();
+			antumbra->draw(window.getWidth(), window.getHeight());
 		}
     }
 }

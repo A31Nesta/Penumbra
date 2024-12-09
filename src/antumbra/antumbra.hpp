@@ -39,9 +39,6 @@
 #include <cstdint>
 #include <vector>
 
-// BGFX. The Ultimate Goal is to delete this line:
-#include <bgfx/bgfx.h>
-
 namespace pen::antumbra {
     class Antumbra {
     public:
@@ -56,7 +53,7 @@ namespace pen::antumbra {
         void removeSprite(Sprite sprite);
         void removeSprite(uint32_t sprite);
 
-        void draw(uint32_t framebuffer, uint16_t width, uint16_t height);
+        void draw(uint16_t width, uint16_t height);
         
     private:
         // Inits the bgfx objects and loads the default shader

@@ -1,6 +1,7 @@
 #include "../backendRender.hpp"
 
 #include <bgfx/bgfx.h>
+#include <cstdint>
 
 namespace pen::backend {
     // Global variables
@@ -34,8 +35,8 @@ namespace pen::backend {
     }
 
     // Framebuffer Stuff
-    void bindFramebuffer(uint32_t framebufferID) {
-        framebuffer = framebufferID;
+    void bindFramebuffer(void* framebufferID) {
+        framebuffer = *reinterpret_cast<uint32_t*>(framebufferID);
     }
 
     // General

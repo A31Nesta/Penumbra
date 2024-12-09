@@ -1,7 +1,10 @@
 #include "../shader.hpp"
+#include "backend/wgpu/wgpuutils/objectManager.hpp"
 #include "debug/log.hpp"
 
+#include <cstdint>
 #include <fstream>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 
@@ -12,35 +15,31 @@ namespace pen {
 
         debug::print("\n\n--- LOADING SHADER: "+shader+" ---\n");
 
-        // Load shaders and create program here
+        // Load shader and create pipeline
+        program = loadShader(shader+".wgsl");
 
-        debug::print("SHADER PROGRAM CREATED! - "+std::to_string(program)+"\n");
-        // Check if shader is valid here (if possible)
+        debug::print("RENDER PIPELINE CREATED! - "+std::to_string(program)+"\n");
     }
     Shader::~Shader() {
         // Delete program
     }
 
     uint16_t Shader::loadShader(std::string name) {
-        char* data = new char[2048];
-        std::ifstream file;
-        size_t fileSize;
-        file.open(name);
+        std::string shaderCode;
+        std::ifstream file(name);
         if(file.is_open()) {
-            file.seekg(0, std::ios::end);
-            fileSize = file.tellg();
-            file.seekg(0, std::ios::beg);
-            file.read(data, fileSize);
+            std::stringstream buffer;
+            buffer << file.rdbuf();
+            shaderCode = buffer.str();
             file.close();
         }
         else {
             throw std::runtime_error("PENUMBRA_ERROR: Couldn't open Shader "+name);
         }
 
-        // Load (however tf is done)
+        // Create Render Pipeline for this shader and get the "program"
+        uint16_t pipeline = backend::createRenderPipeline(shaderCode);
 
-        // Check if it's valid (if possible)
-
-        return 0;
+        return pipeline;
     }
 }

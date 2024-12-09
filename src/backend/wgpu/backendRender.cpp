@@ -1,8 +1,10 @@
 #include "../backendRender.hpp"
 
+#include "backend/wgpu/wgpuutils/objectManager.hpp"
+
 namespace pen::backend {
     // Global variables
-    uint32_t framebuffer = 0; // In this case it is the view ID
+    RenderPassObjects framebuffer; // For consistency we call it framebuffer but it's actually the render pass
 
     // FUNCTIONS
     // ---------
@@ -17,11 +19,8 @@ namespace pen::backend {
     }
 
     // Framebuffer Stuff
-    void bindFramebuffer(uint32_t framebufferID) {
-        framebuffer = framebufferID;
-
-        // Do some stuff here. Assigning to a "framebuffer" variable may not even
-        // be necessary
+    void bindFramebuffer(void* framebufferID) {
+        framebuffer = *reinterpret_cast<RenderPassObjects*>(framebufferID);
     }
 
     // General
@@ -40,5 +39,9 @@ namespace pen::backend {
     // Draw Element
     void drawCurrent(Shader* shader) {
         // Some code to draw the currently bound element...
+
+        // TODO: Change into proper code
+        setRenderPipeline(framebuffer.renderPass, shader->getProgram());
+        wgpuRenderPassEncoderDraw(framebuffer.renderPass, 3, 1, 0, 0);
     }
 }

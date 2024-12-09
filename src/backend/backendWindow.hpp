@@ -74,10 +74,10 @@ namespace pen::backend {
         // Returns false if closeWindow() was closed at any point and true otherwise
         bool running() { return !glfwWindowShouldClose(window); }
 
-        // Get 2D Framebuffer. Pass this to the 2D renderer
-        uint16_t get2DFramebuffer() { return framebuffer2D; }
-        // Get 3D Framebuffer. Pass this to the 3D renderer
-        uint16_t get3DFramebuffer() { return framebuffer3D; }
+        // Sets the 2D Framebuffer or otherwise starts the 2D Render Pass
+        void begin2DPass();
+        // Sets the 3D Render Pass
+        void begin3DPass();
 
         // TODO: Custom framebuffers
         // Set custom framebuffer by name. Call this function to draw to a custom
@@ -158,11 +158,6 @@ namespace pen::backend {
                 // We always create a GLFW_NO_API window if we don't set transparency
                 glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
             }
-
-            // TODO: Remove this flag. It is only done for now on the WGPU Backend
-            // #ifdef PENUMBRA_BACKEND_WGPU
-            //     glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-            // #endif
 
             // Create GLFW Window
             window = glfwCreateWindow(width, height, windowTitle.c_str(), NULL, NULL);
