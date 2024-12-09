@@ -8,12 +8,14 @@
 #include <GLFW/glfw3.h>
 
 #include <cassert>
+#include <chrono>
 #include <cmath>
 #include <cstdint>
 #include <cstdlib>
 #include <iostream>
 #include <stdexcept>
 #include <string>
+#include <thread>
 
 // WGPU Objects from Object Manager
 #include "wgpuutils/objectManager.hpp"
@@ -149,18 +151,24 @@ namespace pen::backend {
         renderPassObjs.targetView = getNextSurfaceTextureView(objects::surface);
         if (!renderPassObjs.targetView) {
             // Inform error
-            std::cout << "PENUMBRA_FATAL [WGPU]: Well, well, well... If you see a \"Surface Texture Status: OUTDATED\""
-                " message just above this message and the window sizes indicated below are equal, that means that you've fallen into my"
-                " dark magic trap. For reasons unknown to man this happens when you run a X11 window inside Wayland. Just run with the"
-                " wayland flag enabled.\n";
+            std::cerr << "PENUMBRA_ERROR [WGPU]: Couldn't obtain Target View\n";
+            #ifdef __linux__
+                // For Linux users inform of the black magic going on with X11 under Wayland Compositors
+                std::cerr << "PENUMBRA_INFO [WGPU]: If you're on Wayland, check that you're not running this program with XWayland.\n";
+            #endif
+            std::cerr << "PENUMBRA_INFO [WGPU]: Applying the Nuclear Option: Waiting 0.1 second and trying again...\n";
 
-            // Log Window Sizes
-            int w, h;
-            glfwGetWindowSize(window, &w, &h);
-            std::cout << "GLFW: " << std::to_string(w) << ", " << std::to_string(h) << "\n";
-            std::cout << "WGPU: " << std::to_string(width) << ", " << std::to_string(height) << "\n";
+            // HACK: Freeze the thread for 0.1 seconds, re-poll events and try again
+            // This should be OK because it happens 
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-            throw std::runtime_error("PENUMBRA_ERROR [WGPU]: No Target view was obtained");
+            // Re-try. If it fails, it is time to crash :(
+            glfwPollEvents();
+            renderPassObjs.targetView = getNextSurfaceTextureView(objects::surface);
+            if (!renderPassObjs.targetView) {
+                std::cerr << "PENUMBRA_FATAL [WGPU]: Re-tried getting Surface Texture after re-polling events but an invalid Target View was obtained.\n";
+                throw std::runtime_error("PENUMBRA_ERROR [WGPU]: No Target View was obtained");
+            }
         }
 
         // Create Command Encoder
