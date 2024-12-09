@@ -159,7 +159,8 @@ namespace pen::backend {
             std::cerr << "PENUMBRA_INFO [WGPU]: Applying the Nuclear Option: Waiting 0.1 second and trying again...\n";
 
             // HACK: Freeze the thread for 0.1 seconds, re-poll events and try again
-            // This should be OK because it happens 
+            // This should be OK because it happens when resizing the window
+            // WARNING: This doesn't really fix the issue
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
             // Re-try. If it fails, it is time to crash :(
