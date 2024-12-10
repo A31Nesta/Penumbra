@@ -21,7 +21,7 @@ namespace pen {
         debug::print("RENDER PIPELINE CREATED! - "+std::to_string(program)+"\n");
     }
     Shader::~Shader() {
-        // Delete program
+        backend::destroyRenderPipeline(id);
     }
 
     uint16_t Shader::loadShader(std::string name) {

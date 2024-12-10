@@ -8,6 +8,7 @@
 #include "webgpu.h"
 #include <cstdint>
 #include <string>
+#include <vector>
 
 namespace pen::backend {
     namespace objects {
@@ -19,6 +20,10 @@ namespace pen::backend {
         extern WGPUSurfaceConfiguration config;
         // Pipeline
         extern WGPUTextureFormat surfaceFormat;
+    }
+    namespace layouts {
+        // We specify that this layout is used for 2D Only
+        extern WGPUVertexBufferLayout* layout2D;
     }
 
     // Structs
@@ -35,6 +40,16 @@ namespace pen::backend {
     uint16_t createRenderPipeline(std::string shaderCode);
     // Sets the pipeline specified
     void setRenderPipeline(WGPURenderPassEncoder renderPass, uint16_t pipeline);
+    // Destroy render pipeline
+    void destroyRenderPipeline(uint16_t pipeline);
+
+    // Creates Vertex Buffer from a vector of Vertices
+    uint16_t createVertexBuffer(std::vector<float> vtxArr);
+    // Destroy Vertex Buffer
+    void destroyVertexBuffer(uint16_t buffer);
+
+    // Sets the Vertex and Index Buffers
+    void setBuffers(uint16_t vertexBuffer, uint16_t indexBuffer);
 
 
     // Deinitializes all objects

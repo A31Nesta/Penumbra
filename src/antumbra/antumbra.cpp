@@ -40,6 +40,20 @@ namespace pen::antumbra {
     Antumbra::Antumbra(std::string defaultShader) {
         defaultShaderPath = defaultShader;
 
+        // Create 2D Vertex Layout
+        // When you do this step doesn't matter in BGFX
+        // In WGPU, this has to be done before creating the Pipeline (Shader)
+        backend::BackendVtxLayout vtxLayout;
+        vtxLayout.addVtxAttrib(backend::Position);
+        vtxLayout.addVtxAttrib(backend::TexCoord0);
+        // This method creates the backend-specific object. Once this function
+        // gets called it is impossible to modify the Vertex Layout
+        // [WGPU]: With the WGPU backend enabled this also sets the current
+        // Vertex Layout. Pipelines created after this is called will use
+        // this Vertex Layout
+        vtxLayout.getBackendSpecificData();
+
+        // Create Quad
         Shader* defaultS = new Shader(0, defaultShaderPath);
         defaultS->setPersistence(true);
         shaders.push_back(defaultS);
@@ -65,7 +79,8 @@ namespace pen::antumbra {
             colorUniform = backend::createUniform("s_color", backend::UniformType::Sampler);
         #endif
         
-        initQuad();
+        // We pass the Vertex Layout to the initQuad() function
+        initQuad(vtxLayout);
     }
     Antumbra::~Antumbra() {
         // Delete Sprites
@@ -163,11 +178,7 @@ namespace pen::antumbra {
     // Private
 
     // Inits the Vertex and Index Buffers and loads the default shader
-    void Antumbra::initQuad() {
-        backend::BackendVtxLayout vtxLayout;
-        vtxLayout.addVtxAttrib(backend::Position);
-        vtxLayout.addVtxAttrib(backend::TexCoord0);
-
+    void Antumbra::initQuad(backend::BackendVtxLayout vtxLayout) {
         bvb = new backend::BackendVtxBuffer(QUAD_VTX, vtxLayout);
         bib = new backend::BackendIdxBuffer(QUAD_IDX);
 

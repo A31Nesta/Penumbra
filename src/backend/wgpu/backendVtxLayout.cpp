@@ -75,10 +75,16 @@ namespace pen::backend {
             offset += (format==WGPUVertexFormat_Float32x3)?(sizeof(float) * 3):(sizeof(float) * 2);
         }
         
-        // 
+        // Set attributes into layout
+        vertexBufferLayout.attributeCount = attributes.size();
+        vertexBufferLayout.attributes = attributes.data();
+
+        // == Common to attributes from the same buffer ==
+        vertexBufferLayout.arrayStride = offset; // Offset should hold the total offset now (sum of all attributes' size)
+        vertexBufferLayout.stepMode = WGPUVertexStepMode_Vertex;
 
         // Save data pointer and return
-        // data = (void*) <Whatever the fuck goes here>;
+        data = reinterpret_cast<void*>(&vertexBufferLayout);
         return data;
     }
 

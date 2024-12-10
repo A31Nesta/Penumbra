@@ -3,6 +3,7 @@
 #include "webgpu.h"
 
 #include <cstdint>
+#include <iostream>
 #include <vector>
 
 namespace pen::backend {
@@ -17,9 +18,14 @@ namespace pen::backend {
         // Pipeline
         WGPUTextureFormat surfaceFormat = WGPUTextureFormat_Undefined;
     }
+    namespace layouts {
+        // We specify that this layout is used for 2D Only
+        WGPUVertexBufferLayout* layout2D;
+    }
     
     // WGPU Pipeline register
     std::vector<WGPURenderPipeline*> renderPipelines;
+    std::vector<WGPUBuffer*> vertexBuffers;
 
     // Registers a pipeline and returns its ID
     uint16_t registerPipeline(WGPURenderPipeline* pipeline) {
@@ -44,6 +50,32 @@ namespace pen::backend {
         else {
             index = renderPipelines.size();
             renderPipelines.push_back(pipeline);
+            return index;
+        }
+    }
+    // Registers a vertex buffer and returns its ID
+    uint16_t registerVertexBuffer(WGPUBuffer* buffer) {
+        uint16_t index = -1; // Invalid ID by default
+
+        // Check for re-usable spots
+        for (uint16_t i = 0; i < vertexBuffers.size(); i++) {
+            WGPUBuffer* buf = vertexBuffers.at(i);
+            if (buf == nullptr) {
+                index = i;
+                break;
+            }
+        }
+
+        // If the ID is valid set the buffer and return the ID
+        if (index < vertexBuffers.size()) {
+            vertexBuffers.at(index) = buffer;
+            return index;
+        } 
+        // If the ID is invalid we didn't have free spots.
+        // We should just add this new one
+        else {
+            index = vertexBuffers.size();
+            vertexBuffers.push_back(buffer);
             return index;
         }
     }
@@ -77,9 +109,14 @@ namespace pen::backend {
 
         // Describe vertex pipeline state
         // ------------------------------
-        pipelineDesc.vertex.bufferCount = 0; // TODO: Enable vertex buffer things amogus sussy
-        pipelineDesc.vertex.buffers = nullptr;
-        // NB: We define the 'shaderModule' in the second part of this chapter.
+        if (layouts::layout2D != nullptr) {
+            pipelineDesc.vertex.bufferCount = 1;
+	        pipelineDesc.vertex.buffers = layouts::layout2D;
+        } else {
+            pipelineDesc.vertex.bufferCount = 0;
+	        pipelineDesc.vertex.buffers = nullptr;
+            std::cout << "PENUMBRA_ERROR [WGPU]: Couldn't bind Vertex Layout for this Pipeline (no vertex layout defined before shader creation)\n";
+        }
         // Here we tell that the programmable vertex shader stage is described
         // by the function called 'vs_main' in that module.
         pipelineDesc.vertex.module = shaderModule;
@@ -169,10 +206,44 @@ namespace pen::backend {
         // -------------------------------
         return registerPipeline(pipeline);
     }
-
     // Sets the pipeline specified
     void setRenderPipeline(WGPURenderPassEncoder renderPass, uint16_t pipeline) {
         wgpuRenderPassEncoderSetPipeline(renderPass, *renderPipelines.at(pipeline));
+    }
+    // Destroy render pipeline
+    void destroyRenderPipeline(uint16_t pipeline) {
+        wgpuRenderPipelineRelease(*renderPipelines.at(pipeline));
+        delete renderPipelines.at(pipeline);
+        renderPipelines.at(pipeline) = nullptr;
+    }
+
+    // Creates Vertex Buffer from a vector of Vertices
+    uint16_t createVertexBuffer(std::vector<float> vtxArr) {
+        WGPUBuffer* vtxBuffer = new WGPUBuffer;
+
+        // Descriptor
+        WGPUBufferDescriptor bufferDescriptor{};
+        bufferDescriptor.nextInChain = nullptr;
+        bufferDescriptor.size = vtxArr.size() * sizeof(float);
+        bufferDescriptor.usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Vertex; // Copy from CPU to GPU + It's a Vertex Buffer
+        bufferDescriptor.mappedAtCreation = false;
+        
+        *vtxBuffer = wgpuDeviceCreateBuffer(objects::device, &bufferDescriptor);
+
+        // REGISTER VERTEX BUFFER AND RETURN ID
+        // ------------------------------------
+        return registerVertexBuffer(vtxBuffer);
+    }
+    // Destroy Vertex Buffer
+    void destroyVertexBuffer(uint16_t buffer) {
+        wgpuBufferRelease(*vertexBuffers.at(buffer));
+        delete vertexBuffers.at(buffer);
+        vertexBuffers.at(buffer) = nullptr;
+    }
+
+    // Sets the Vertex and Index Buffers
+    void setBuffers(uint16_t vertexBuffer, uint16_t indexBuffer) {
+
     }
 
 

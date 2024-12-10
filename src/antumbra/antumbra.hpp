@@ -28,6 +28,7 @@
 
 #include "antumbra/types/sprite.hpp"
 
+#include "backend/backendVtxLayout.hpp"
 #include "backend/shader.hpp"
 #include "backend/texture.hpp"
 #include "backend/backendIdxBuffer.hpp"
@@ -57,7 +58,7 @@ namespace pen::antumbra {
         
     private:
         // Inits the bgfx objects and loads the default shader
-        void initQuad();
+        void initQuad(backend::BackendVtxLayout vtxLayout);
 
         // Utitities
         Shader* getShader(std::string shader);
