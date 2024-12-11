@@ -104,7 +104,7 @@ namespace pen::antumbra {
             }
         }
 
-        // Delete BGFX objects
+        // Delete Vertex and Index buffers + Uniform
         backend::deleteUniform(colorUniform);
         delete bvb;
         delete bib;
