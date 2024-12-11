@@ -12,6 +12,8 @@
 
 - Separate Shaders into **2D and 3D Shaders**. Shaders are built after generating the layout and after uniforms are created.
 
+### Implementation
+
 - Create **Default Uniforms** for Perspective, View and Model matrices
 
 - Make WGPU Uniform Creation work like in BGFX with just a string and type. These uniforms are set from the renderer

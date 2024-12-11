@@ -219,8 +219,7 @@ namespace pen::backend {
 
         // Describe pipeline layout
         // ------------------------
-        // No memory layout for this pipeline
-        // TODO: Memory layout for pipeline lol
+        // Uniform Layout. Here we set Uniform layouts and stuff
         pipelineDesc.layout = nullptr;
 
         // Create render pipeline

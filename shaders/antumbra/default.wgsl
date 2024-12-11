@@ -1,8 +1,14 @@
+// DEFAULT UNIFORM STRUCT
+struct ViewProjection {
+    mat4x4<f32> view;
+    mat4x4<f32> projection;
+}
+
+// Structs
 struct VertexInput {
     @location(0) position: vec3f,
     @location(1) uv: vec2f,
 };
-
 struct VertexOutput {
     @builtin(position) position: vec4f,
 	// The location here does not refer to a vertex attribute, it just means
@@ -11,6 +17,10 @@ struct VertexOutput {
 	// as input to the fragment shader.)
 	@location(0) uv: vec2f,
 };
+
+// Uniforms
+// Commented until we implement uniforms
+// @group(0) @binding(0) var<uniform> uViewProj: ViewProjection;
 
 
 @vertex

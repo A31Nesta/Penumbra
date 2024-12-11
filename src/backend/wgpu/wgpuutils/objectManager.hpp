@@ -10,6 +10,10 @@
 #include <string>
 #include <vector>
 
+#include <glm/glm.hpp>
+#include <glm/ext/matrix_transform.hpp>
+#include <glm/ext/matrix_float4x4.hpp>
+
 namespace pen::backend {
     namespace objects {
         extern WGPUDevice device;
@@ -33,6 +37,11 @@ namespace pen::backend {
         WGPURenderPassEncoder renderPass;
 
         bool rendering = false;
+    };
+    // View and Projection matrices
+    struct ViewProjection {
+        glm::mat4 view = glm::mat4(1);
+        glm::mat4 projection = glm::mat4(1);
     };
 
 
