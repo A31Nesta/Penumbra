@@ -42,5 +42,7 @@ fn fs_main(in: VertexOutput) -> @location(0) vec4f {
         discard;
     }
 
-    return vec4f(hsv2rgb(vec3f(angleMapped, distToCenter*2, 1)), 1.0);
+    // Gamma-correction
+    let linear_color: vec3f = pow(hsv2rgb(vec3f(angleMapped, distToCenter*2, 1)), vec3f(2.2));
+    return vec4f(linear_color, 1.0);
 }

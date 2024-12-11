@@ -181,11 +181,11 @@ namespace pen::backend {
         WGPUBlendState blendState = {};
         // Color blending equation
         blendState.color.srcFactor = WGPUBlendFactor_SrcAlpha;
-        blendState.color.dstFactor = WGPUBlendFactor_OneMinusDstAlpha;
+        blendState.color.dstFactor = WGPUBlendFactor_OneMinusSrcAlpha;
         blendState.color.operation = WGPUBlendOperation_Add;
         // Alpha blending equation
-        blendState.alpha.srcFactor = WGPUBlendFactor_Zero;
-        blendState.alpha.dstFactor = WGPUBlendFactor_One;
+        blendState.alpha.srcFactor = WGPUBlendFactor_SrcAlpha;
+        blendState.alpha.dstFactor = WGPUBlendFactor_OneMinusSrcAlpha;
         blendState.alpha.operation = WGPUBlendOperation_Add;
 
         WGPUColorTargetState colorTarget = {};
