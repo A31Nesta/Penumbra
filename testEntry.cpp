@@ -6,6 +6,11 @@
 
 int main(int argc, char** argv) {
     uint32_t flags = pen::getFlagsFromArguments(argc, argv);
+
+    // DEBUG:
+    // Force Wayland
+    flags = flags | PENUMBRA_WAYLAND;
+
     pen::createWindow("Penumbra", 1280, 720, flags);
     pen::createAntumbra("pnmbr/shaders-2D/default");
 
