@@ -129,10 +129,6 @@ namespace pen::backend {
 
     // WGPU Globals
     // ------------
-    // Test Shader
-    // TODO: Rely on Penumbra's Shader System
-    Shader* shader;
-
     // Render Pass Objects
     RenderPassObjects renderPassObjs;
 
@@ -343,9 +339,6 @@ namespace pen::backend {
 
         // Release the adapter at the end
         wgpuAdapterRelease(adapter);
-
-        // Test Shaders
-        shader = new Shader(10, "pnmbr/shaders-2D/default");
     }
 
     // Deinitializes Backend

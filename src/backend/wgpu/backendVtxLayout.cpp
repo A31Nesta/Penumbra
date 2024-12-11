@@ -1,6 +1,8 @@
 #include "../backendVtxLayout.hpp"
+#include "backend/wgpu/wgpuutils/objectManager.hpp"
 #include "webgpu.h"
 
+#include <cstddef>
 #include <cstdint>
 #include <unordered_map>
 #include <vector>
@@ -34,6 +36,10 @@ namespace pen::backend {
         // the data pointer
         if (!hasCopied && data != nullptr) {
             // Delete vertex layout data...
+            // In WebGPU the Vertex Layout is destroyed with the Pipeline
+            // Pipelines are Shaders here.
+            delete reinterpret_cast<std::vector<WGPUVertexAttribute>*>(vtxAttributesData);
+            delete reinterpret_cast<WGPUVertexBufferLayout*>(data);
         }
     }
 
@@ -46,13 +52,13 @@ namespace pen::backend {
     // source file inside this function. This is only done once
     void* BackendVtxLayout::getBackendSpecificData() {
         // If we already calculated the data we return it
-        if (data) {
+        if (data != nullptr) {
             return data;
         }
 
         // If we didn't calculate it before, do it now
-        WGPUVertexBufferLayout vertexBufferLayout{};
-        std::vector<WGPUVertexAttribute> attributes;
+        WGPUVertexBufferLayout* vertexBufferLayout = new WGPUVertexBufferLayout{};
+        std::vector<WGPUVertexAttribute>* attributes = new std::vector<WGPUVertexAttribute>;
         uint16_t offset = 0;
 
         // Loop
@@ -69,22 +75,28 @@ namespace pen::backend {
             vtxAttribute.offset = offset; // Set Offset. For the first attribute it is 0
 
             // Add to attribute list
-            attributes.push_back(vtxAttribute);
+            attributes->push_back(vtxAttribute);
 
             // Update Offset
             offset += (format==WGPUVertexFormat_Float32x3)?(sizeof(float) * 3):(sizeof(float) * 2);
         }
         
         // Set attributes into layout
-        vertexBufferLayout.attributeCount = attributes.size();
-        vertexBufferLayout.attributes = attributes.data();
+        vertexBufferLayout->attributeCount = attributes->size();
+        vertexBufferLayout->attributes = attributes->data();
 
         // == Common to attributes from the same buffer ==
-        vertexBufferLayout.arrayStride = offset; // Offset should hold the total offset now (sum of all attributes' size)
-        vertexBufferLayout.stepMode = WGPUVertexStepMode_Vertex;
+        vertexBufferLayout->arrayStride = offset; // Offset should hold the total offset now (sum of all attributes' size)
+        vertexBufferLayout->stepMode = WGPUVertexStepMode_Vertex;
+
+        // Set Vertex Layout as current
+        layouts::layout2D = vertexBufferLayout;
+
+        // Save Vertex Attribute Vector Pointer
+        vtxAttributesData = reinterpret_cast<void*>(attributes);
 
         // Save data pointer and return
-        data = reinterpret_cast<void*>(&vertexBufferLayout);
+        data = reinterpret_cast<void*>(vertexBufferLayout);
         return data;
     }
 

@@ -1,10 +1,12 @@
 #include "../backendRender.hpp"
 
 #include "backend/wgpu/wgpuutils/objectManager.hpp"
+#include "webgpu.h"
 
 namespace pen::backend {
     // Global variables
     RenderPassObjects framebuffer; // For consistency we call it framebuffer but it's actually the render pass
+    uint32_t currentIndexCount = 0; // How many indices from the index buffer do we have to draw now?
 
     // FUNCTIONS
     // ---------
@@ -33,15 +35,14 @@ namespace pen::backend {
         // Set Model Transform matrix
     }
     void setBuffers(BackendVtxBuffer* bvb, BackendIdxBuffer* bib) {
-        // Bind the Vertex Buffer and Index Buffer
+        setBuffers(framebuffer.renderPass, bvb->getID(), bib->getID());
+        currentIndexCount = bib->getSize();
     }
 
     // Draw Element
     void drawCurrent(Shader* shader) {
         // Some code to draw the currently bound element...
-
-        // TODO: Change into proper code
         setRenderPipeline(framebuffer.renderPass, shader->getProgram());
-        wgpuRenderPassEncoderDraw(framebuffer.renderPass, 3, 1, 0, 0);
+        wgpuRenderPassEncoderDrawIndexed(framebuffer.renderPass, currentIndexCount, 1, 0, 0, 0);
     }
 }

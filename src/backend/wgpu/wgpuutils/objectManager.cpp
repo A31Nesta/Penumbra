@@ -26,6 +26,7 @@ namespace pen::backend {
     // WGPU Pipeline register
     std::vector<WGPURenderPipeline*> renderPipelines;
     std::vector<WGPUBuffer*> vertexBuffers;
+    std::vector<WGPUBuffer*> indexBuffers;
 
     // Registers a pipeline and returns its ID
     uint16_t registerPipeline(WGPURenderPipeline* pipeline) {
@@ -76,6 +77,32 @@ namespace pen::backend {
         else {
             index = vertexBuffers.size();
             vertexBuffers.push_back(buffer);
+            return index;
+        }
+    }
+    // Registers an index buffer and returns its ID
+    uint16_t registerIndexBuffer(WGPUBuffer* buffer) {
+        uint16_t index = -1; // Invalid ID by default
+
+        // Check for re-usable spots
+        for (uint16_t i = 0; i < indexBuffers.size(); i++) {
+            WGPUBuffer* buf = indexBuffers.at(i);
+            if (buf == nullptr) {
+                index = i;
+                break;
+            }
+        }
+
+        // If the ID is valid set the buffer and return the ID
+        if (index < indexBuffers.size()) {
+            indexBuffers.at(index) = buffer;
+            return index;
+        } 
+        // If the ID is invalid we didn't have free spots.
+        // We should just add this new one
+        else {
+            index = indexBuffers.size();
+            indexBuffers.push_back(buffer);
             return index;
         }
     }
@@ -230,20 +257,55 @@ namespace pen::backend {
         
         *vtxBuffer = wgpuDeviceCreateBuffer(objects::device, &bufferDescriptor);
 
+        // Send buffer to GPU Memory
+        wgpuQueueWriteBuffer(objects::queue, *vtxBuffer, 0, vtxArr.data(), bufferDescriptor.size);
+
         // REGISTER VERTEX BUFFER AND RETURN ID
         // ------------------------------------
         return registerVertexBuffer(vtxBuffer);
     }
     // Destroy Vertex Buffer
     void destroyVertexBuffer(uint16_t buffer) {
-        wgpuBufferRelease(*vertexBuffers.at(buffer));
+        // I prefer having full control over when the object is released
+        // With buffers I can call Destroy instead of Release to destroy the object now
+        wgpuBufferDestroy(*vertexBuffers.at(buffer));
         delete vertexBuffers.at(buffer);
         vertexBuffers.at(buffer) = nullptr;
     }
 
-    // Sets the Vertex and Index Buffers
-    void setBuffers(uint16_t vertexBuffer, uint16_t indexBuffer) {
+    // Creates Index Buffer from a vector of Indices
+    uint16_t createIndexBuffer(std::vector<uint16_t> idxArr) {
+        WGPUBuffer* idxBuffer = new WGPUBuffer;
 
+        // Descriptor
+        WGPUBufferDescriptor bufferDescriptor{};
+        bufferDescriptor.nextInChain = nullptr;
+        bufferDescriptor.size = idxArr.size() * sizeof(uint16_t);
+        bufferDescriptor.size = (bufferDescriptor.size + 3) & ~3; // round up to the next multiple of 4
+        bufferDescriptor.usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Index; // Copy from CPU to GPU + It's a Index Buffer
+        bufferDescriptor.mappedAtCreation = false;
+        
+        *idxBuffer = wgpuDeviceCreateBuffer(objects::device, &bufferDescriptor);
+
+        // Write buffer to GPU Memory
+        wgpuQueueWriteBuffer(objects::queue, *idxBuffer, 0, idxArr.data(), bufferDescriptor.size);
+
+        // REGISTER INDEX BUFFER AND RETURN ID
+        // ------------------------------------
+        return registerIndexBuffer(idxBuffer);
+    }
+    // Destroy Index Buffer
+    void destroyIndexBuffer(uint16_t buffer) {
+
+    }
+
+    // Sets the Vertex and Index Buffers
+    void setBuffers(WGPURenderPassEncoder& renderPass, uint16_t vertexBuffer, uint16_t indexBuffer) {
+        WGPUBuffer vtxBuf = *vertexBuffers.at(vertexBuffer);
+        WGPUBuffer idxBuf = *indexBuffers.at(indexBuffer);
+
+        wgpuRenderPassEncoderSetVertexBuffer(renderPass, 0, vtxBuf, 0, wgpuBufferGetSize(vtxBuf));
+        wgpuRenderPassEncoderSetIndexBuffer(renderPass, idxBuf, WGPUIndexFormat_Uint16, 0, wgpuBufferGetSize(idxBuf));
     }
 
 

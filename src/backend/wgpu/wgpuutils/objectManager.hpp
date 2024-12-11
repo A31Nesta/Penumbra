@@ -48,8 +48,13 @@ namespace pen::backend {
     // Destroy Vertex Buffer
     void destroyVertexBuffer(uint16_t buffer);
 
+    // Creates Index Buffer from a vector of Indices
+    uint16_t createIndexBuffer(std::vector<uint16_t> idxArr);
+    // Destroy Index Buffer
+    void destroyIndexBuffer(uint16_t buffer);
+
     // Sets the Vertex and Index Buffers
-    void setBuffers(uint16_t vertexBuffer, uint16_t indexBuffer);
+    void setBuffers(WGPURenderPassEncoder& renderPass, uint16_t vertexBuffer, uint16_t indexBuffer);
 
 
     // Deinitializes all objects

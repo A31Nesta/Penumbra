@@ -1,4 +1,5 @@
 #include "../backendIdxBuffer.hpp"
+#include "backend/wgpu/wgpuutils/objectManager.hpp"
 
 #include <vector>
 
@@ -6,10 +7,10 @@ namespace pen::backend {
     BackendIdxBuffer::BackendIdxBuffer(std::vector<uint16_t> idxArr) {
         this->idxArr = idxArr;
 
-        // Create Index Buffer
+        id = createIndexBuffer(idxArr);
     }
 
     BackendIdxBuffer::~BackendIdxBuffer() {
-        // Delete Index Buffer
+        destroyIndexBuffer(id);
     }
 }

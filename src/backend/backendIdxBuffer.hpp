@@ -21,6 +21,7 @@ namespace pen::backend {
         ~BackendIdxBuffer();
 
         uint16_t getID() { return id; }
+        uint32_t getSize() { return idxArr.size(); }
 
     private:
         // Obtained from the rendering backend.

@@ -80,7 +80,11 @@ namespace pen::backend {
     private:
         // The backend-specific data. It is only calculated the first
         // time we call getBackendSpecificData();
-        void* data;
+        void* data = nullptr;
+
+        // WGPU-specific std::vector of Vertex Layout Attributes
+        // Allows me to delete the vertex attributes in the destructor
+        void* vtxAttributesData = nullptr;
 
         // All the attributes in this object
         std::vector<BackendAttribute> vtxLayout;
