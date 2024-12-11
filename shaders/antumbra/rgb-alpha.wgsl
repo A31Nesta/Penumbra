@@ -37,5 +37,10 @@ fn fs_main(in: VertexOutput) -> @location(0) vec4f {
     let angle: f32 = atan2(toCenter.y, toCenter.x);
     let angleMapped: f32 = angle/(2.0*PI);
 
+    // Discard fragments that are too far :D
+    if (distToCenter > 0.5) {
+        discard;
+    }
+
     return vec4f(hsv2rgb(vec3f(angleMapped, distToCenter*2, 1)), 1.0);
 }

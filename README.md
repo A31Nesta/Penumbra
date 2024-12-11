@@ -4,7 +4,14 @@ Simple Renderer built for Selengine.
 It features a strange and simplistic lighting model based on textures created specifically for the game being developed in Selengine.   
 Cross-platform but primarily tested and developed on Linux.
 
-It supports BGFX and WebGPU as backends (WebGPU via WebGPU-Native).
+It supports **BGFX** and **WebGPU** as backends (WebGPU via WGPU-Native).
+
+## Important
+
+This is a Work In Progress. As of now, only 2D Rendering is supported.  
+Furthermore, the BGFX backend is more developed than the WebGPU one:
+The BGFX backend can output debug information to the screen while the
+WGPU one outputs to the console, for example.
 
 ## What does it support?
 
@@ -20,25 +27,30 @@ It supports BGFX and WebGPU as backends (WebGPU via WebGPU-Native).
 - PBR Lighting
 - Shadow Mapping (ironic that it's not supported for now)
 
-## Is there a lore reason why it's called like that?
+## "Is there a lore reason why it's called like that?"
 
 Yes, there is.  
-There is a lore reason that somewhat relates to the main projects (Selengine and the game being made with it)
+There is a lore reason related to the main projects (Selengine and the game being made with it)
 
 ## Dependencies
 ### Utilities
-- bgfx-shaderc (included with BGFX) \[Only if using BGFX as backend\]
-- toktx
+- **bgfx-shaderc** (included with BGFX) \[Only if using BGFX as backend\]
+- **toktx** \[Khronos Textures not supported with WebGPU Backend for now\]
 
 ### Libraries
-- BGFX \[Only if using BGFX as backend\]
-- WebGPU Native \[Only if using WebGPU as backend\]
-- GLFW
-- GLM
-- STB Image (included)
+- **BGFX** \[Only if using BGFX as backend\]
+- **WGPU-Native**: Version 22.1.0.5 \[Only if using WebGPU as backend\]
+- **GLFW**
+- **GLM**
+- **STB Image** (included)
 
-### Arch Linux Packages
-- bgfx-cmake-git
-- ktx_software-git
-- glfw
-- glm
+### Extra: Arch Linux Packages
+
+If you're using Arch Linux or an Arch-based Linux distribution, you can
+use these packages to install the necessary dependencies.
+WGPU-Native is obtained from the Releases tab of [its repository](https://github.com/gfx-rs/wgpu-native/).
+
+- **bgfx-cmake-git** \[Only if using BGFX as backend\]
+- **ktx_software-git**
+- **glfw**
+- **glm**
