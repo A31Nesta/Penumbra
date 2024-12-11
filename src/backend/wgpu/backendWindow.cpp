@@ -318,7 +318,6 @@ namespace pen::backend {
             if (supportsTransparency) {
                 // You can set Premultiplied or Postmultiplied.
                 // Source: https://docs.rs/wgpu/latest/wgpu/enum.CompositeAlphaMode.html
-                // TODO: Investigate this further.
                 objects::config.alphaMode = WGPUCompositeAlphaMode_Premultiplied;
                 std::cout << "PENUMBRA [WGPU]: Created Transparent Window with Premultiplied Alpha\n";
             } else {
