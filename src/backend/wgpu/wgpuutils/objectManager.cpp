@@ -45,7 +45,7 @@ namespace pen::backend {
 
         WGPUPipelineLayoutDescriptor layoutDesc{};
         layoutDesc.nextInChain = nullptr;
-        layoutDesc.bindGroupLayoutCount = 1; // View and Projection + Model
+        layoutDesc.bindGroupLayoutCount = 2; // View and Projection + Model
         layoutDesc.bindGroupLayouts = pipeline2D::bindGroupLayouts;
         pipeline2D::pipelineLayout = wgpuDeviceCreatePipelineLayout(objects::device, &layoutDesc);
     }

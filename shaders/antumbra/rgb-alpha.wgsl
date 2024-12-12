@@ -20,12 +20,13 @@ struct VertexOutput {
 
 // Uniforms
 @group(0) @binding(0) var<uniform> uViewProj: ViewProjection;
+@group(1) @binding(0) var<uniform> uModel: mat4x4<f32>;
 
 // VERTEX CODE
 @vertex
 fn vs_main(in: VertexInput) -> VertexOutput {
     var output: VertexOutput;
-    output.position = uViewProj.projection * uViewProj.view * vec4f(in.position, 1.0);
+    output.position = uViewProj.projection * uViewProj.view * uModel * vec4f(in.position, 1.0);
     output.uv = in.uv;
     return output;
 }
@@ -53,5 +54,5 @@ fn fs_main(in: VertexOutput) -> @location(0) vec4f {
 
     // Gamma-correction
     let linear_color: vec3f = pow(hsv2rgb(vec3f(angleMapped, distToCenter*2, 1)), vec3f(2.2));
-    return vec4f(linear_color, 1.0);
+    return vec4f(linear_color*0.7, 0.7);
 }

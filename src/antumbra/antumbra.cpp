@@ -159,7 +159,7 @@ namespace pen::antumbra {
         backend::setViewTransform(viewMtx, projMtx);
 
         for (Sprite* sprite : sprites) {
-            backend::setModelTransform(sprite->transform);
+            backend::setModelTransform(sprite);
 
             // Buffers
             backend::setBuffers(bvb, bib);

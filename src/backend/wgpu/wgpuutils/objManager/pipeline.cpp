@@ -126,7 +126,7 @@ namespace pen::backend {
         bindGroupLayouts[1] = {};
         setDefault(bindGroupLayouts[1]);
         // Binding index for Model matrix is 1
-        bindGroupLayouts[1].binding = 1;
+        bindGroupLayouts[1].binding = 0;
         // Only the Vertex Shader needs this
         // INFO: It may be useful to change this later on
         bindGroupLayouts[1].visibility = WGPUShaderStage_Vertex;

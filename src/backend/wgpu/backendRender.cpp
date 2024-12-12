@@ -45,8 +45,10 @@ namespace pen::backend {
         viewProjMatrices.projection = projMtx;
         wgpuQueueWriteBuffer(objects::queue, objects::viewProjection.uniformBuffer, 0, &viewProjMatrices, sizeof(ViewProjection));
     }
-    void setModelTransform(float* modelMtx) {
-        // Set Model Transform matrix
+    void setModelTransform(antumbra::Sprite* sprite) {
+        UniformData* spriteData = reinterpret_cast<UniformData*>(sprite->_getBackendSpecificData());
+        wgpuRenderPassEncoderSetBindGroup(framebuffer.renderPass, 1, spriteData->bindGroup, 0, nullptr);
+        wgpuQueueWriteBuffer(objects::queue, spriteData->uniformBuffer, 0, sprite->transform.getMatrix(), sizeof(glm::mat4));
     }
     void setBuffers(BackendVtxBuffer* bvb, BackendIdxBuffer* bib) {
         setBuffers(framebuffer.renderPass, bvb->getID(), bib->getID());

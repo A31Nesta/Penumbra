@@ -17,6 +17,7 @@ namespace pen {
 
         // Get Matrix
         operator float*();
+        operator glm::mat4();
         float* getMatrix();
 
         Vec2 position;

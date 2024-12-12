@@ -20,17 +20,19 @@ struct VertexOutput {
 
 // Uniforms
 @group(0) @binding(0) var<uniform> uViewProj: ViewProjection;
+@group(1) @binding(0) var<uniform> uModel: mat4x4<f32>;
 
 
 @vertex
 fn vs_main(in: VertexInput) -> VertexOutput {
     var output: VertexOutput;
-    output.position = uViewProj.projection * uViewProj.view * vec4f(in.position, 1.0);
+    output.position = uViewProj.projection * uViewProj.view * uModel * vec4f(in.position, 1.0);
     output.uv = in.uv;
     return output;
 }
 
 @fragment
 fn fs_main(in: VertexOutput) -> @location(0) vec4f {
-    return vec4f(in.uv.x, in.uv.y, 1.0, 1.0);
+    let color: vec3f = vec3f(in.uv.x, in.uv.y, 1.0);
+    return vec4f(color*0.7, 0.7);
 }

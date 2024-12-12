@@ -55,8 +55,8 @@ namespace pen::backend {
     }
 
     // Models
-    void setModelTransform(float* modelMtx) {
-        bgfx::setTransform(modelMtx);
+    void setModelTransform(antumbra::Sprite* sprite) {
+        bgfx::setTransform(sprite->transform.getMatrix());
     }
     void setBuffers(BackendVtxBuffer* bvb, BackendIdxBuffer* bib) {
         uint16_t vbhID = bvb->getID();

@@ -24,6 +24,10 @@ namespace pen {
         calculateMatrix();
         return &matrix[0][0];
     }
+    Transform2D::operator glm::mat4() {
+        calculateMatrix();
+        return matrix;
+    }
     float* Transform2D::getMatrix() {
         calculateMatrix();
         return &matrix[0][0];

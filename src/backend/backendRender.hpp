@@ -5,6 +5,7 @@
     ------------------------------------
 */
 
+#include "antumbra/types/sprite.hpp"
 #include "shader.hpp"
 #include "backendIdxBuffer.hpp"
 #include "backendVtxBuffer.hpp"
@@ -32,7 +33,7 @@ namespace pen::backend {
 
     // Transform and Model
     void setViewTransform(glm::mat4 viewMtx, glm::mat4 projMtx);
-    void setModelTransform(float* modelMtx);
+    void setModelTransform(antumbra::Sprite* sprite);
     void setBuffers(BackendVtxBuffer* bvb, BackendIdxBuffer* bib);
 
     // Draw Element
