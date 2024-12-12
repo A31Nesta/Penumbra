@@ -30,6 +30,11 @@ namespace pen::backend {
         extern WGPUVertexBufferLayout* layout2D;
     }
 
+    // Pipeline Templates and Bind Group Layouts
+    namespace pipeline2D {
+        extern WGPUBindGroupLayout bindGroupLayout;
+    }
+
     // Structs
     struct RenderPassObjects {
         WGPUTextureView targetView;
@@ -43,6 +48,10 @@ namespace pen::backend {
         glm::mat4 view = glm::mat4(1);
         glm::mat4 projection = glm::mat4(1);
     };
+
+    // Initializes Object Manager
+    // Inits the Bind Group Layouts
+    void initObjectManager();
 
 
     // Takes a path to a shader and returns the ID of the pipeline

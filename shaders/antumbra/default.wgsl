@@ -1,7 +1,7 @@
 // DEFAULT UNIFORM STRUCT
 struct ViewProjection {
-    mat4x4<f32> view;
-    mat4x4<f32> projection;
+    view: mat4x4<f32>,
+    projection: mat4x4<f32>,
 }
 
 // Structs

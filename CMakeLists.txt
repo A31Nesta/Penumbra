@@ -128,6 +128,8 @@ endif(BACKEND_BGFX)
 if(BACKEND_WGPU)
     target_sources(${PROJECT_NAME} PRIVATE 
         src/backend/wgpu/backendRender.cpp
+
+        src/backend/wgpu/wgpuutils/objManager/pipeline.cpp
         src/backend/wgpu/wgpuutils/objectManager.cpp
         src/backend/wgpu/wgpuutils/init.cpp
         
