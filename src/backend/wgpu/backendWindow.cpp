@@ -1,6 +1,5 @@
 #include "../backendWindow.hpp"
 #include "backend/backendRender.hpp"
-#include "backend/shader.hpp"
 #include "utils/config.hpp"
 #include "wgpu/wgpu.h"
 #include "webgpu/webgpu.h"
@@ -14,7 +13,6 @@
 #include <cstdlib>
 #include <iostream>
 #include <stdexcept>
-#include <string>
 #include <thread>
 
 // WGPU Objects from Object Manager
@@ -331,6 +329,11 @@ namespace pen::backend {
         // Set the current configuration
         wgpuSurfaceConfigure(objects::surface, &objects::config);
 
+        // Initialize the bind group layouts. They're shared for all Shaders
+        initBindGroupLayouts();
+        // Init Bind Group (View and Projection)
+        initViewProjectionUniform();
+
         // Enable debug text.
         if (penumbraFlags & PENUMBRA_DEBUG) {
             debugging = true;
@@ -342,10 +345,6 @@ namespace pen::backend {
 
     // Deinitializes Backend
     void BackendWindow::deinitBackend() {
-        // Release pipeline
-        // TODO: Move to shader class
-        // wgpuRenderPipelineRelease(pipeline);
-        
         deinitAllObjects();
     }
 

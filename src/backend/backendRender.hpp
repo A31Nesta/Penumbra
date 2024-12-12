@@ -11,6 +11,10 @@
 
 #include <cstdint>
 
+#include <glm/glm.hpp>
+#include <glm/ext/matrix_transform.hpp>
+#include <glm/ext/matrix_float4x4.hpp>
+
 namespace pen::backend {
     enum class UniformType {
         Sampler,
@@ -27,7 +31,7 @@ namespace pen::backend {
     void bindFramebuffer(void* framebufferID);
 
     // Transform and Model
-    void setViewTransform(float* viewMtx, float* projMtx);
+    void setViewTransform(glm::mat4 viewMtx, glm::mat4 projMtx);
     void setModelTransform(float* modelMtx);
     void setBuffers(BackendVtxBuffer* bvb, BackendIdxBuffer* bib);
 

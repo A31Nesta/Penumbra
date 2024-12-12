@@ -40,8 +40,8 @@ namespace pen::backend {
     }
 
     // General
-    void setViewTransform(float* viewMtx, float* projMtx) {
-        bgfx::setViewTransform(framebuffer, viewMtx, projMtx);
+    void setViewTransform(glm::mat4 viewMtx, glm::mat4 projMtx) {
+        bgfx::setViewTransform(framebuffer, &viewMtx[0][0], &projMtx[0][0]);
 
         // for (uint16_t i = 0; i < 16; i++) {
         //     std::cout << viewMtx[i] << " ";

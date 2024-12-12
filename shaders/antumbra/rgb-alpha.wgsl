@@ -1,3 +1,9 @@
+// DEFAULT UNIFORM STRUCT
+struct ViewProjection {
+    view: mat4x4<f32>,
+    projection: mat4x4<f32>,
+}
+
 struct VertexInput {
     @location(0) position: vec3f,
     @location(1) uv: vec2f,
@@ -12,11 +18,14 @@ struct VertexOutput {
 	@location(0) uv: vec2f,
 };
 
+// Uniforms
+@group(0) @binding(0) var<uniform> uViewProj: ViewProjection;
+
 // VERTEX CODE
 @vertex
 fn vs_main(in: VertexInput) -> VertexOutput {
     var output: VertexOutput;
-    output.position = vec4f(in.position, 1.0);
+    output.position = uViewProj.projection * uViewProj.view * vec4f(in.position, 1.0);
     output.uv = in.uv;
     return output;
 }

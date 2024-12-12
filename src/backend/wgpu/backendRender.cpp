@@ -1,5 +1,6 @@
 #include "../backendRender.hpp"
 
+#include "backend/wgpu/wgpuutils/objManager/pipeline.hpp"
 #include "backend/wgpu/wgpuutils/objectManager.hpp"
 #include "webgpu.h"
 
@@ -10,6 +11,9 @@ namespace pen::backend {
 
     // Smol smol optimizations
     uint16_t currentPipeline = -1; // Stores the current render pipeline being used. We only change the render pipeline it's not the current one
+
+    // Current View and Projection
+    ViewProjection viewProjMatrices;
 
     // FUNCTIONS
     // ---------
@@ -35,8 +39,11 @@ namespace pen::backend {
     }
 
     // Transform and Model
-    void setViewTransform(float* viewMtx, float* projMtx) {
-        // Set View and Projection matrices
+    void setViewTransform(glm::mat4 viewMtx, glm::mat4 projMtx) {
+        wgpuRenderPassEncoderSetBindGroup(framebuffer.renderPass, 0, objects::viewProjection.bindGroup, 0, nullptr);
+        viewProjMatrices.view = viewMtx;
+        viewProjMatrices.projection = projMtx;
+        wgpuQueueWriteBuffer(objects::queue, objects::viewProjection.uniformBuffer, 0, &viewProjMatrices, sizeof(ViewProjection));
     }
     void setModelTransform(float* modelMtx) {
         // Set Model Transform matrix

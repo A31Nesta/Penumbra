@@ -8,6 +8,7 @@ namespace pen::antumbra {
     class Sprite {
     public:
         Sprite(uint32_t id, Transform2D tr, Vec2 df, uint32_t tid, uint32_t sid);
+        ~Sprite(); // to delete backend-specific data
 
         void setDeform(Vec2 deform);
         
@@ -15,10 +16,16 @@ namespace pen::antumbra {
         uint32_t getShaderID() { return shaderID; }
         uint32_t getTextureID() { return textureID; }
 
+        void* _getBackendSpecificData() { return backendData; }
+
         Transform2D transform;
     private:
         uint32_t id;
         uint32_t textureID;
         uint32_t shaderID;
+
+        // Backend-specific data
+        // In BGFX this is nothing, in WGPU this is the Bind Group
+        void* backendData;
     };
 }

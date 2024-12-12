@@ -1,4 +1,6 @@
 #include "pipeline.hpp"
+#include "webgpu.h"
+#include <glm/fwd.hpp>
 #include <iostream>
 
 namespace pen::backend {
@@ -98,5 +100,76 @@ namespace pen::backend {
 
         // Return
         return pipelineDesc;
+    }
+
+    void create2DBindGroupLayouts(WGPUBindGroupLayout& layoutVP, WGPUBindGroupLayout& layoutM, WGPUDevice device) {
+        // Create the two Bind Group Layout Entries
+        // ----------------------------------------
+        WGPUBindGroupLayoutEntry bindGroupLayouts[2];
+
+        // View and Projection (struct)
+        // ----------------------------
+        bindGroupLayouts[0] = {};
+        setDefault(bindGroupLayouts[0]);
+        // Binding index for VP matrices is 0
+        bindGroupLayouts[0].binding = 0;
+        // Only the Vertex Shader needs this
+        // INFO: It may be useful to change this later on
+        bindGroupLayouts[0].visibility = WGPUShaderStage_Vertex;
+        // This is a uniform so we set the type to uniform
+        bindGroupLayouts[0].buffer.type = WGPUBufferBindingType_Uniform;
+        // Min Binding Size, it is equal to the size of the Struct (ViewProjection)
+        bindGroupLayouts[0].buffer.minBindingSize = sizeof(ViewProjection);
+
+        // Model (1 4x4 Matrix)
+        // --------------------
+        bindGroupLayouts[1] = {};
+        setDefault(bindGroupLayouts[1]);
+        // Binding index for Model matrix is 1
+        bindGroupLayouts[1].binding = 1;
+        // Only the Vertex Shader needs this
+        // INFO: It may be useful to change this later on
+        bindGroupLayouts[1].visibility = WGPUShaderStage_Vertex;
+        // This is a uniform so we set the type to uniform
+        bindGroupLayouts[1].buffer.type = WGPUBufferBindingType_Uniform;
+        // Min Binding Size, it is equal to the size of a 4x4 matrix (I use GLM for this)
+        bindGroupLayouts[1].buffer.minBindingSize = sizeof(glm::mat4);
+
+        // Create Descriptor for the Layout
+        // --------------------------------
+        WGPUBindGroupLayoutDescriptor bindGroupLayoutDescriptor{};
+        bindGroupLayoutDescriptor.nextInChain = nullptr;
+        bindGroupLayoutDescriptor.entryCount = 1; // Only 1 layout entry for the VP
+        bindGroupLayoutDescriptor.entries = &bindGroupLayouts[0];
+
+        // Create Bind Group Layout
+        // ------------------------
+        layoutVP = wgpuDeviceCreateBindGroupLayout(device, &bindGroupLayoutDescriptor);
+
+        // Re-use descriptor for the other layout:
+        // ---------------------------------------
+        bindGroupLayoutDescriptor.entries = &bindGroupLayouts[1];
+        layoutM = wgpuDeviceCreateBindGroupLayout(device, &bindGroupLayoutDescriptor);
+    }
+
+
+    // Set Default WGPUBindGroupLayoutEntry
+    void setDefault(WGPUBindGroupLayoutEntry &bindingLayout) {
+        bindingLayout.buffer.nextInChain = nullptr;
+        bindingLayout.buffer.type = WGPUBufferBindingType_Undefined;
+        bindingLayout.buffer.hasDynamicOffset = false;
+
+        bindingLayout.sampler.nextInChain = nullptr;
+        bindingLayout.sampler.type = WGPUSamplerBindingType_Undefined;
+
+        bindingLayout.storageTexture.nextInChain = nullptr;
+        bindingLayout.storageTexture.access = WGPUStorageTextureAccess_Undefined;
+        bindingLayout.storageTexture.format = WGPUTextureFormat_Undefined;
+        bindingLayout.storageTexture.viewDimension = WGPUTextureViewDimension_Undefined;
+
+        bindingLayout.texture.nextInChain = nullptr;
+        bindingLayout.texture.multisampled = false;
+        bindingLayout.texture.sampleType = WGPUTextureSampleType_Undefined;
+        bindingLayout.texture.viewDimension = WGPUTextureViewDimension_Undefined;
     }
 }

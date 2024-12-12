@@ -156,7 +156,7 @@ namespace pen::antumbra {
         glm::mat4 projMtx = glm::perspective(glm::radians(60.0f), float(width)/float(height), 0.1f, 100.f);
 
         // Set View and Projection
-        backend::setViewTransform(&viewMtx[0][0], &projMtx[0][0]);
+        backend::setViewTransform(viewMtx, projMtx);
 
         for (Sprite* sprite : sprites) {
             backend::setModelTransform(sprite->transform);

@@ -5,16 +5,30 @@
     of Shaders (pipelines), textures and more.
 */
 
-#include "webgpu.h"
+#include <webgpu/webgpu.h>
 #include <cstdint>
 #include <string>
 #include <vector>
 
-#include <glm/glm.hpp>
-#include <glm/ext/matrix_transform.hpp>
-#include <glm/ext/matrix_float4x4.hpp>
-
 namespace pen::backend {
+    // Structs
+    struct RenderPassObjects {
+        WGPUTextureView targetView;
+        WGPUCommandEncoder encoder;
+        WGPURenderPassEncoder renderPass;
+
+        bool rendering = false;
+    };
+
+    // Sprite and Model
+    // Bind Group and Buffer all in one :D
+    struct UniformData {
+        WGPUBuffer uniformBuffer;
+        WGPUBindGroup bindGroup;
+    };
+
+
+    // Global stuff
     namespace objects {
         extern WGPUDevice device;
         extern WGPUQueue queue;
@@ -24,6 +38,9 @@ namespace pen::backend {
         extern WGPUSurfaceConfiguration config;
         // Pipeline
         extern WGPUTextureFormat surfaceFormat;
+
+        // View and Projection Uniforms (general)
+        extern UniformData viewProjection;
     }
     namespace layouts {
         // We specify that this layout is used for 2D Only
@@ -32,26 +49,15 @@ namespace pen::backend {
 
     // Pipeline Templates and Bind Group Layouts
     namespace pipeline2D {
-        extern WGPUBindGroupLayout bindGroupLayout;
+        // 0 - View and Perspective
+        // 1 - Model
+        extern WGPUBindGroupLayout bindGroupLayouts[2];
     }
 
-    // Structs
-    struct RenderPassObjects {
-        WGPUTextureView targetView;
-        WGPUCommandEncoder encoder;
-        WGPURenderPassEncoder renderPass;
-
-        bool rendering = false;
-    };
-    // View and Projection matrices
-    struct ViewProjection {
-        glm::mat4 view = glm::mat4(1);
-        glm::mat4 projection = glm::mat4(1);
-    };
-
-    // Initializes Object Manager
-    // Inits the Bind Group Layouts
-    void initObjectManager();
+    // Inits the Bind Group Layouts, duh
+    void initBindGroupLayouts();
+    // Inits the Bind Group for the View and Projection
+    void initViewProjectionUniform();
 
 
     // Takes a path to a shader and returns the ID of the pipeline

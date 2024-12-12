@@ -19,14 +19,13 @@ struct VertexOutput {
 };
 
 // Uniforms
-// Commented until we implement uniforms
-// @group(0) @binding(0) var<uniform> uViewProj: ViewProjection;
+@group(0) @binding(0) var<uniform> uViewProj: ViewProjection;
 
 
 @vertex
 fn vs_main(in: VertexInput) -> VertexOutput {
     var output: VertexOutput;
-    output.position = vec4f(in.position, 1.0);
+    output.position = uViewProj.projection * uViewProj.view * vec4f(in.position, 1.0);
     output.uv = in.uv;
     return output;
 }

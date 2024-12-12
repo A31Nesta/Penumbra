@@ -4,7 +4,6 @@
 #include "webgpu.h"
 
 #include <cstdint>
-#include <iostream>
 #include <vector>
 
 namespace pen::backend {
@@ -18,6 +17,9 @@ namespace pen::backend {
         WGPUSurfaceConfiguration config;
         // Pipeline
         WGPUTextureFormat surfaceFormat = WGPUTextureFormat_Undefined;
+
+        // View and Projection Uniforms (general)
+        UniformData viewProjection;
     }
     namespace layouts {
         // We specify that this layout is used for 2D Only
@@ -26,7 +28,10 @@ namespace pen::backend {
 
     // Pipeline Templates and Bind Group Layouts
     namespace pipeline2D {
-        WGPUBindGroupLayout bindGroupLayout;
+        // 0 - View and Perspective
+        // 1 - Model
+        WGPUBindGroupLayout bindGroupLayouts[2];
+        WGPUPipelineLayout pipelineLayout;
     }
     
     // WGPU Pipeline register
@@ -34,10 +39,48 @@ namespace pen::backend {
     std::vector<WGPUBuffer*> vertexBuffers;
     std::vector<WGPUBuffer*> indexBuffers;
 
-    // Initializes Object Manager
-    // Inits the Bind Group Layouts
-    void initObjectManager() {
-        
+    // Inits the Bind Group Layouts, duh
+    void initBindGroupLayouts() {
+        create2DBindGroupLayouts(pipeline2D::bindGroupLayouts[0], pipeline2D::bindGroupLayouts[1], objects::device);
+
+        WGPUPipelineLayoutDescriptor layoutDesc{};
+        layoutDesc.nextInChain = nullptr;
+        layoutDesc.bindGroupLayoutCount = 1; // View and Projection + Model
+        layoutDesc.bindGroupLayouts = pipeline2D::bindGroupLayouts;
+        pipeline2D::pipelineLayout = wgpuDeviceCreatePipelineLayout(objects::device, &layoutDesc);
+    }
+    // Inits the Bind Group for the View and Projection
+    void initViewProjectionUniform() {
+        // Create buffer
+        WGPUBufferDescriptor uniformBufferDesc{};
+        uniformBufferDesc.nextInChain = nullptr;
+        uniformBufferDesc.size = sizeof(ViewProjection);
+        uniformBufferDesc.usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Uniform;
+        uniformBufferDesc.mappedAtCreation = false;
+        objects::viewProjection.uniformBuffer = wgpuDeviceCreateBuffer(objects::device, &uniformBufferDesc);
+
+        // Set a default View and Projection at first
+        ViewProjection vp;
+        wgpuQueueWriteBuffer(objects::queue, objects::viewProjection.uniformBuffer, 0, &vp, sizeof(ViewProjection));
+
+        WGPUBindGroupEntry binding{};
+        binding.nextInChain = nullptr;
+        // Index of the binding. View and Projection has the index 0
+        binding.binding = 0;
+        // It is pointing to the uniform buffer in the viewProjection object
+        binding.buffer = objects::viewProjection.uniformBuffer;
+        // Offset
+        binding.offset = 0;
+        // Size
+        binding.size = sizeof(ViewProjection);
+
+        // Create Bind Group Descriptor
+        WGPUBindGroupDescriptor bindGroupDesc{};
+        bindGroupDesc.nextInChain = nullptr;
+        bindGroupDesc.layout = pipeline2D::bindGroupLayouts[0];
+        bindGroupDesc.entryCount = 1;
+        bindGroupDesc.entries = &binding;
+        objects::viewProjection.bindGroup = wgpuDeviceCreateBindGroup(objects::device, &bindGroupDesc);
     }
 
     // Registers a pipeline and returns its ID
@@ -145,7 +188,7 @@ namespace pen::backend {
         WGPURenderPipelineDescriptor pipelineDesc = create2DPipelineDescriptor(layouts::layout2D, shaderModule, objects::surfaceFormat);
         
         // Set Layout here.
-        
+        pipelineDesc.layout = pipeline2D::pipelineLayout;
 
         // Create render pipeline
         *pipeline = wgpuDeviceCreateRenderPipeline(objects::device, &pipelineDesc);
@@ -220,7 +263,11 @@ namespace pen::backend {
     }
     // Destroy Index Buffer
     void destroyIndexBuffer(uint16_t buffer) {
-
+        // I prefer having full control over when the object is released
+        // With buffers I can call Destroy instead of Release to destroy the object now
+        wgpuBufferDestroy(*indexBuffers.at(buffer));
+        delete indexBuffers.at(buffer);
+        indexBuffers.at(buffer) = nullptr;
     }
 
     // Sets the Vertex and Index Buffers
@@ -235,6 +282,16 @@ namespace pen::backend {
 
     // Deinitializes all objects
     void deinitAllObjects() {
+        // Release pipeline layout
+        wgpuPipelineLayoutRelease(pipeline2D::pipelineLayout);
+        // Bind Group release (for View and Projection matrices)
+        wgpuBindGroupRelease(objects::viewProjection.bindGroup);
+        // Release Bind Group Layout
+        wgpuBindGroupLayoutRelease(pipeline2D::bindGroupLayouts[0]);
+        wgpuBindGroupLayoutRelease(pipeline2D::bindGroupLayouts[1]);
+        // Delet uniform buffer
+        wgpuBufferRelease(objects::viewProjection.uniformBuffer);
+
         // Unconfigure the surface
         wgpuSurfaceUnconfigure(objects::surface);
         // Free members
