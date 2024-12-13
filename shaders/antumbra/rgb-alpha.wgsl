@@ -54,5 +54,6 @@ fn fs_main(in: VertexOutput) -> @location(0) vec4f {
 
     // Gamma-correction
     let linear_color: vec3f = pow(hsv2rgb(vec3f(angleMapped, distToCenter*2, 1)), vec3f(2.2));
-    return vec4f(linear_color*0.7, 0.7);
+    let alpha: f32 = 0.5;
+    return vec4f(linear_color*alpha, alpha);
 }

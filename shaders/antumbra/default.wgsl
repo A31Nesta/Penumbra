@@ -33,6 +33,12 @@ fn vs_main(in: VertexInput) -> VertexOutput {
 
 @fragment
 fn fs_main(in: VertexOutput) -> @location(0) vec4f {
-    let color: vec3f = vec3f(in.uv.x, in.uv.y, 1.0);
-    return vec4f(color*0.7, 0.7);
+    let distToCenter: f32 = distance(in.uv, vec2(0.5, 0.5));
+    if (distToCenter > 0.5) {
+        discard;
+    }
+    
+    let color: vec3f = vec3f(in.uv.x, in.uv.y, 0.0);
+    let alpha: f32 = 1.0;
+    return vec4f(color*alpha, alpha);
 }
