@@ -22,6 +22,9 @@ struct VertexOutput {
 @group(0) @binding(0) var<uniform> uViewProj: ViewProjection;
 @group(1) @binding(0) var<uniform> uModel: mat4x4<f32>;
 
+// Textures
+@group(2) @binding(0) var uTexture: texture_2d<f32>;
+
 // VERTEX CODE
 @vertex
 fn vs_main(in: VertexInput) -> VertexOutput {
@@ -54,6 +57,6 @@ fn fs_main(in: VertexOutput) -> @location(0) vec4f {
 
     // Gamma-correction
     let linear_color: vec3f = pow(hsv2rgb(vec3f(angleMapped, distToCenter*2, 1)), vec3f(2.2));
-    let alpha: f32 = 0.5;
+    let alpha: f32 = textureLoad(uTexture, vec2i(in.uv * vec2f(textureDimensions(uTexture))), 0).a;
     return vec4f(linear_color*alpha, alpha);
 }

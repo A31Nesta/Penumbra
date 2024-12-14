@@ -14,10 +14,10 @@ int main(int argc, char** argv) {
     pen::createWindow("Penumbra", 1280, 720, flags);
     pen::createAntumbra("pnmbr/shaders-2D/default");
 
-    pen::antumbra::Sprite* magic_1 = pen::createSprite("pnmbr/images/hexta.ktx", pen::Vec2(0, 0), 0, 0.6);
-    pen::antumbra::Sprite* magic = pen::createSprite("pnmbr/images/hexta.ktx", pen::Vec2(0, 0), 0, 1.125);
-    pen::antumbra::Sprite* magic2 = pen::createSprite("pnmbr/images/hexta.ktx", pen::Vec2(0, 0), 0, 2);
-    pen::antumbra::Sprite* magic3 = pen::createSprite("pnmbr/images/hexta.ktx", pen::Vec2(0, 0), 0, 3.5, "pnmbr/shaders-2D/rgb-alpha");
+    pen::antumbra::Sprite* magic_1 = pen::createSprite("pnmbr/images/hexta.png", pen::Vec2(0, 0), 0, 0.6);
+    pen::antumbra::Sprite* magic = pen::createSprite("pnmbr/images/hexta.png", pen::Vec2(0, 0), 0, 1.125);
+    pen::antumbra::Sprite* magic2 = pen::createSprite("pnmbr/images/hexta.png", pen::Vec2(0, 0), 0, 2);
+    pen::antumbra::Sprite* magic3 = pen::createSprite("pnmbr/images/hexta.png", pen::Vec2(0, 0), 0, 3.5, "pnmbr/shaders-2D/rgb-alpha");
 
     // Run Program
     while (pen::running()) {

@@ -30,7 +30,8 @@ namespace pen::backend {
     namespace pipeline2D {
         // 0 - View and Perspective
         // 1 - Model
-        WGPUBindGroupLayout bindGroupLayouts[2];
+        // 2 - Texture
+        WGPUBindGroupLayout bindGroupLayouts[3];
         WGPUPipelineLayout pipelineLayout;
     }
     
@@ -38,14 +39,20 @@ namespace pen::backend {
     std::vector<WGPURenderPipeline*> renderPipelines;
     std::vector<WGPUBuffer*> vertexBuffers;
     std::vector<WGPUBuffer*> indexBuffers;
+    std::vector<TextureData*> textures;
 
     // Inits the Bind Group Layouts, duh
     void initBindGroupLayouts() {
-        create2DBindGroupLayouts(pipeline2D::bindGroupLayouts[0], pipeline2D::bindGroupLayouts[1], objects::device);
+        create2DBindGroupLayouts(
+            pipeline2D::bindGroupLayouts[0],
+            pipeline2D::bindGroupLayouts[1],
+            pipeline2D::bindGroupLayouts[2],
+            objects::device
+        );
 
         WGPUPipelineLayoutDescriptor layoutDesc{};
         layoutDesc.nextInChain = nullptr;
-        layoutDesc.bindGroupLayoutCount = 2; // View and Projection + Model
+        layoutDesc.bindGroupLayoutCount = 3; // View and Projection + Model + Texture
         layoutDesc.bindGroupLayouts = pipeline2D::bindGroupLayouts;
         pipeline2D::pipelineLayout = wgpuDeviceCreatePipelineLayout(objects::device, &layoutDesc);
     }
@@ -85,81 +92,69 @@ namespace pen::backend {
 
     // Registers a pipeline and returns its ID
     uint16_t registerPipeline(WGPURenderPipeline* pipeline) {
-        uint16_t index = -1; // Invalid ID by default
-
         // Check for re-usable spots
         for (uint16_t i = 0; i < renderPipelines.size(); i++) {
             WGPURenderPipeline* p = renderPipelines.at(i);
             if (p == nullptr) {
-                index = i;
-                break;
+                renderPipelines.at(i) = pipeline;
+                return i;
             }
         }
 
-        // If the ID is valid set the pipeline and return the ID
-        if (index < renderPipelines.size()) {
-            renderPipelines.at(index) = pipeline;
-            return index;
-        } 
-        // If the ID is invalid we didn't have free spots.
-        // We should just add this new one
-        else {
-            index = renderPipelines.size();
-            renderPipelines.push_back(pipeline);
-            return index;
-        }
+        // If we didn't have free spots,
+        // we should just add this new one
+        uint16_t index = renderPipelines.size();
+        renderPipelines.push_back(pipeline);
+        return index;
     }
     // Registers a vertex buffer and returns its ID
     uint16_t registerVertexBuffer(WGPUBuffer* buffer) {
-        uint16_t index = -1; // Invalid ID by default
-
         // Check for re-usable spots
         for (uint16_t i = 0; i < vertexBuffers.size(); i++) {
             WGPUBuffer* buf = vertexBuffers.at(i);
             if (buf == nullptr) {
-                index = i;
-                break;
+                vertexBuffers.at(i) = buffer;
+                return i;
             }
         }
-
-        // If the ID is valid set the buffer and return the ID
-        if (index < vertexBuffers.size()) {
-            vertexBuffers.at(index) = buffer;
-            return index;
-        } 
-        // If the ID is invalid we didn't have free spots.
-        // We should just add this new one
-        else {
-            index = vertexBuffers.size();
-            vertexBuffers.push_back(buffer);
-            return index;
-        }
+        // If we didn't have free spots,
+        // we should just add this new one
+        uint16_t index = vertexBuffers.size();
+        vertexBuffers.push_back(buffer);
+        return index;
     }
     // Registers an index buffer and returns its ID
     uint16_t registerIndexBuffer(WGPUBuffer* buffer) {
-        uint16_t index = -1; // Invalid ID by default
-
         // Check for re-usable spots
         for (uint16_t i = 0; i < indexBuffers.size(); i++) {
             WGPUBuffer* buf = indexBuffers.at(i);
             if (buf == nullptr) {
-                index = i;
-                break;
+                indexBuffers.at(i) = buffer;
+                return i;
+            }
+        }
+        // If we didn't have free spots,
+        // we should just add this new one
+        uint16_t index = indexBuffers.size();
+        indexBuffers.push_back(buffer);
+        return index;
+    }
+    // Registers a texture and returns its ID
+    uint16_t registerTexture(TextureData* texture) {
+        // Check for re-usable spots
+        for (uint16_t i = 0; i < textures.size(); i++) {
+            TextureData* tex = textures.at(i);
+            if (tex == nullptr) {
+                textures.at(i) = texture;
+                return i;
             }
         }
 
-        // If the ID is valid set the buffer and return the ID
-        if (index < indexBuffers.size()) {
-            indexBuffers.at(index) = buffer;
-            return index;
-        } 
-        // If the ID is invalid we didn't have free spots.
-        // We should just add this new one
-        else {
-            index = indexBuffers.size();
-            indexBuffers.push_back(buffer);
-            return index;
-        }
+        // If we didn't have free spots,
+        // we should just add this new one
+        uint16_t index = textures.size();
+        textures.push_back(texture);
+        return index;
     }
 
     // Takes a path to a shader and returns the ID of the pipeline
@@ -236,6 +231,7 @@ namespace pen::backend {
         // I prefer having full control over when the object is released
         // With buffers I can call Destroy instead of Release to destroy the object now
         wgpuBufferDestroy(*vertexBuffers.at(buffer));
+        wgpuBufferRelease(*vertexBuffers.at(buffer));
         delete vertexBuffers.at(buffer);
         vertexBuffers.at(buffer) = nullptr;
     }
@@ -266,8 +262,94 @@ namespace pen::backend {
         // I prefer having full control over when the object is released
         // With buffers I can call Destroy instead of Release to destroy the object now
         wgpuBufferDestroy(*indexBuffers.at(buffer));
+        wgpuBufferRelease(*indexBuffers.at(buffer));
         delete indexBuffers.at(buffer);
         indexBuffers.at(buffer) = nullptr;
+    }
+
+    // Creates a Texture and Texture View
+    uint16_t createTexture(uint8_t* data, uint32_t size, uint16_t w, uint16_t h) {
+        TextureData* textureData = new TextureData();
+
+        // Create Texture
+        // --------------
+        WGPUTextureDescriptor textureDesc;
+        // Size Stuff
+        textureDesc.dimension = WGPUTextureDimension_2D;
+        textureDesc.size = {w, h, 1};
+        textureDesc.mipLevelCount = 1; // TODO: Change to the maximum level of mips later
+        textureDesc.sampleCount = 1;
+        // Format, we assume RGBA8 for no reason in particular
+        // INFO: Assuming RGBA8 for no reason in particular could give issues lol
+        textureDesc.format = WGPUTextureFormat_RGBA8Unorm;
+        // Usage and view format stuff (whatever that is)
+        textureDesc.usage = WGPUTextureUsage_CopyDst | WGPUTextureUsage_TextureBinding;
+        textureDesc.viewFormatCount = 0;
+        textureDesc.viewFormats = nullptr;
+        // Create Texture
+        textureData->texture = wgpuDeviceCreateTexture(objects::device, &textureDesc);
+
+        // Write to Texture
+        // ----------------
+        // Arguments telling which part of the texture we upload to
+        // (together with the last argument of writeTexture)
+        WGPUImageCopyTexture destination;
+        destination.texture = textureData->texture;
+        destination.mipLevel = 0;
+        destination.origin = { 0, 0, 0 }; // equivalent of the offset argument of wgpuQueueWriteBuffer
+        destination.aspect = WGPUTextureAspect_All; // only relevant for depth/Stencil textures
+
+        // Arguments telling how the C++ side pixel memory is laid out
+        WGPUTextureDataLayout source;
+        source.offset = 0;
+        source.bytesPerRow = 4 * w; // 4 channels multiplied by the Width
+        source.rowsPerImage = h; // Height is the number of rows lol
+
+        // Write
+        wgpuQueueWriteTexture(objects::queue, &destination, data, size, &source, &textureDesc.size);
+
+        // Create the View
+        // ---------------
+        WGPUTextureViewDescriptor textureViewDesc;
+        textureViewDesc.aspect = WGPUTextureAspect_All;
+        textureViewDesc.baseArrayLayer = 0;
+        textureViewDesc.arrayLayerCount = 1;
+        textureViewDesc.baseMipLevel = 0;
+        textureViewDesc.mipLevelCount = 1;
+        textureViewDesc.dimension = WGPUTextureViewDimension_2D;
+        textureViewDesc.format = textureDesc.format;
+        textureData->textureView = wgpuTextureCreateView(textureData->texture, &textureViewDesc);
+
+        // Create the Bind Group
+        // ---------------------
+        WGPUBindGroupEntry bindGroupEntry;
+        bindGroupEntry.nextInChain = nullptr;
+        bindGroupEntry.binding = 0; // new bind group so...
+        bindGroupEntry.textureView = textureData->textureView;
+        // Set stuff to null
+        bindGroupEntry.buffer = nullptr;
+        bindGroupEntry.sampler = nullptr;
+        
+        WGPUBindGroupDescriptor bindGroupDesc{};
+        bindGroupDesc.nextInChain = nullptr;
+        bindGroupDesc.layout = pipeline2D::bindGroupLayouts[2]; // Index 2 is for the texture
+        bindGroupDesc.entryCount = 1;
+        bindGroupDesc.entries = &bindGroupEntry;
+        textureData->textureBindGroup = wgpuDeviceCreateBindGroup(objects::device, &bindGroupDesc);
+
+        // REGISTER TEXTURE AND RETURN ID
+        // ------------------------------
+        return registerTexture(textureData);
+    }
+    // Destroys the texture and texture view
+    void destroyTexture(uint16_t texture) {
+        TextureData* td = textures.at(texture);
+        // Delete Bind Group
+        wgpuBindGroupRelease(td->textureBindGroup);
+        // Delete texture
+        wgpuTextureViewRelease(td->textureView);
+        wgpuTextureDestroy(td->texture);
+        wgpuTextureRelease(td->texture);
     }
 
     // Sets the Vertex and Index Buffers
@@ -277,6 +359,12 @@ namespace pen::backend {
 
         wgpuRenderPassEncoderSetVertexBuffer(renderPass, 0, vtxBuf, 0, wgpuBufferGetSize(vtxBuf));
         wgpuRenderPassEncoderSetIndexBuffer(renderPass, idxBuf, WGPUIndexFormat_Uint16, 0, wgpuBufferGetSize(idxBuf));
+    }
+    // Binds a texture
+    void bindTexture(WGPURenderPassEncoder& renderPass, uint16_t texture) {
+        TextureData textureData = *textures.at(texture);
+        // Sets the Texture Bind Group into the Group Index 2 (Texture)
+        wgpuRenderPassEncoderSetBindGroup(renderPass, 2, textureData.textureBindGroup, 0, nullptr);
     }
 
 
@@ -290,6 +378,7 @@ namespace pen::backend {
         wgpuBindGroupLayoutRelease(pipeline2D::bindGroupLayouts[0]);
         wgpuBindGroupLayoutRelease(pipeline2D::bindGroupLayouts[1]);
         // Delet uniform buffer
+        wgpuBufferDestroy(objects::viewProjection.uniformBuffer);
         wgpuBufferRelease(objects::viewProjection.uniformBuffer);
 
         // Unconfigure the surface

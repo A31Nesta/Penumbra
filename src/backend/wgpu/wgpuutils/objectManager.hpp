@@ -27,6 +27,15 @@ namespace pen::backend {
         WGPUBindGroup bindGroup;
     };
 
+    // Texture data
+    // Texture and Texture View
+    struct TextureData {
+        WGPUTexture texture;
+        WGPUTextureView textureView;
+        // In Antumbra (2D) we use a new Bind Group per Texture
+        WGPUBindGroup textureBindGroup;
+    };
+
 
     // Global stuff
     namespace objects {
@@ -51,7 +60,8 @@ namespace pen::backend {
     namespace pipeline2D {
         // 0 - View and Perspective
         // 1 - Model
-        extern WGPUBindGroupLayout bindGroupLayouts[2];
+        // 2 - Texture
+        extern WGPUBindGroupLayout bindGroupLayouts[3];
     }
 
     // Inits the Bind Group Layouts, duh
@@ -77,8 +87,15 @@ namespace pen::backend {
     // Destroy Index Buffer
     void destroyIndexBuffer(uint16_t buffer);
 
+    // Creates a Texture and Texture View
+    uint16_t createTexture(uint8_t* data, uint32_t size, uint16_t w, uint16_t h);
+    // Destroys the texture and texture view
+    void destroyTexture(uint16_t texture);
+
     // Sets the Vertex and Index Buffers
     void setBuffers(WGPURenderPassEncoder& renderPass, uint16_t vertexBuffer, uint16_t indexBuffer);
+    // Binds a texture
+    void bindTexture(WGPURenderPassEncoder& renderPass, uint16_t texture);
 
 
     // Deinitializes all objects

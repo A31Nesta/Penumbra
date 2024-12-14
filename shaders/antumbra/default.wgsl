@@ -22,6 +22,9 @@ struct VertexOutput {
 @group(0) @binding(0) var<uniform> uViewProj: ViewProjection;
 @group(1) @binding(0) var<uniform> uModel: mat4x4<f32>;
 
+// Textures
+@group(2) @binding(0) var uTexture: texture_2d<f32>;
+
 
 @vertex
 fn vs_main(in: VertexInput) -> VertexOutput {
@@ -33,12 +36,7 @@ fn vs_main(in: VertexInput) -> VertexOutput {
 
 @fragment
 fn fs_main(in: VertexOutput) -> @location(0) vec4f {
-    let distToCenter: f32 = distance(in.uv, vec2(0.5, 0.5));
-    if (distToCenter > 0.5) {
-        discard;
-    }
-    
-    let color: vec3f = vec3f(in.uv.x, in.uv.y, 0.0);
-    let alpha: f32 = 1.0;
-    return vec4f(color*alpha, alpha);
+    let color: vec4f = textureLoad(uTexture, vec2i(in.uv * vec2f(textureDimensions(uTexture))), 0).rgba;
+    let alpha: f32 = color.a;
+    return vec4f(color.rgb*alpha, alpha);
 }

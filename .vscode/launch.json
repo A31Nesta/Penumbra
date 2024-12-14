@@ -30,7 +30,10 @@
             "args": [
                 "-wayland"
             ],
-            "cwd": "${workspaceFolder}/build/"
+            "cwd": "${workspaceFolder}/build/",
+            "env": {
+                "RUST_BACKTRACE": "1"
+            }
         },
         {
             "type": "lldb",

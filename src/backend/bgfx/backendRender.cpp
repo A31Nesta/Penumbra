@@ -2,6 +2,8 @@
 
 #include <bgfx/bgfx.h>
 #include <cstdint>
+#include <iostream>
+#include <string>
 
 namespace pen::backend {
     // Global variables
@@ -32,6 +34,9 @@ namespace pen::backend {
     }
     void deleteUniform(uint16_t uniform) {
         bgfx::destroy((bgfx::UniformHandle)uniform);
+    }
+    void bindTexture(uint16_t texture) {
+        std::cout << "PENUMBRA_CLUELESS: How did you manage to call this function? (bindTexture() in backendRender), trying to bind texture " << std::to_string(texture) << "\n";
     }
 
     // Framebuffer Stuff

@@ -26,6 +26,9 @@ namespace pen::backend {
     void deleteUniform(uint16_t uniform) {
         // Delete uniform...
     }
+    void bindTexture(uint16_t texture) {
+        bindTexture(framebuffer.renderPass, texture);
+    }
 
     // Framebuffer Stuff
     void bindFramebuffer(void* framebufferID) {

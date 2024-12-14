@@ -102,54 +102,72 @@ namespace pen::backend {
         return pipelineDesc;
     }
 
-    void create2DBindGroupLayouts(WGPUBindGroupLayout& layoutVP, WGPUBindGroupLayout& layoutM, WGPUDevice device) {
+    void create2DBindGroupLayouts(WGPUBindGroupLayout& layoutVP, WGPUBindGroupLayout& layoutM, WGPUBindGroupLayout& layoutTex, WGPUDevice device) {
         // Create the two Bind Group Layout Entries
         // ----------------------------------------
-        WGPUBindGroupLayoutEntry bindGroupLayouts[2];
+        WGPUBindGroupLayoutEntry bindGroupLayoutVP;
+        WGPUBindGroupLayoutEntry bindGroupLayoutM;
+        WGPUBindGroupLayoutEntry bindGroupLayoutTex;
 
         // View and Projection (struct)
         // ----------------------------
-        bindGroupLayouts[0] = {};
-        setDefault(bindGroupLayouts[0]);
+        bindGroupLayoutVP = {};
+        setDefault(bindGroupLayoutVP);
         // Binding index for VP matrices is 0
-        bindGroupLayouts[0].binding = 0;
+        bindGroupLayoutVP.binding = 0;
         // Only the Vertex Shader needs this
         // INFO: It may be useful to change this later on
-        bindGroupLayouts[0].visibility = WGPUShaderStage_Vertex;
+        bindGroupLayoutVP.visibility = WGPUShaderStage_Vertex;
         // This is a uniform so we set the type to uniform
-        bindGroupLayouts[0].buffer.type = WGPUBufferBindingType_Uniform;
+        bindGroupLayoutVP.buffer.type = WGPUBufferBindingType_Uniform;
         // Min Binding Size, it is equal to the size of the Struct (ViewProjection)
-        bindGroupLayouts[0].buffer.minBindingSize = sizeof(ViewProjection);
+        bindGroupLayoutVP.buffer.minBindingSize = sizeof(ViewProjection);
 
         // Model (1 4x4 Matrix)
         // --------------------
-        bindGroupLayouts[1] = {};
-        setDefault(bindGroupLayouts[1]);
-        // Binding index for Model matrix is 1
-        bindGroupLayouts[1].binding = 0;
+        bindGroupLayoutM = {};
+        setDefault(bindGroupLayoutM);
+        // Binding index for Model matrix is 0
+        bindGroupLayoutM.binding = 0;
         // Only the Vertex Shader needs this
         // INFO: It may be useful to change this later on
-        bindGroupLayouts[1].visibility = WGPUShaderStage_Vertex;
+        bindGroupLayoutM.visibility = WGPUShaderStage_Vertex;
         // This is a uniform so we set the type to uniform
-        bindGroupLayouts[1].buffer.type = WGPUBufferBindingType_Uniform;
+        bindGroupLayoutM.buffer.type = WGPUBufferBindingType_Uniform;
         // Min Binding Size, it is equal to the size of a 4x4 matrix (I use GLM for this)
-        bindGroupLayouts[1].buffer.minBindingSize = sizeof(glm::mat4);
+        bindGroupLayoutM.buffer.minBindingSize = sizeof(glm::mat4);
+
+        // Texture
+        // -------
+        bindGroupLayoutTex = {};
+        setDefault(bindGroupLayoutTex);
+        // Binding index for texture is 0
+        bindGroupLayoutTex.binding = 0;
+        // Only the Fragment Shader needs this
+        bindGroupLayoutTex.visibility = WGPUShaderStage_Fragment;
+        // Sample type is float because we expect numbers from 0 to 1 in the color channels
+        bindGroupLayoutTex.texture.sampleType = WGPUTextureSampleType_Float;
+        // View Dimension. 2D
+        bindGroupLayoutTex.texture.viewDimension = WGPUTextureViewDimension_2D;
 
         // Create Descriptor for the Layout
         // --------------------------------
         WGPUBindGroupLayoutDescriptor bindGroupLayoutDescriptor{};
         bindGroupLayoutDescriptor.nextInChain = nullptr;
         bindGroupLayoutDescriptor.entryCount = 1; // Only 1 layout entry for the VP
-        bindGroupLayoutDescriptor.entries = &bindGroupLayouts[0];
+        bindGroupLayoutDescriptor.entries = &bindGroupLayoutVP;
 
         // Create Bind Group Layout
         // ------------------------
         layoutVP = wgpuDeviceCreateBindGroupLayout(device, &bindGroupLayoutDescriptor);
 
-        // Re-use descriptor for the other layout:
-        // ---------------------------------------
-        bindGroupLayoutDescriptor.entries = &bindGroupLayouts[1];
+        // Re-use descriptor for the other layouts:
+        // ----------------------------------------
+        bindGroupLayoutDescriptor.entries = &bindGroupLayoutM;
         layoutM = wgpuDeviceCreateBindGroupLayout(device, &bindGroupLayoutDescriptor);
+
+        bindGroupLayoutDescriptor.entries = &bindGroupLayoutTex;
+        layoutTex = wgpuDeviceCreateBindGroupLayout(device, &bindGroupLayoutDescriptor);
     }
 
 

@@ -12,8 +12,6 @@
 
 - Separate Shaders into **2D and 3D Shaders**. Shaders are built after generating the layout and after uniforms are created.
 
-### Implementation
+- Make **Sprites** get their Bind Groups from the Object Manager. There should be 0 Backend-specific code in the Sprite code.
 
-- Create **Default Uniforms** for Perspective, View and Model matrices
-
-- Make WGPU Uniform Creation work like in BGFX with just a string and type. These uniforms are set from the renderer
+- **Shaders** and **Textures** being part of the rendering backend itself still makes sense, since you don't work with them directly, but they should follow the same structure

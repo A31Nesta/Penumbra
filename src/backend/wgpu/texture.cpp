@@ -1,4 +1,6 @@
 #include "../texture.hpp"
+#include "backend/backendRender.hpp"
+#include "backend/wgpu/wgpuutils/objectManager.hpp"
 #include "debug/consoleColors.hpp"
 #include "debug/log.hpp"
 
@@ -21,14 +23,13 @@ namespace pen {
         this->path = path;
     }
     Texture::~Texture() {
-        // DO NOT DESTROY UNIFORM
-        // That's Antumbra's job, not ours, we just delete our texture
-        
         // Delete Texture
+        backend::destroyTexture(_textureHandle);
     }
 
     void Texture::bindTexture() {
         // Bind texture
+        backend::bindTexture(_textureHandle);
     }
 
     void Texture::loadTexture(std::string path) {
@@ -36,21 +37,24 @@ namespace pen {
         int x = 0;
         int y = 0;
         int channels = 0;
-        stbi_uc* bytes = stbi_load(path.c_str(), &x, &y, &channels, 4);
+        uint8_t* bytes = stbi_load(path.c_str(), &x, &y, &channels, 4);
 
-        // Load texture into WGPU somehow
+        // Load texture into WGPU
+        if (bytes) {
+            // We do x*y*4 here because per pixel we have RGB and A
+            _textureHandle = backend::createTexture(bytes, x *y*4, x, y);
+            width = x;
+            height = y;
+            stbi_image_free(bytes);
 
-        // Le fnuui error handling
-        // Check if the image is valid. Replace the "true" with the check lol
-        if (true) {
+            // calculate deform
+            uint16_t maxValue = std::max(width, height);
+            spriteDeform.x = float(width)/maxValue;
+            spriteDeform.y = float(height)/maxValue;
+        }
+        else {
             debug::print("Failed to load Texture: " + path + "\n", debug::Color::RED);
             valid = false;
-        } else {
-            // calculate deform
-            // uint16_t maxValue = std::max(width, height);
-            // spriteDeform.x = float(width)/maxValue;
-            // spriteDeform.y = float(height)/maxValue;
         }
-
     }
 }

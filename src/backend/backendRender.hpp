@@ -27,6 +27,7 @@ namespace pen::backend {
     // Shading and Uniforms
     uint16_t createUniform(std::string name, UniformType type);
     void deleteUniform(uint16_t uniform);
+    void bindTexture(uint16_t texture);
 
     // Framebuffer Stuff
     void bindFramebuffer(void* framebufferID);

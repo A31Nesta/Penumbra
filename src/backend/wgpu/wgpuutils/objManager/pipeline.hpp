@@ -19,7 +19,7 @@ namespace pen::backend {
     };
 
     WGPURenderPipelineDescriptor create2DPipelineDescriptor(WGPUVertexBufferLayout* layout2D, WGPUShaderModule shaderModule, WGPUTextureFormat surfaceFormat);
-    void create2DBindGroupLayouts(WGPUBindGroupLayout& layoutVP, WGPUBindGroupLayout& layoutM, WGPUDevice device);
+    void create2DBindGroupLayouts(WGPUBindGroupLayout& layoutVP, WGPUBindGroupLayout& layoutM, WGPUBindGroupLayout& layoutTex, WGPUDevice device);
 
 
     // Set Default WGPUBindGroupLayoutEntry
