@@ -89,7 +89,7 @@ namespace pen::backend {
     void destroyIndexBuffer(uint16_t buffer);
 
     // Creates a Texture and Texture View
-    uint16_t createTexture(uint8_t* data, uint32_t size, uint16_t w, uint16_t h);
+    uint16_t createTexture(std::vector<uint8_t> data, uint16_t w, uint16_t h);
     // Destroys the texture and texture view
     void destroyTexture(uint16_t texture);
 

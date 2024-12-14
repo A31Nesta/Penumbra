@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <cstdlib>
 #include <string>
+#include <vector>
 
 // STBI
 #define STB_IMAGE_IMPLEMENTATION
@@ -42,7 +43,8 @@ namespace pen {
         // Load texture into WGPU
         if (bytes) {
             // We do x*y*4 here because per pixel we have RGB and A
-            _textureHandle = backend::createTexture(bytes, x *y*4, x, y);
+            std::vector<uint8_t> data(bytes, bytes+x*y*4);
+            _textureHandle = backend::createTexture(data, x, y);
             width = x;
             height = y;
             stbi_image_free(bytes);

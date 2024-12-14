@@ -3,7 +3,9 @@
 #include "backend/wgpu/wgpuutils/objManager/pipeline.hpp"
 #include "webgpu.h"
 
+#include <algorithm>
 #include <cstdint>
+#include <utility>
 #include <vector>
 
 namespace pen::backend {
@@ -268,7 +270,12 @@ namespace pen::backend {
     }
 
     // Creates a Texture and Texture View
-    uint16_t createTexture(uint8_t* data, uint32_t size, uint16_t w, uint16_t h) {
+    uint16_t createTexture(std::vector<uint8_t> data, uint16_t w, uint16_t h) {
+        // Get Mip Level Count. We always generate all of 'em for funsies
+        uint32_t maxMipLevelCount = std::bit_width(std::max(w, h));
+
+        // CREATE TEXTURE DATA STRUCT
+        // --------------------------
         TextureData* textureData = new TextureData();
 
         // Create Texture
@@ -277,7 +284,7 @@ namespace pen::backend {
         // Size Stuff
         textureDesc.dimension = WGPUTextureDimension_2D;
         textureDesc.size = {w, h, 1};
-        textureDesc.mipLevelCount = 1; // TODO: Change to the maximum level of mips later
+        textureDesc.mipLevelCount = maxMipLevelCount; // We paid for all mipmaps so we're using all mipmaps
         textureDesc.sampleCount = 1;
         // Format, we assume RGBA8 for no reason in particular
         // INFO: Assuming RGBA8 for no reason in particular could give issues lol
@@ -289,25 +296,6 @@ namespace pen::backend {
         // Create Texture
         textureData->texture = wgpuDeviceCreateTexture(objects::device, &textureDesc);
 
-        // Write to Texture
-        // ----------------
-        // Arguments telling which part of the texture we upload to
-        // (together with the last argument of writeTexture)
-        WGPUImageCopyTexture destination;
-        destination.texture = textureData->texture;
-        destination.mipLevel = 0;
-        destination.origin = { 0, 0, 0 }; // equivalent of the offset argument of wgpuQueueWriteBuffer
-        destination.aspect = WGPUTextureAspect_All; // only relevant for depth/Stencil textures
-
-        // Arguments telling how the C++ side pixel memory is laid out
-        WGPUTextureDataLayout source;
-        source.offset = 0;
-        source.bytesPerRow = 4 * w; // 4 channels multiplied by the Width
-        source.rowsPerImage = h; // Height is the number of rows lol
-
-        // Write
-        wgpuQueueWriteTexture(objects::queue, &destination, data, size, &source, &textureDesc.size);
-
         // Create the View
         // ---------------
         WGPUTextureViewDescriptor textureViewDesc;
@@ -315,7 +303,7 @@ namespace pen::backend {
         textureViewDesc.baseArrayLayer = 0;
         textureViewDesc.arrayLayerCount = 1;
         textureViewDesc.baseMipLevel = 0;
-        textureViewDesc.mipLevelCount = 1;
+        textureViewDesc.mipLevelCount = maxMipLevelCount;
         textureViewDesc.dimension = WGPUTextureViewDimension_2D;
         textureViewDesc.format = textureDesc.format;
         textureData->textureView = wgpuTextureCreateView(textureData->texture, &textureViewDesc);
@@ -329,10 +317,70 @@ namespace pen::backend {
         samplerDesc.minFilter = WGPUFilterMode_Linear;
         samplerDesc.mipmapFilter = WGPUMipmapFilterMode_Linear;
         samplerDesc.lodMinClamp = 0.0f;
-        samplerDesc.lodMaxClamp = 1.0f;
+        samplerDesc.lodMaxClamp = maxMipLevelCount; // All mipmaps because funi
         samplerDesc.compare = WGPUCompareFunction_Undefined;
         samplerDesc.maxAnisotropy = 1;
         textureData->sampler = wgpuDeviceCreateSampler(objects::device, &samplerDesc);
+
+        // Write to Texture
+        // ----------------
+        // Arguments telling which part of the texture we upload to
+        // (together with the last argument of writeTexture)
+        WGPUImageCopyTexture destination;
+        destination.texture = textureData->texture;
+        destination.origin = { 0, 0, 0 }; // equivalent of the offset argument of wgpuQueueWriteBuffer
+        destination.aspect = WGPUTextureAspect_All; // only relevant for depth/Stencil textures
+
+        // Arguments telling how the C++ side pixel memory is laid out
+        WGPUTextureDataLayout source;
+        source.offset = 0;
+
+        WGPUExtent3D mipLevelSize = textureDesc.size;
+        std::vector<uint8_t> previousLevelPixels;
+        for (uint32_t level = 0; level < textureDesc.mipLevelCount; ++level) {
+            // Create pixels array
+            std::vector<uint8_t> pixels(4 * mipLevelSize.width * mipLevelSize.height);
+            // Create image data for this mip level
+            // If level is 0 we copy
+            if (level == 0) {
+                pixels = data;
+            }
+            // If the level is more than 0 (a mipmap)
+            else {
+                for (uint32_t i = 0; i < mipLevelSize.width; ++i) {
+                    for (uint32_t j = 0; j < mipLevelSize.height; ++j) {
+                        uint8_t* p = &pixels[4 * (j * mipLevelSize.width + i)];
+                        
+                        // Get the corresponding 4 pixels from the previous level
+                        uint8_t* p00 = &previousLevelPixels[4 * ((2 * j + 0) * (2 * mipLevelSize.width) + (2 * i + 0))];
+                        uint8_t* p01 = &previousLevelPixels[4 * ((2 * j + 0) * (2 * mipLevelSize.width) + (2 * i + 1))];
+                        uint8_t* p10 = &previousLevelPixels[4 * ((2 * j + 1) * (2 * mipLevelSize.width) + (2 * i + 0))];
+                        uint8_t* p11 = &previousLevelPixels[4 * ((2 * j + 1) * (2 * mipLevelSize.width) + (2 * i + 1))];
+                        // Average
+                        p[0] = (p00[0] + p01[0] + p10[0] + p11[0]) / 4;
+                        p[1] = (p00[1] + p01[1] + p10[1] + p11[1]) / 4;
+                        p[2] = (p00[2] + p01[2] + p10[2] + p11[2]) / 4;
+                        p[3] = (p00[3] + p01[3] + p10[3] + p11[3]) / 4;
+                    }
+                }
+            }
+
+            // Change this to the current level
+            destination.mipLevel = level;
+
+            // Compute from the mip level size
+            source.bytesPerRow = 4 * mipLevelSize.width;
+            source.rowsPerImage = mipLevelSize.height;
+
+            wgpuQueueWriteTexture(objects::queue, &destination, pixels.data(), pixels.size(), &source, &mipLevelSize);
+
+            // The size of the next mip level:
+            // (see https://www.w3.org/TR/webgpu/#logical-miplevel-specific-texture-extent)
+            mipLevelSize.width /= 2;
+            mipLevelSize.height /= 2;
+
+            previousLevelPixels = std::move(pixels);
+        }
 
         // Create the Bind Group
         // ---------------------
