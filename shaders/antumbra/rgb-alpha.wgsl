@@ -24,6 +24,7 @@ struct VertexOutput {
 
 // Textures
 @group(2) @binding(0) var uTexture: texture_2d<f32>;
+@group(2) @binding(1) var uSampler: sampler;
 
 // VERTEX CODE
 @vertex
@@ -57,6 +58,6 @@ fn fs_main(in: VertexOutput) -> @location(0) vec4f {
 
     // Gamma-correction
     let linear_color: vec3f = pow(hsv2rgb(vec3f(angleMapped, distToCenter*2, 1)), vec3f(2.2));
-    let alpha: f32 = textureLoad(uTexture, vec2i(in.uv * vec2f(textureDimensions(uTexture))), 0).a;
+    let alpha: f32 = textureSample(uTexture, uSampler, in.uv).a;
     return vec4f(linear_color*alpha, alpha);
 }

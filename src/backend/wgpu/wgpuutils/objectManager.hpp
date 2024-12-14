@@ -32,6 +32,7 @@ namespace pen::backend {
     struct TextureData {
         WGPUTexture texture;
         WGPUTextureView textureView;
+        WGPUSampler sampler;
         // In Antumbra (2D) we use a new Bind Group per Texture
         WGPUBindGroup textureBindGroup;
     };

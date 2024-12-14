@@ -24,6 +24,7 @@ struct VertexOutput {
 
 // Textures
 @group(2) @binding(0) var uTexture: texture_2d<f32>;
+@group(2) @binding(1) var uSampler: sampler;
 
 
 @vertex
@@ -36,7 +37,7 @@ fn vs_main(in: VertexInput) -> VertexOutput {
 
 @fragment
 fn fs_main(in: VertexOutput) -> @location(0) vec4f {
-    let color: vec4f = textureLoad(uTexture, vec2i(in.uv * vec2f(textureDimensions(uTexture))), 0).rgba;
+    let color: vec4f = textureSample(uTexture, uSampler, in.uv).rgba;
     let alpha: f32 = color.a;
     return vec4f(color.rgb*alpha, alpha);
 }

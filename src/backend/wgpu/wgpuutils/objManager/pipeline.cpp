@@ -107,7 +107,7 @@ namespace pen::backend {
         // ----------------------------------------
         WGPUBindGroupLayoutEntry bindGroupLayoutVP;
         WGPUBindGroupLayoutEntry bindGroupLayoutM;
-        WGPUBindGroupLayoutEntry bindGroupLayoutTex;
+        WGPUBindGroupLayoutEntry bindGroupLayoutTex[2];
 
         // View and Projection (struct)
         // ----------------------------
@@ -139,16 +139,26 @@ namespace pen::backend {
 
         // Texture
         // -------
-        bindGroupLayoutTex = {};
-        setDefault(bindGroupLayoutTex);
+        bindGroupLayoutTex[0] = {};
+        setDefault(bindGroupLayoutTex[0]);
         // Binding index for texture is 0
-        bindGroupLayoutTex.binding = 0;
+        bindGroupLayoutTex[0].binding = 0;
         // Only the Fragment Shader needs this
-        bindGroupLayoutTex.visibility = WGPUShaderStage_Fragment;
+        bindGroupLayoutTex[0].visibility = WGPUShaderStage_Fragment;
         // Sample type is float because we expect numbers from 0 to 1 in the color channels
-        bindGroupLayoutTex.texture.sampleType = WGPUTextureSampleType_Float;
+        bindGroupLayoutTex[0].texture.sampleType = WGPUTextureSampleType_Float;
         // View Dimension. 2D
-        bindGroupLayoutTex.texture.viewDimension = WGPUTextureViewDimension_2D;
+        bindGroupLayoutTex[0].texture.viewDimension = WGPUTextureViewDimension_2D;
+        // Sampler
+        // -------
+        bindGroupLayoutTex[1] = {};
+        setDefault(bindGroupLayoutTex[1]);
+        // Binding index for texture sampler is 1
+        bindGroupLayoutTex[1].binding = 1;
+        // Only the Fragment Shader needs this
+        bindGroupLayoutTex[1].visibility = WGPUShaderStage_Fragment;
+        // Sampler type is set to filtering
+        bindGroupLayoutTex[1].sampler.type = WGPUSamplerBindingType_Filtering;
 
         // Create Descriptor for the Layout
         // --------------------------------
@@ -166,7 +176,8 @@ namespace pen::backend {
         bindGroupLayoutDescriptor.entries = &bindGroupLayoutM;
         layoutM = wgpuDeviceCreateBindGroupLayout(device, &bindGroupLayoutDescriptor);
 
-        bindGroupLayoutDescriptor.entries = &bindGroupLayoutTex;
+        bindGroupLayoutDescriptor.entryCount = 2; // 2 layout entries for the Texture Bind Group. We need a Texture and a Sampler
+        bindGroupLayoutDescriptor.entries = bindGroupLayoutTex;
         layoutTex = wgpuDeviceCreateBindGroupLayout(device, &bindGroupLayoutDescriptor);
     }
 

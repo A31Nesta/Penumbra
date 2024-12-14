@@ -320,21 +320,41 @@ namespace pen::backend {
         textureViewDesc.format = textureDesc.format;
         textureData->textureView = wgpuTextureCreateView(textureData->texture, &textureViewDesc);
 
+        // Create a sampler
+        WGPUSamplerDescriptor samplerDesc;
+        samplerDesc.addressModeU = WGPUAddressMode_Repeat;
+        samplerDesc.addressModeV = WGPUAddressMode_Repeat;
+        samplerDesc.addressModeW = WGPUAddressMode_Repeat;
+        samplerDesc.magFilter = WGPUFilterMode_Linear;
+        samplerDesc.minFilter = WGPUFilterMode_Linear;
+        samplerDesc.mipmapFilter = WGPUMipmapFilterMode_Linear;
+        samplerDesc.lodMinClamp = 0.0f;
+        samplerDesc.lodMaxClamp = 1.0f;
+        samplerDesc.compare = WGPUCompareFunction_Undefined;
+        samplerDesc.maxAnisotropy = 1;
+        textureData->sampler = wgpuDeviceCreateSampler(objects::device, &samplerDesc);
+
         // Create the Bind Group
         // ---------------------
-        WGPUBindGroupEntry bindGroupEntry;
-        bindGroupEntry.nextInChain = nullptr;
-        bindGroupEntry.binding = 0; // new bind group so...
-        bindGroupEntry.textureView = textureData->textureView;
-        // Set stuff to null
-        bindGroupEntry.buffer = nullptr;
-        bindGroupEntry.sampler = nullptr;
+        // Texture
+        WGPUBindGroupEntry bindGroupEntries[2];
+        bindGroupEntries[0].nextInChain = nullptr;
+        bindGroupEntries[0].binding = 0; // new bind group so...
+        bindGroupEntries[0].textureView = textureData->textureView;
+        bindGroupEntries[0].buffer = nullptr;
+        bindGroupEntries[0].sampler = nullptr;
+        // Sampler
+        bindGroupEntries[1].nextInChain = nullptr;
+        bindGroupEntries[1].binding = 1; // Sampler has binding 1
+        bindGroupEntries[1].sampler = textureData->sampler;
+        bindGroupEntries[1].textureView = nullptr;
+        bindGroupEntries[1].buffer = nullptr;
         
         WGPUBindGroupDescriptor bindGroupDesc{};
         bindGroupDesc.nextInChain = nullptr;
         bindGroupDesc.layout = pipeline2D::bindGroupLayouts[2]; // Index 2 is for the texture
-        bindGroupDesc.entryCount = 1;
-        bindGroupDesc.entries = &bindGroupEntry;
+        bindGroupDesc.entryCount = 2;
+        bindGroupDesc.entries = bindGroupEntries;
         textureData->textureBindGroup = wgpuDeviceCreateBindGroup(objects::device, &bindGroupDesc);
 
         // REGISTER TEXTURE AND RETURN ID
@@ -346,6 +366,8 @@ namespace pen::backend {
         TextureData* td = textures.at(texture);
         // Delete Bind Group
         wgpuBindGroupRelease(td->textureBindGroup);
+        // Delete Sampler
+        wgpuSamplerRelease(td->sampler);
         // Delete texture
         wgpuTextureViewRelease(td->textureView);
         wgpuTextureDestroy(td->texture);
