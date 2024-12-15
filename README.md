@@ -1,6 +1,6 @@
 # Penumbra
 
-Simple Renderer built for Selengine.   
+Simple Renderer built for Selengine, a custom 3D game engine.   
 It features a strange and simplistic lighting model based on textures created specifically for the game being developed in Selengine.   
 Cross-platform but primarily tested and developed on Linux.
 
@@ -17,15 +17,11 @@ WGPU one outputs to the console, for example.
 
 - 2D and 3D Graphics via separate modules (Antumbra and Umbra respectively)
 - Simple phong-based lighting
-- Model loading (From Hope-Soda files or normal files)
+- Model loading
 
-## What may be supported in the future?
+### What does it ACTUALLY support?
 
-**Not planned for now**
-
-- 2D Normal Map support for better 2D Lighting
-- PBR Lighting
-- Shadow Mapping (ironic that it's not supported for now)
+Right now it only supports simple 2D graphics, but they work in exactly the same way with WebGPU and BGFX.
 
 ## "Is there a lore reason why it's called like that?"
 
