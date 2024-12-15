@@ -41,7 +41,7 @@ namespace pen::backend {
         // But the face orientation does not matter much because we do not
         // cull (i.e. "hide") the faces pointing away from us (which is often
         // used for optimization).
-        pipelineDesc.primitive.cullMode = WGPUCullMode_None; // TODO: Cull back faces once everything is working (Set to Front)
+        pipelineDesc.primitive.cullMode = WGPUCullMode_Front; // Cull back faces (Set this to None for debug, Front otherwise)
 
         // Describe fragment pipeline state
         // --------------------------------

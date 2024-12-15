@@ -142,8 +142,18 @@ namespace pen::antumbra {
 
     // Draw the scene
     void Antumbra::draw(uint16_t width, uint16_t height) {
-        const glm::vec3 at(0.0f, 0.0f, 0.0f);
-        const glm::vec3 eye(0.0f, 0.0f, 2.0f);
+        glm::vec3 at(0.0f, 0.0f, 0.0f);
+        glm::vec3 eye(0.0f, 0.0f, -2.0f);
+
+        #ifdef PENUMBRA_BACKEND_BGFX
+            // Correct Position
+            eye.z = -eye.z;
+            at.z  = -at.z;
+        #elif defined(PENUMBRA_BACKEND_WGPU)
+            // Correct Position
+            eye.x = -eye.x;
+            at.x  = -at.x;
+        #endif
 
         // Set view and projection matrix for view 0.
         glm::mat4 viewMtx = glm::lookAt(eye, at, glm::vec3(0, 1, 0));

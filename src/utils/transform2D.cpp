@@ -42,7 +42,11 @@ namespace pen {
         if (position != _lastPos) {
             needsRecalc = true;
             _lastPos = position;
-            _posMtx = glm::translate(glm::mat4(1), glm::vec3(position.x, position.y, 0.0f));
+            #ifdef PENUMBRA_BACKEND_WGPU
+                _posMtx = glm::translate(glm::mat4(1), glm::vec3(-position.x, position.y, 0.0f));
+            #else
+                _posMtx = glm::translate(glm::mat4(1), glm::vec3(position.x, position.y, 0.0f));
+            #endif
         }
         // If the rotation changed we calculate it
         if (rotation != _lastRot) {
@@ -62,7 +66,7 @@ namespace pen {
 
         // If the main matrix needs to be calculated, we calculate it
         if (needsRecalc) {
-            matrix = _sclMtx * _rotMtx * _posMtx;
+            matrix = _posMtx * _rotMtx * _sclMtx;
         }
     }
     void Transform2D::forceCalculateMatrix() {
@@ -73,6 +77,6 @@ namespace pen {
         _lastScl = scale;
         _sclMtx = glm::scale(glm::mat4(1), glm::vec3(scale.x, scale.y, 1.0f));
 
-        matrix = _sclMtx * _rotMtx * _posMtx;
+        matrix = _posMtx * _rotMtx * _sclMtx;
     }
 }

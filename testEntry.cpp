@@ -9,7 +9,7 @@ int main(int argc, char** argv) {
 
     // DEBUG:
     // Force Wayland
-    flags = flags | PENUMBRA_WAYLAND;
+    // flags = flags | PENUMBRA_WAYLAND;
 
     pen::createWindow("Penumbra", 1280, 720, flags);
     pen::createAntumbra("pnmbr/shaders-2D/default");
@@ -18,6 +18,9 @@ int main(int argc, char** argv) {
     pen::antumbra::Sprite* magic = pen::createSprite("pnmbr/images/hexta.png", pen::Vec2(0, 0), 0, 1.125);
     pen::antumbra::Sprite* magic2 = pen::createSprite("pnmbr/images/hexta.png", pen::Vec2(0, 0), 0, 2);
     pen::antumbra::Sprite* magic3 = pen::createSprite("pnmbr/images/hexta.png", pen::Vec2(0, 0), 0, 3.5, "pnmbr/shaders-2D/rgb-alpha");
+
+    magic3->transform.position.x = 2;
+    magic3->transform.scale.y = 2;
 
     // Run Program
     while (pen::running()) {
