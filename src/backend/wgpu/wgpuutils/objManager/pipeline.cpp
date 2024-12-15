@@ -15,6 +15,7 @@ namespace pen::backend {
         if (layout2D != nullptr) {
             pipelineDesc.vertex.bufferCount = 1;
 	        pipelineDesc.vertex.buffers = layout2D;
+            std::cout << "PENUMBRA_INFO [WGPU]: Bound Vertex Layout for this Pipeline!\n";
         } else {
             pipelineDesc.vertex.bufferCount = 0;
 	        pipelineDesc.vertex.buffers = nullptr;
@@ -26,6 +27,8 @@ namespace pen::backend {
         pipelineDesc.vertex.entryPoint = "vs_main";
         pipelineDesc.vertex.constantCount = 0;
         pipelineDesc.vertex.constants = nullptr;
+
+        std::cout << "PENUMBRA_INFO [WGPU]: Configured Vertex stage!\n";
 
         // Describe primitive pipeline state
         // ---------------------------------
@@ -42,6 +45,8 @@ namespace pen::backend {
         // cull (i.e. "hide") the faces pointing away from us (which is often
         // used for optimization).
         pipelineDesc.primitive.cullMode = WGPUCullMode_Back; // Cull back faces (Set this to None for debug, Back otherwise)
+
+        std::cout << "PENUMBRA_INFO [WGPU]: Configured Primitive stage!\n";
 
         // Describe fragment pipeline state
         // --------------------------------
@@ -77,6 +82,8 @@ namespace pen::backend {
         // Set fragment
         pipelineDesc.fragment = &fragmentState;
 
+        std::cout << "PENUMBRA_INFO [WGPU]: Configured Fragment stage!\n";
+
         // Describe stencil/depth pipeline state
         // -------------------------------------
         // Don't use depth for now
@@ -97,6 +104,8 @@ namespace pen::backend {
         // ------------------------
         // Uniform Layout. Here we set Uniform layouts and stuff
         pipelineDesc.layout = nullptr;
+
+        std::cout << "PENUMBRA_INFO [WGPU]: Finished configuring Pipeline!\n";
 
         // Return
         return pipelineDesc;

@@ -5,6 +5,7 @@
 #include "debug/log.hpp"
 
 #include <cmath>
+#include <iostream>
 
 namespace pen::core {
     Window::Window(std::string title, int width, int height, uint32_t penumbra_flags)
@@ -30,7 +31,8 @@ namespace pen::core {
 	// Create or set renderers
 	void Window::createAntumbra(std::string defaultShader) {
 		antumbra = new antumbra::Antumbra(defaultShader);
-		debug::print("PENUMBRA_LOG [BGFX]: Antumbra renderer successfully created\n");
+		debug::print("PENUMBRA_INFO: Antumbra renderer successfully created\n");
+		std::cout << "PENUMBRA_INFO: Antumbra renderer successfully created\n";
 	}
 
     // Normal functions

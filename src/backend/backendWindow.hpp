@@ -49,6 +49,9 @@ namespace pen::backend {
             // Create Framebuffers
             createFramebuffers();
 
+            // Log
+            std::cout << "PENUMBRA: Initialized Backend and Window Correctly!\n";
+
             // Update time things
             currentTime = glfwGetTime();
             lastTime = currentTime;

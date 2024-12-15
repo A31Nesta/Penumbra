@@ -21,7 +21,7 @@
 #include "wgpuutils/init.hpp"
 
 #ifdef __EMSCRIPTEN__
-    #include <emscripten.h>
+    #include <emscripten/emscripten.h>
 #endif // __EMSCRIPTEN__
 
 
@@ -87,7 +87,9 @@ namespace pen::backend {
         WGPUTextureView targetView = wgpuTextureCreateView(surfaceTexture.texture, &viewDescriptor);
 
         // Apparently we shouldn't do this in WGPU-Native
-        // wgpuTextureRelease(surfaceTexture.texture);
+        #ifdef __EMSCRIPTEN__
+            wgpuTextureRelease(surfaceTexture.texture);
+        #endif
 
         return targetView;
     }
@@ -111,13 +113,14 @@ namespace pen::backend {
 
             // Release the texture view
             wgpuTextureViewRelease(renderPassObjs.targetView);
-            // Present the next texture of the swap chain, yay!
-            #ifndef __EMSCRIPTEN__
-                wgpuSurfacePresent(objects::surface);
-            #endif
 
-            // WGPU Device Poll (AKA WGPU Device Tick in Dawn)
-            wgpuDevicePoll(objects::device, false, nullptr);
+            #ifndef __EMSCRIPTEN__
+                // Present the next texture of the swap chain, yay!
+                wgpuSurfacePresent(objects::surface);
+
+                // WGPU Device Poll (AKA WGPU Device Tick in Dawn)
+                wgpuDevicePoll(objects::device, false, nullptr);
+            #endif
 
             // SET RENDERING TO FALSE.
             // THIS INDICATES THAT WE'VE ENDED THE FRAME
@@ -189,7 +192,9 @@ namespace pen::backend {
         }
 
         // Apparently this is not supported by WGPU Native
-        // renderPassColorAttachment.depthSlice = WGPU_DEPTH_SLICE_UNDEFINED;
+        #ifdef __EMSCRIPTEN__
+            renderPassColorAttachment.depthSlice = WGPU_DEPTH_SLICE_UNDEFINED;
+        #endif
 
         renderPassDescriptor.colorAttachmentCount = 1;
         renderPassDescriptor.colorAttachments = &renderPassColorAttachment;
@@ -262,7 +267,8 @@ namespace pen::backend {
         showAdapterProperties(adapter);
 
         // Create Descriptor
-        WGPUDeviceDescriptor deviceDesc = getDeviceDescriptor();
+        WGPURequiredLimits limits;
+        WGPUDeviceDescriptor deviceDesc = getDeviceDescriptor(adapter, limits);
         // Request device
         objects::device = requestDeviceSync(adapter, &deviceDesc);
 
@@ -283,7 +289,13 @@ namespace pen::backend {
         // Set surface format to whatever the surface uses
         objects::surfaceCapabilities = {};
         wgpuSurfaceGetCapabilities(objects::surface, adapter, &objects::surfaceCapabilities);
-        objects::surfaceFormat = objects::surfaceCapabilities.formats[0];
+        #ifdef __EMSCRIPTEN__
+            // Emscripten is buggy right now
+            // HACK: HARD CODED SURFACE FORMAT IN EMSCRIPTEN. Emscripten is currently fucked up so it doesn't work with getCapabilities
+            objects::surfaceFormat = WGPUTextureFormat_RGBA8Unorm;
+        #else
+            objects::surfaceFormat = objects::surfaceCapabilities.formats[0];
+        #endif
         objects::config.format = objects::surfaceFormat;
         // And we do not need any particular view format
         objects::config.viewFormatCount = 0;

@@ -4,7 +4,13 @@
 #include <cassert>
 #include <iostream>
 
-#if __linux__
+#ifdef __EMSCRIPTEN__
+    #define GLFW_EXPOSE_NATIVE_EMSCRIPTEN
+    #ifndef GLFW_PLATFORM_EMSCRIPTEN // not defined in older versions of emscripten
+        #define GLFW_PLATFORM_EMSCRIPTEN 0
+    #endif
+    #include <emscripten/emscripten.h>
+#elif __linux__
 	// X11 Support
     #ifdef PENUMBRA_X11_COMPAT
 		#define GLFW_EXPOSE_NATIVE_X11
@@ -19,10 +25,13 @@
 #elif defined(__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__)
     #define GLFW_EXPOSE_NATIVE_COCOA
 #endif
-#include <GLFW/glfw3native.h>
+
+#ifndef __EMSCRIPTEN__
+    #include <GLFW/glfw3native.h>
+#endif
 
 WGPUInstance createWGPUInstance() {
-    #ifdef WGPU_EMSCRIPTEN
+    #ifdef __EMSCRIPTEN__
         // return instance
         return wgpuCreateInstance(nullptr);
     #else
@@ -94,12 +103,14 @@ void deviceLostCallback(WGPUDeviceLostReason reason, char const* message, void* 
     if (message) std::cout << " (" << message << ")";
     std::cout << std::endl;
 };
-WGPUDeviceDescriptor getDeviceDescriptor() {
+WGPUDeviceDescriptor getDeviceDescriptor(WGPUAdapter adapter, WGPURequiredLimits& limits) {
+    limits = getRequiredLimits(adapter);
+
     WGPUDeviceDescriptor deviceDesc = {};
     deviceDesc.nextInChain = nullptr;
     deviceDesc.label = "Default Device"; // anything works here, that's your call
     deviceDesc.requiredFeatureCount = 0; // we do not require any specific feature
-    deviceDesc.requiredLimits = nullptr; // we do not require any specific limit
+    deviceDesc.requiredLimits = &limits;
     deviceDesc.defaultQueue.nextInChain = nullptr;
     deviceDesc.defaultQueue.label = "default queue";
     // A function that is invoked whenever the device stops being available.
@@ -208,6 +219,82 @@ void showAdapterProperties(WGPUAdapter adapter) {
     std::cout << std::dec; // Restore decimal numbers
 }
 
+// Limits
+void setDefault(WGPULimits& limits) {
+    limits.maxTextureDimension1D = WGPU_LIMIT_U32_UNDEFINED;
+	limits.maxTextureDimension2D = WGPU_LIMIT_U32_UNDEFINED;
+	limits.maxTextureDimension3D = WGPU_LIMIT_U32_UNDEFINED;
+	limits.maxTextureArrayLayers = WGPU_LIMIT_U32_UNDEFINED;
+	limits.maxBindGroups = WGPU_LIMIT_U32_UNDEFINED;
+	limits.maxBindGroupsPlusVertexBuffers = WGPU_LIMIT_U32_UNDEFINED;
+	limits.maxBindingsPerBindGroup = WGPU_LIMIT_U32_UNDEFINED;
+	limits.maxDynamicUniformBuffersPerPipelineLayout = WGPU_LIMIT_U32_UNDEFINED;
+	limits.maxDynamicStorageBuffersPerPipelineLayout = WGPU_LIMIT_U32_UNDEFINED;
+	limits.maxSampledTexturesPerShaderStage = WGPU_LIMIT_U32_UNDEFINED;
+	limits.maxSamplersPerShaderStage = WGPU_LIMIT_U32_UNDEFINED;
+	limits.maxStorageBuffersPerShaderStage = WGPU_LIMIT_U32_UNDEFINED;
+	limits.maxStorageTexturesPerShaderStage = WGPU_LIMIT_U32_UNDEFINED;
+	limits.maxUniformBuffersPerShaderStage = WGPU_LIMIT_U32_UNDEFINED;
+	limits.maxUniformBufferBindingSize = WGPU_LIMIT_U64_UNDEFINED;
+	limits.maxStorageBufferBindingSize = WGPU_LIMIT_U64_UNDEFINED;
+	limits.minUniformBufferOffsetAlignment = WGPU_LIMIT_U32_UNDEFINED;
+	limits.minStorageBufferOffsetAlignment = WGPU_LIMIT_U32_UNDEFINED;
+	limits.maxVertexBuffers = WGPU_LIMIT_U32_UNDEFINED;
+	limits.maxBufferSize = WGPU_LIMIT_U64_UNDEFINED;
+	limits.maxVertexAttributes = WGPU_LIMIT_U32_UNDEFINED;
+	limits.maxVertexBufferArrayStride = WGPU_LIMIT_U32_UNDEFINED;
+	limits.maxInterStageShaderComponents = WGPU_LIMIT_U32_UNDEFINED;
+	limits.maxInterStageShaderVariables = WGPU_LIMIT_U32_UNDEFINED;
+	limits.maxColorAttachments = WGPU_LIMIT_U32_UNDEFINED;
+	limits.maxColorAttachmentBytesPerSample = WGPU_LIMIT_U32_UNDEFINED;
+	limits.maxComputeWorkgroupStorageSize = WGPU_LIMIT_U32_UNDEFINED;
+	limits.maxComputeInvocationsPerWorkgroup = WGPU_LIMIT_U32_UNDEFINED;
+	limits.maxComputeWorkgroupSizeX = WGPU_LIMIT_U32_UNDEFINED;
+	limits.maxComputeWorkgroupSizeY = WGPU_LIMIT_U32_UNDEFINED;
+	limits.maxComputeWorkgroupSizeZ = WGPU_LIMIT_U32_UNDEFINED;
+	limits.maxComputeWorkgroupsPerDimension = WGPU_LIMIT_U32_UNDEFINED;
+}
+WGPURequiredLimits getRequiredLimits(WGPUAdapter adapter) {
+    // Get adapter supported limits, in case we need them
+	WGPUSupportedLimits supportedLimits;
+	supportedLimits.nextInChain = nullptr;
+	wgpuAdapterGetLimits(adapter, &supportedLimits);
+
+	WGPURequiredLimits requiredLimits{};
+	setDefault(requiredLimits.limits);
+
+	requiredLimits.limits.maxVertexAttributes = 4;
+	requiredLimits.limits.maxVertexBuffers = 1;
+	requiredLimits.limits.maxBufferSize = supportedLimits.limits.maxBufferSize; // Same as supported
+	requiredLimits.limits.maxVertexBufferArrayStride = 5 * sizeof(float); // POSITION + UV
+
+    #ifndef __EMSCRIPTEN__
+	    requiredLimits.limits.maxInterStageShaderComponents = 6;
+    #endif
+
+	// We use at most 3 bind groups for now
+	requiredLimits.limits.maxBindGroups = 3;
+	// We use at most 2 uniform buffers per stage
+	requiredLimits.limits.maxUniformBuffersPerShaderStage = 2;
+	requiredLimits.limits.maxUniformBufferBindingSize = supportedLimits.limits.maxUniformBufferBindingSize;
+
+	// These two limits are different because they are "minimum" limits,
+	// they are the only ones we are may forward from the adapter's supported
+	// limits.
+	requiredLimits.limits.minUniformBufferOffsetAlignment = supportedLimits.limits.minUniformBufferOffsetAlignment;
+	requiredLimits.limits.minStorageBufferOffsetAlignment = supportedLimits.limits.minStorageBufferOffsetAlignment;
+
+    // Textures (This could fix some stuff???)
+    // Allow textures up to 4K (this is supposed to be a retro/stylized renderer)
+	requiredLimits.limits.maxTextureDimension1D = 4096;
+	requiredLimits.limits.maxTextureDimension2D = 4096;
+	requiredLimits.limits.maxTextureArrayLayers = 1;
+	requiredLimits.limits.maxSampledTexturesPerShaderStage = 1;
+	requiredLimits.limits.maxSamplersPerShaderStage = 1;
+
+	return requiredLimits;
+}
+
 // WINDOW
 WGPUSurface getSurfaceFromGLFWWindow(GLFWwindow* window, WGPUInstance instance) {
     WGPUSurface surface;
@@ -305,6 +392,24 @@ WGPUSurface getSurfaceFromGLFWWindow(GLFWwindow* window, WGPUInstance instance) 
                         .hwnd = hwnd,
                     },
             });
+    }
+    #elif defined(GLFW_EXPOSE_NATIVE_EMSCRIPTEN)
+    {
+        WGPUSurfaceDescriptorFromCanvasHTMLSelector fromCanvasHTMLSelector;
+        fromCanvasHTMLSelector.chain.sType = WGPUSType_SurfaceDescriptorFromCanvasHTMLSelector;
+
+        fromCanvasHTMLSelector.chain.next = NULL;
+        fromCanvasHTMLSelector.selector = "canvas";
+
+        WGPUSurfaceDescriptor surfaceDescriptor;
+        surfaceDescriptor.nextInChain = &fromCanvasHTMLSelector.chain;
+        surfaceDescriptor.label = NULL;
+
+        // Create Surface
+        surface = wgpuInstanceCreateSurface(
+            instance,
+            &surfaceDescriptor
+        );
     }
     #else
     #error "Unsupported GLFW native platform"

@@ -9,6 +9,8 @@
 #include <string>
 #include <vector>
 
+#include <iostream>
+
 // STBI
 #define STB_IMAGE_IMPLEMENTATION
 #include "stbi/stb_image.h"
@@ -43,6 +45,7 @@ namespace pen {
 
         // Load texture into WGPU
         if (bytes) {
+            std::cout << "PENUMBRA_INFO [WGPU]: Loaded texture into memory!\n";
             // We do x*y*4 here because per pixel we have RGB and A
             std::vector<uint8_t> data(bytes, bytes+x*y*4);
             _textureHandle = backend::createTexture(data, x, y);
@@ -56,7 +59,7 @@ namespace pen {
             spriteDeform.y = float(height)/maxValue;
         }
         else {
-            debug::print("Failed to load Texture: " + path + "\n", debug::Color::RED);
+            std::cout << "PENUMBRA_ERROR [WGPU]: Failed to load Texture: " + path + "\n";
             valid = false;
         }
     }

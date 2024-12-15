@@ -51,6 +51,7 @@ namespace pen::antumbra {
             bindGroupDesc.layout = backend::pipeline2D::bindGroupLayouts[1];
             bindGroupDesc.entryCount = 1;
             bindGroupDesc.entries = &binding;
+            bindGroupDesc.label = "modelMatrix";
             uniformData->bindGroup = wgpuDeviceCreateBindGroup(backend::objects::device, &bindGroupDesc);
 
             // Convert to backendData

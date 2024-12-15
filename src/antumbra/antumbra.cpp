@@ -20,6 +20,7 @@
 #include <cstdint>
 #include <string>
 #include <vector>
+#include <iostream>
 
 #ifdef PENUMBRA_BACKEND_BGFX
     #include <bgfx/bgfx.h>
@@ -54,10 +55,14 @@ namespace pen::antumbra {
         // this Vertex Layout
         vtxLayout.getBackendSpecificData();
 
+        std::cout << "ANTUMBRA_INIT: Created Vertex Layout\n";
+
         // Create Quad
         Shader* defaultS = new Shader(0, defaultShaderPath);
         defaultS->setPersistence(true);
         shaders.push_back(defaultS);
+
+        std::cout << "ANTUMBRA_INIT: Created Shader\n";
 
         // Create Uniforms
         // HACK: With BGFX Backend we manually create the Uniform here
@@ -82,6 +87,8 @@ namespace pen::antumbra {
         
         // We pass the Vertex Layout to the initQuad() function
         initQuad(vtxLayout);
+
+        std::cout << "ANTUMBRA_INIT: Initialized Quad\n";
     }
     Antumbra::~Antumbra() {
         // Delete Sprites
@@ -113,6 +120,7 @@ namespace pen::antumbra {
 
     // BASE ADD SPRITE
     Sprite* Antumbra::createSprite(std::string texture, Transform2D transform, std::string shader) {
+        std::cout << "PENUMBRA_INFO [WGPU]: Creating new Sprite...\n";
         uint32_t id = sprites.size();
 
         Texture* t = getTexture(texture);
@@ -124,6 +132,8 @@ namespace pen::antumbra {
         
         Sprite* sprite = new Sprite(id, transform, deform, textureID, shaderID);
         sprites.push_back(sprite);
+
+        std::cout << "PENUMBRA_INFO [WGPU]: Created new Sprite!\n";
         return sprite;
     }
     // OTHER ADD SPRITES
@@ -208,7 +218,9 @@ namespace pen::antumbra {
             }
         }
 
+        std::cout << "PENUMBRA_INFO [WGPU]: Creating new texture...\n";
         Texture* newTexture = new Texture(textures.size(), texture, PENUMBRA_TEX_COLOR, colorUniform);
+        std::cout << "PENUMBRA_INFO [WGPU]: Created new texture!\n";
         
         // Only add if it's Valid
         if (newTexture->isValid()) {

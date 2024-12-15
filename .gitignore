@@ -1,5 +1,9 @@
 build/
+build-emscripten/
 .cache/
+
+# GLM library stuff is only for Emscripten
+external/glm/
 
 # WGPU precompiled libraries are comically large
 external/wgpu-native/linux-debug/lib/

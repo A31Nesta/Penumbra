@@ -7,10 +7,8 @@ option(LINUX_WAYLAND "Linux Only. Enables Wayland support. [Recommended if Wayla
 # INFO: To develop WGPU backend, disable building with BGFX and enable building with WGPU
 option(BACKEND_BGFX "Use BGFX as Backend" OFF)
 option(BACKEND_WGPU "Use WebGPU Native as Backend" ON)
-# Since I never got Emscripten to work with CMake I'll just say that there's a macro:
-# WGPU_EMSCRIPTEN
-# That I use for emscripten-specific code while using WGPU. Define it when compiling for Web
-# In Emscripten we should also use the -sASYNCIFY option
+# I never got Emscripten to work with CMake lol
+# In Emscripten we should use the -sASYNCIFY option and the -sUSE_GLFW=3
 
 # Set C++ Standard
 set(CMAKE_CXX_STANDARD 20)

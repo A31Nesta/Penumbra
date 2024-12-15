@@ -8,6 +8,8 @@
 #include <utility>
 #include <vector>
 
+#include <iostream>
+
 namespace pen::backend {
     // Global Data
     namespace objects {
@@ -89,6 +91,7 @@ namespace pen::backend {
         bindGroupDesc.layout = pipeline2D::bindGroupLayouts[0];
         bindGroupDesc.entryCount = 1;
         bindGroupDesc.entries = &binding;
+        bindGroupDesc.label = "viewProjectionMatrices";
         objects::viewProjection.bindGroup = wgpuDeviceCreateBindGroup(objects::device, &bindGroupDesc);
     }
 
@@ -166,8 +169,10 @@ namespace pen::backend {
 
         // Create Shader module
         WGPUShaderModuleDescriptor shaderDesc = {};
-        shaderDesc.hintCount = 0;
-        shaderDesc.hints = nullptr;
+        #ifndef __EMSCRIPTEN__
+            shaderDesc.hintCount = 0;
+            shaderDesc.hints = nullptr;
+        #endif
 
         // Shader Code Module Descriptor
         WGPUShaderModuleWGSLDescriptor shaderCodeDesc = {}; // We use WGSL for shaders. We could use SPIR-V or GLSL though
@@ -295,6 +300,7 @@ namespace pen::backend {
         textureDesc.viewFormats = nullptr;
         // Create Texture
         textureData->texture = wgpuDeviceCreateTexture(objects::device, &textureDesc);
+        std::cout << "PENUMBRA_INFO [WGPU]: Created WGPUTexture!\n";
 
         // Create the View
         // ---------------
@@ -307,6 +313,7 @@ namespace pen::backend {
         textureViewDesc.dimension = WGPUTextureViewDimension_2D;
         textureViewDesc.format = textureDesc.format;
         textureData->textureView = wgpuTextureCreateView(textureData->texture, &textureViewDesc);
+        std::cout << "PENUMBRA_INFO [WGPU]: Created Texture View!\n";
 
         // Create a sampler
         WGPUSamplerDescriptor samplerDesc;
@@ -321,6 +328,7 @@ namespace pen::backend {
         samplerDesc.compare = WGPUCompareFunction_Undefined;
         samplerDesc.maxAnisotropy = 1;
         textureData->sampler = wgpuDeviceCreateSampler(objects::device, &samplerDesc);
+        std::cout << "PENUMBRA_INFO [WGPU]: Created Sampler!\n";
 
         // Write to Texture
         // ----------------
@@ -381,6 +389,7 @@ namespace pen::backend {
 
             previousLevelPixels = std::move(pixels);
         }
+        std::cout << "PENUMBRA_INFO [WGPU]: Moved Texture Data to GPU!\n";
 
         // Create the Bind Group
         // ---------------------
@@ -403,7 +412,9 @@ namespace pen::backend {
         bindGroupDesc.layout = pipeline2D::bindGroupLayouts[2]; // Index 2 is for the texture
         bindGroupDesc.entryCount = 2;
         bindGroupDesc.entries = bindGroupEntries;
+        bindGroupDesc.label = "textureBindGroup";
         textureData->textureBindGroup = wgpuDeviceCreateBindGroup(objects::device, &bindGroupDesc);
+        std::cout << "PENUMBRA_INFO [WGPU]: Created Bind Groups!\n";
 
         // REGISTER TEXTURE AND RETURN ID
         // ------------------------------
