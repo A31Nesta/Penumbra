@@ -73,6 +73,7 @@ namespace pen {
             int x = 0;
             int y = 0;
             int channels = 0;
+            stbi_set_flip_vertically_on_load(true);
             stbi_uc* bytes = stbi_load(path.c_str(), &x, &y, &channels, 4);
 
             if (bytes) {

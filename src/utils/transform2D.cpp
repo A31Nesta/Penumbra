@@ -42,11 +42,7 @@ namespace pen {
         if (position != _lastPos) {
             needsRecalc = true;
             _lastPos = position;
-            #ifdef PENUMBRA_BACKEND_WGPU
-                _posMtx = glm::translate(glm::mat4(1), glm::vec3(-position.x, position.y, 0.0f));
-            #else
-                _posMtx = glm::translate(glm::mat4(1), glm::vec3(position.x, position.y, 0.0f));
-            #endif
+            _posMtx = glm::translate(glm::mat4(1), glm::vec3(position.x, position.y, 0.0f));
         }
         // If the rotation changed we calculate it
         if (rotation != _lastRot) {
