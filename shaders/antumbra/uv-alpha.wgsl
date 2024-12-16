@@ -4,11 +4,11 @@ struct ViewProjection {
     projection: mat4x4<f32>,
 }
 
-// Structs
 struct VertexInput {
     @location(0) position: vec3f,
     @location(1) uv: vec2f,
 };
+
 struct VertexOutput {
     @builtin(position) position: vec4f,
 	// The location here does not refer to a vertex attribute, it just means
@@ -26,7 +26,7 @@ struct VertexOutput {
 @group(2) @binding(0) var uTexture: texture_2d<f32>;
 @group(2) @binding(1) var uSampler: sampler;
 
-
+// VERTEX CODE
 @vertex
 fn vs_main(in: VertexInput) -> VertexOutput {
     var output: VertexOutput;
@@ -35,10 +35,11 @@ fn vs_main(in: VertexInput) -> VertexOutput {
     return output;
 }
 
+// FRAGMENT CODE
 @fragment
 fn fs_main(in: VertexOutput) -> @location(0) vec4f {
-    var color: vec4f = textureSample(uTexture, uSampler, in.uv).rgba;
-    color = vec4f(pow(color.rgb, vec3f(2.2)), color.a);
-    let alpha: f32 = color.a;
-    return vec4f(color.rgb*alpha, alpha);
+    // Gamma-correction
+    let linear_color: vec3f = pow(vec3f(in.uv.x, in.uv.y, 1), vec3f(2.2));
+    let alpha: f32 = textureSample(uTexture, uSampler, in.uv).a;
+    return vec4f(linear_color*alpha, alpha);
 }
