@@ -18,9 +18,11 @@ namespace pen {
 
     private:
         // BGFX's ShaderHandle
+        // WGPU's Render Pipeline. In WebGPU, Vertex Shaders and Fragment Shaders can be in the same file
         uint16_t loadShader(std::string name);
 
         // BGFX's ProgramHandle
+        // WGPU's Render Pipeline
         uint16_t program;
 
         std::string path;

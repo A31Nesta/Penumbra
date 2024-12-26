@@ -37,7 +37,7 @@ namespace pen {
         bool persistent = false;
 
         // Texture Data
-        uint32_t _textureHandle;
+        uint16_t _textureHandle;
         uint16_t width, height;
         Vec2 spriteDeform;
         uint8_t textureType;
