@@ -3,6 +3,7 @@
 #include "backend/wgpu/wgpuutils/objManager/pipeline.hpp"
 #include "backend/wgpu/wgpuutils/objectManager.hpp"
 #include "webgpu.h"
+#include <glm/fwd.hpp>
 
 namespace pen::backend {
     // Global variables
@@ -19,13 +20,26 @@ namespace pen::backend {
     // ---------
 
     // Shading and Uniforms
-    uint16_t createUniform(std::string name, UniformType type) {
-        // Implement here...
+    // This is not needed in WebGPU
+    uint16_t createUniform([[maybe_unused]] std::string name, [[maybe_unused]] UniformType type) {
         return 0;
     }
-    void deleteUniform(uint16_t uniform) {
-        // Delete uniform...
+    // We didn't need to create anything so...
+    void deleteUniform([[maybe_unused]] uint16_t uniform) {
+        // Do nothing
     }
+    // USED IN SPRITE CREATION IN WGPU
+    uint16_t createSpriteUniform([[maybe_unused]] std::string name, [[maybe_unused]] UniformType type) {
+        // When the Mat4 is sus
+        if (type == UniformType::Mat4) {
+            return createUniformData(sizeof(glm::mat4), 1, name);
+        }
+        return 0;
+    }
+    void deleteSpriteUniform([[maybe_unused]] uint16_t uniform) {
+        destroyUniformData(uniform);
+    }
+
     void bindTexture(uint16_t texture) {
         bindTexture(framebuffer.renderPass, texture);
     }
@@ -49,9 +63,7 @@ namespace pen::backend {
         wgpuQueueWriteBuffer(objects::queue, objects::viewProjection.uniformBuffer, 0, &viewProjMatrices, sizeof(ViewProjection));
     }
     void setModelTransform(antumbra::Sprite* sprite) {
-        UniformData* spriteData = reinterpret_cast<UniformData*>(sprite->_getBackendSpecificData());
-        wgpuRenderPassEncoderSetBindGroup(framebuffer.renderPass, 1, spriteData->bindGroup, 0, nullptr);
-        wgpuQueueWriteBuffer(objects::queue, spriteData->uniformBuffer, 0, sprite->transform.getMatrix(), sizeof(glm::mat4));
+        setBindGroup(framebuffer.renderPass, sprite->_getUniformData(), sprite->transform.getMatrix(), sizeof(glm::mat4));
     }
     void setBuffers(BackendVtxBuffer* bvb, BackendIdxBuffer* bib) {
         setBuffers(framebuffer.renderPass, bvb->getID(), bib->getID());

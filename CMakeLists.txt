@@ -127,8 +127,8 @@ if(BACKEND_WGPU)
     target_sources(${PROJECT_NAME} PRIVATE 
         src/backend/wgpu/backendRender.cpp
 
-        src/backend/wgpu/wgpuutils/objManager/pipeline.cpp
         src/backend/wgpu/wgpuutils/objectManager.cpp
+        src/backend/wgpu/wgpuutils/objManager/pipeline.cpp
         src/backend/wgpu/wgpuutils/init.cpp
         
         src/backend/wgpu/shader.cpp 
@@ -177,11 +177,6 @@ if(LINUX)
 endif(LINUX)
 
 
-target_include_directories(${PROJECT_NAME} PRIVATE
-    include
-    src
-)
-
 # WARNING: Linux Only!
 if(BACKEND_WGPU)
     target_include_directories(${PROJECT_NAME} PRIVATE
@@ -201,15 +196,14 @@ if(BACKEND_WGPU)
         $<$<CONFIG:RelWithDebInfo>:${CMAKE_CURRENT_SOURCE_DIR}/external/wgpu-native/linux-debug/lib>
         $<$<CONFIG:Release>:${CMAKE_CURRENT_SOURCE_DIR}/external/wgpu-native/linux-release/lib>
         $<$<CONFIG:MinSizeRel>:${CMAKE_CURRENT_SOURCE_DIR}/external/wgpu-native/linux-release/lib>
-
-        # Fix sussy issue where wgpu.h can't find the webgpu.h header
-        $<$<CONFIG:Debug>:${CMAKE_CURRENT_SOURCE_DIR}/external/wgpu-native/linux-debug/lib/webgpu>
-        $<$<CONFIG:RelWithDebInfo>:${CMAKE_CURRENT_SOURCE_DIR}/external/wgpu-native/linux-debug/lib/webgpu>
-        $<$<CONFIG:Release>:${CMAKE_CURRENT_SOURCE_DIR}/external/wgpu-native/linux-release/lib/webgpu>
-        $<$<CONFIG:MinSizeRel>:${CMAKE_CURRENT_SOURCE_DIR}/external/wgpu-native/linux-release/lib/webgpu>
     )
 endif(BACKEND_WGPU)
 
+
+target_include_directories(${PROJECT_NAME} PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
+)
 
 if(BACKEND_BGFX)
     target_link_libraries(${PROJECT_NAME}

@@ -47,6 +47,6 @@ use these packages to install the necessary dependencies.
 WGPU-Native is obtained from the Releases tab of [its repository](https://github.com/gfx-rs/wgpu-native/).
 
 - **bgfx-cmake-git** \[Only if using BGFX as backend\]
-- **ktx_software-git**
+- **ktx_software-git** \[Only if using BGFX as backend; KTX is currently not supported with WGPU Backend\]
 - **glfw**
 - **glm**

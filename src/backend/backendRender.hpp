@@ -25,8 +25,13 @@ namespace pen::backend {
     };
 
     // Shading and Uniforms
-    uint16_t createUniform(std::string name, UniformType type);
-    void deleteUniform(uint16_t uniform);
+    // INFO: [[maybe_unused]] is used here because of differences between backends. WGPU needs bind groups for each sprite, BGFX creates the uniform once
+    // TODO: Remove createUniform and manage this piece of BGFX code from an Object Manager-ish function
+    uint16_t createUniform([[maybe_unused]] std::string name, [[maybe_unused]] UniformType type);
+    void deleteUniform([[maybe_unused]] uint16_t uniform);
+    uint16_t createSpriteUniform([[maybe_unused]] std::string name, [[maybe_unused]] UniformType type);
+    void deleteSpriteUniform([[maybe_unused]] uint16_t uniform);
+
     void bindTexture(uint16_t texture);
 
     // Framebuffer Stuff

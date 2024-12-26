@@ -25,6 +25,7 @@ namespace pen::backend {
     struct UniformData {
         WGPUBuffer uniformBuffer;
         WGPUBindGroup bindGroup;
+        uint16_t groupIndex;
     };
 
     // Texture data
@@ -93,8 +94,19 @@ namespace pen::backend {
     // Destroys the texture and texture view
     void destroyTexture(uint16_t texture);
 
+
+    // UNIFORMS
+    // Creates a UniformData object (bind group and buffer)
+    uint16_t createUniformData(uint64_t bufferSize, uint16_t bindingLayoutID, std::string label);
+    // Destroys the Uniform Data
+    void destroyUniformData(uint16_t uniformData);
+
+
+
     // Sets the Vertex and Index Buffers
     void setBuffers(WGPURenderPassEncoder& renderPass, uint16_t vertexBuffer, uint16_t indexBuffer);
+    // Sets a Bind Group and writes to buffer
+    void setBindGroup(WGPURenderPassEncoder& renderPass, uint16_t uniform, void* data, uint64_t sizeofData);
     // Binds a texture
     void bindTexture(WGPURenderPassEncoder& renderPass, uint16_t texture);
 

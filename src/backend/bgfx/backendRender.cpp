@@ -14,7 +14,7 @@ namespace pen::backend {
 
     // Shading and Uniforms
     // INFO: For some very cursed reason, it is impossible to make this function work
-    uint16_t createUniform(std::string name, UniformType type) {
+    uint16_t createUniform([[maybe_unused]] std::string name, [[maybe_unused]] UniformType type) {
         // bgfx::UniformType::Enum uType;
 
         // switch (type) {
@@ -32,9 +32,13 @@ namespace pen::backend {
         // bgfx::UniformHandle uniform = bgfx::createUniform("s_color", bgfx::UniformType::Sampler);
         return bgfx::createUniform("s_color", bgfx::UniformType::Sampler).idx;
     }
-    void deleteUniform(uint16_t uniform) {
+    void deleteUniform([[maybe_unused]] uint16_t uniform) {
         bgfx::destroy((bgfx::UniformHandle)uniform);
     }
+    // Ignored functions, BGFX doesn't need to create Bind Groups for each sprite like WebGPU
+    uint16_t createSpriteUniform([[maybe_unused]] std::string name, [[maybe_unused]] UniformType type) {return 0;}
+    void deleteSpriteUniform([[maybe_unused]] uint16_t uniform) {}
+
     void bindTexture(uint16_t texture) {
         std::cout << "PENUMBRA_CLUELESS: How did you manage to call this function? (bindTexture() in backendRender), trying to bind texture " << std::to_string(texture) << "\n";
     }

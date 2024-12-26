@@ -9,7 +9,7 @@
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/ext/matrix_float4x4.hpp>
 
-#include "webgpu.h"
+#include <webgpu/webgpu.h>
 
 namespace pen::backend {
     // View and Projection matrices

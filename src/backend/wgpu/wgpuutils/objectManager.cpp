@@ -1,7 +1,7 @@
 #include "objectManager.hpp"
 
 #include "backend/wgpu/wgpuutils/objManager/pipeline.hpp"
-#include "webgpu.h"
+#include <webgpu/webgpu.h>
 
 #include <algorithm>
 #include <cstdint>
@@ -44,6 +44,7 @@ namespace pen::backend {
     std::vector<WGPUBuffer*> vertexBuffers;
     std::vector<WGPUBuffer*> indexBuffers;
     std::vector<TextureData*> textures;
+    std::vector<UniformData*> uniforms;
 
     // Inits the Bind Group Layouts, duh
     void initBindGroupLayouts() {
@@ -159,6 +160,23 @@ namespace pen::backend {
         // we should just add this new one
         uint16_t index = textures.size();
         textures.push_back(texture);
+        return index;
+    }
+    // Registers a uniform and returns its ID
+    uint16_t registeruniform(UniformData* uniform) {
+        // Check for re-usable spots
+        for (uint16_t i = 0; i < uniforms.size(); i++) {
+            UniformData* unf = uniforms.at(i);
+            if (unf == nullptr) {
+                uniforms.at(i) = uniform;
+                return i;
+            }
+        }
+
+        // If we didn't have free spots,
+        // we should just add this new one
+        uint16_t index = uniforms.size();
+        uniforms.push_back(uniform);
         return index;
     }
 
@@ -431,7 +449,70 @@ namespace pen::backend {
         wgpuTextureViewRelease(td->textureView);
         wgpuTextureDestroy(td->texture);
         wgpuTextureRelease(td->texture);
+
+        // Delete texture Data
+        delete td;
+        textures.at(texture) = nullptr;
     }
+
+
+    // UNIFORMS
+    // Creates a UniformData object (bind group and buffer)
+    uint16_t createUniformData(uint64_t bufferSize, uint16_t bindingLayoutID, std::string label) {
+        UniformData* uniformData = new UniformData;
+
+        // Create buffer
+        WGPUBufferDescriptor uniformBufferDesc{};
+        uniformBufferDesc.nextInChain = nullptr;
+        uniformBufferDesc.size = bufferSize; // sizeof(glm::mat4) for Model Matrix, for example
+        uniformBufferDesc.usage = WGPUBufferUsage_CopyDst | WGPUBufferUsage_Uniform;
+        uniformBufferDesc.mappedAtCreation = false;
+        uniformData->uniformBuffer = wgpuDeviceCreateBuffer(objects::device, &uniformBufferDesc);
+
+        // Set a default Model
+        // We don't do this here because this function is general-purpose, should be fine though
+        // glm::mat4 model;
+        // wgpuQueueWriteBuffer(objects::queue, uniformData->uniformBuffer, 0, &model, sizeof(glm::mat4));
+
+        WGPUBindGroupEntry binding{};
+        binding.nextInChain = nullptr;
+        // Index of the binding. This is a new Bind Group, we use Binding 0. For multiple data you use Structs and Binding 0
+        binding.binding = 0;
+        // It is pointing to the uniform buffer created earlier
+        binding.buffer = uniformData->uniformBuffer;
+        // Offset
+        binding.offset = 0;
+        // Size
+        binding.size = bufferSize;
+
+        // Create Bind Group Descriptor
+        WGPUBindGroupDescriptor bindGroupDesc{};
+        bindGroupDesc.nextInChain = nullptr;
+        bindGroupDesc.layout = backend::pipeline2D::bindGroupLayouts[bindingLayoutID]; // bindingLayoutID is 1 for Model Matrices
+        bindGroupDesc.entryCount = 1;
+        bindGroupDesc.entries = &binding;
+        bindGroupDesc.label = label.c_str(); // "modelMatrix", for example. Can be whatever
+        uniformData->bindGroup = wgpuDeviceCreateBindGroup(backend::objects::device, &bindGroupDesc);
+
+        // Set Group Index
+        uniformData->groupIndex = bindingLayoutID;
+
+        // REGISTER UNIFORM AND RETURN ID
+        // ------------------------------
+        return registeruniform(uniformData);
+    }
+    // Destroys the Uniform Data
+    void destroyUniformData(uint16_t uniformData) {
+        UniformData* ud = uniforms.at(uniformData);
+
+        // Delete WGPU Objects
+        wgpuBindGroupRelease(ud->bindGroup);
+        wgpuBufferRelease(ud->uniformBuffer);
+        // Delete this pointer
+        delete ud;
+        uniforms.at(uniformData) = nullptr;
+    }
+
 
     // Sets the Vertex and Index Buffers
     void setBuffers(WGPURenderPassEncoder& renderPass, uint16_t vertexBuffer, uint16_t indexBuffer) {
@@ -440,6 +521,12 @@ namespace pen::backend {
 
         wgpuRenderPassEncoderSetVertexBuffer(renderPass, 0, vtxBuf, 0, wgpuBufferGetSize(vtxBuf));
         wgpuRenderPassEncoderSetIndexBuffer(renderPass, idxBuf, WGPUIndexFormat_Uint16, 0, wgpuBufferGetSize(idxBuf));
+    }
+    // Sets a Bind Group and writes to buffer
+    void setBindGroup(WGPURenderPassEncoder& renderPass, uint16_t uniform, void* data, uint64_t sizeofData) {
+        UniformData* uniformData = uniforms.at(uniform);
+        wgpuRenderPassEncoderSetBindGroup(renderPass, uniformData->groupIndex, uniformData->bindGroup, 0, nullptr);
+        wgpuQueueWriteBuffer(objects::queue, uniformData->uniformBuffer, 0, data, sizeofData);
     }
     // Binds a texture
     void bindTexture(WGPURenderPassEncoder& renderPass, uint16_t texture) {

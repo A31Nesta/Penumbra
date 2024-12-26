@@ -16,7 +16,7 @@ namespace pen::antumbra {
         uint32_t getShaderID() { return shaderID; }
         uint32_t getTextureID() { return textureID; }
 
-        void* _getBackendSpecificData() { return backendData; }
+        uint16_t _getUniformData() { return uniform; }
 
         Transform2D transform;
     private:
@@ -24,8 +24,8 @@ namespace pen::antumbra {
         uint32_t textureID;
         uint32_t shaderID;
 
-        // Backend-specific data
+        // Uniform
         // In BGFX this is nothing, in WGPU this is the Bind Group
-        void* backendData;
+        uint16_t uniform;
     };
 }
