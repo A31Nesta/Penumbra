@@ -1,6 +1,5 @@
 #include "../shader.hpp"
 #include "backend/wgpu/wgpuutils/objectManager.hpp"
-#include "debug/log.hpp"
 
 #include <cstdint>
 #include <fstream>

@@ -1,8 +1,6 @@
 #include "../texture.hpp"
 #include "backend/backendRender.hpp"
 #include "backend/wgpu/wgpuutils/objectManager.hpp"
-#include "debug/consoleColors.hpp"
-#include "debug/log.hpp"
 
 #include <cstdint>
 #include <cstdlib>
