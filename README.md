@@ -1,32 +1,25 @@
-# Penumbra
+<img src="readme-assets/penumbra-rotate.svg" alt="EcLibs Penumbra"></img>
 
-Simple Renderer built for Selengine, a custom 3D game engine.   
-It features a strange and simplistic lighting model based on textures created specifically for the game being developed in Selengine.   
-Cross-platform but primarily tested and developed on Linux.
+Penumbra is a simple Rendering Engine primarily built for Occlusion, a custom 3D game engine.  
+Cross-platform but mainly tested and developed on Linux.  
+Penumbra is part of the EcLibs project, a group of libraries and tools mainly focused on graphics and game development.  
+Like with **Occlusion**, the name of this project is also related to eclipses. Why? Rule of cool.
 
 It supports **BGFX** and **WebGPU** as backends (WebGPU via WGPU-Native).
 
 ## Important
 
-This is a Work In Progress. As of now, only 2D Rendering is supported.  
-Furthermore, the BGFX backend is more developed than the WebGPU one:
-The BGFX backend can output debug information to the screen while the
-WGPU one outputs to the console, for example.
+This is a Work in Progress. As of now, only 2D Rendering is supported.
 
 ## What does it support?
 
 - 2D and 3D Graphics via separate modules (Antumbra and Umbra respectively)
-- Simple phong-based lighting
+- Phong-based lighting and other simple experimental non-physically based lighting models
 - Model loading
 
 ### What does it ACTUALLY support?
 
-Right now it only supports simple 2D graphics, but they work in exactly the same way with WebGPU and BGFX.
-
-## "Is there a lore reason why it's called like that?"
-
-Yes, there is.  
-There is a lore reason related to the main projects (Selengine and the game being made with it)
+Right now it only supports simple 2D graphics lol.
 
 ## Dependencies
 ### Utilities
