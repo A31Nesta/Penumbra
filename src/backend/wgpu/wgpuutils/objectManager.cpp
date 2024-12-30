@@ -362,6 +362,7 @@ namespace pen::backend {
         source.offset = 0;
 
         WGPUExtent3D mipLevelSize = textureDesc.size;
+        uint32_t previousLevelWidth = 0;
         std::vector<uint8_t> previousLevelPixels;
         for (uint32_t level = 0; level < textureDesc.mipLevelCount; ++level) {
             // Create pixels array
@@ -378,10 +379,11 @@ namespace pen::backend {
                         uint8_t* p = &pixels[4 * (j * mipLevelSize.width + i)];
                         
                         // Get the corresponding 4 pixels from the previous level
-                        uint8_t* p00 = &previousLevelPixels[4 * ((2 * j + 0) * (2 * mipLevelSize.width) + (2 * i + 0))];
-                        uint8_t* p01 = &previousLevelPixels[4 * ((2 * j + 0) * (2 * mipLevelSize.width) + (2 * i + 1))];
-                        uint8_t* p10 = &previousLevelPixels[4 * ((2 * j + 1) * (2 * mipLevelSize.width) + (2 * i + 0))];
-                        uint8_t* p11 = &previousLevelPixels[4 * ((2 * j + 1) * (2 * mipLevelSize.width) + (2 * i + 1))];
+                        uint8_t* p00 = &previousLevelPixels[4 * ((2 * j + 0) * (previousLevelWidth) + (2 * i + 0))];
+                        uint8_t* p01 = &previousLevelPixels[4 * ((2 * j + 0) * (previousLevelWidth) + (2 * i + 1))];
+                        uint8_t* p10 = &previousLevelPixels[4 * ((2 * j + 1) * (previousLevelWidth) + (2 * i + 0))];
+                        uint8_t* p11 = &previousLevelPixels[4 * ((2 * j + 1) * (previousLevelWidth) + (2 * i + 1))];
+
                         // Average
                         p[0] = (p00[0] + p01[0] + p10[0] + p11[0]) / 4;
                         p[1] = (p00[1] + p01[1] + p10[1] + p11[1]) / 4;
@@ -400,10 +402,14 @@ namespace pen::backend {
 
             wgpuQueueWriteTexture(objects::queue, &destination, pixels.data(), pixels.size(), &source, &mipLevelSize);
 
+            // Before getting the next texture size we store the current
+            previousLevelWidth = mipLevelSize.width;
+
             // The size of the next mip level:
             // (see https://www.w3.org/TR/webgpu/#logical-miplevel-specific-texture-extent)
-            mipLevelSize.width /= 2;
-            mipLevelSize.height /= 2;
+            // Modified to disallow size 0 images
+            mipLevelSize.width  = std::max((uint32_t)1, mipLevelSize.width  / 2);
+            mipLevelSize.height = std::max((uint32_t)1, mipLevelSize.height / 2);
 
             previousLevelPixels = std::move(pixels);
         }

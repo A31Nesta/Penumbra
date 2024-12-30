@@ -3,6 +3,8 @@
 ## \[General\]
 
 - Move Build System to Meson.
+- Separate Shaders into **2D and 3D Shaders**. Shaders are built after generating the layout and after uniforms are created.
+- Move **Layout Generation to Backend** so that it's only done once per Renderer. (Once per Pipeline Type in WebGPU)
 
 ## \[Antumbra\]
 
@@ -14,11 +16,9 @@
 
 ## \[WGPU\]
 
-### Refactor
-
 - Refactor **Object Manager** to manage every (used) WGPU Object (creation and destruction)
-- Create a "**Descriptor Options**" (or similar) file with macros or options to configure the object creation.
-- Move **Layout Generation to Backend** so that it's only done once per Renderer. (Once per Pipeline Type)
-- Separate Shaders into **2D and 3D Shaders**. Shaders are built after generating the layout and after uniforms are created.
-
-- Fix mipmap generation on non-square/non-power-of-two sized images
+    - Already done for most objects. Keeping this here to remember to restructure a bit:
+        - Separate functions and class definitions from objects
+        - Separate "Object Manager" into smaller object managers that take care of specific types of objects
+        - Move creation of BackendWindow WebGPU Objects into a "mini object manager"
+        - Create a "**Descriptor Options**" (or similar) file with macros or options to configure the object creation.
