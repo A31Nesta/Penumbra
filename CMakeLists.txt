@@ -5,8 +5,8 @@ option(LINUX_X11 "Linux Only. Enables X11 support. [Recommended]" ON)
 option(LINUX_WAYLAND "Linux Only. Enables Wayland support. [Recommended if Wayland is installed]" ON)
 
 # INFO: To develop WGPU backend, disable building with BGFX and enable building with WGPU
-option(BACKEND_BGFX "Use BGFX as Backend" OFF)
-option(BACKEND_WGPU "Use WebGPU Native as Backend" ON)
+option(BACKEND_BGFX "Use BGFX as Backend" ON)
+option(BACKEND_WGPU "Use WebGPU Native as Backend" OFF)
 # I never got Emscripten to work with CMake lol
 # In Emscripten we should use the -sASYNCIFY option and the -sUSE_GLFW=3
 
@@ -21,8 +21,6 @@ add_library(${PROJECT_NAME} STATIC
     src/utils/vectors.cpp 
     src/utils/transform2D.cpp 
 
-    # src/antumbra/types/shader.cpp 
-    # src/antumbra/types/texture.cpp 
     src/antumbra/types/sprite.cpp 
     src/antumbra/antumbra.cpp 
 
@@ -32,6 +30,39 @@ add_library(${PROJECT_NAME} STATIC
     src/utils/config.cpp
     src/penumbra.cpp
 )
+
+# Backend-specific sources
+if(BACKEND_BGFX)
+    target_sources(${PROJECT_NAME} PRIVATE 
+        src/backend/bgfx/backendRender.cpp
+    
+        src/backend/bgfx/shader.cpp 
+        src/backend/bgfx/texture.cpp
+    
+        src/backend/bgfx/backendWindow.cpp
+        src/backend/bgfx/backendVtxLayout.cpp
+        src/backend/bgfx/backendVtxBuffer.cpp
+        src/backend/bgfx/backendIdxBuffer.cpp
+    )
+endif(BACKEND_BGFX)
+
+if(BACKEND_WGPU)
+    target_sources(${PROJECT_NAME} PRIVATE 
+        src/backend/wgpu/backendRender.cpp
+
+        src/backend/wgpu/wgpuutils/objectManager.cpp
+        src/backend/wgpu/wgpuutils/objManager/pipeline.cpp
+        src/backend/wgpu/wgpuutils/init.cpp
+        
+        src/backend/wgpu/shader.cpp 
+        src/backend/wgpu/texture.cpp
+        
+        src/backend/wgpu/backendWindow.cpp
+        src/backend/wgpu/backendVtxLayout.cpp
+        src/backend/wgpu/backendVtxBuffer.cpp
+        src/backend/wgpu/backendIdxBuffer.cpp
+    )
+endif(BACKEND_WGPU)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
     VERSION ${PROJECT_VERSION}
@@ -61,10 +92,31 @@ if(LINUX)
     endif(LINUX_WAYLAND)
 endif(LINUX)
 
+# WARNING: Linux Only!
+if(BACKEND_WGPU)
+    target_include_directories(${PROJECT_NAME} PRIVATE
+        $<$<CONFIG:Debug>:${CMAKE_CURRENT_SOURCE_DIR}/external/wgpu-native/linux-debug/include>
+        $<$<CONFIG:RelWithDebInfo>:${CMAKE_CURRENT_SOURCE_DIR}/external/wgpu-native/linux-debug/include>
+        $<$<CONFIG:Release>:${CMAKE_CURRENT_SOURCE_DIR}/external/wgpu-native/linux-release/include>
+        $<$<CONFIG:MinSizeRel>:${CMAKE_CURRENT_SOURCE_DIR}/external/wgpu-native/linux-release/include>
+
+        # Fix sussy issue where wgpu.h can't find the webgpu.h header
+        $<$<CONFIG:Debug>:${CMAKE_CURRENT_SOURCE_DIR}/external/wgpu-native/linux-debug/include/webgpu>
+        $<$<CONFIG:RelWithDebInfo>:${CMAKE_CURRENT_SOURCE_DIR}/external/wgpu-native/linux-debug/include/webgpu>
+        $<$<CONFIG:Release>:${CMAKE_CURRENT_SOURCE_DIR}/external/wgpu-native/linux-release/include/webgpu>
+        $<$<CONFIG:MinSizeRel>:${CMAKE_CURRENT_SOURCE_DIR}/external/wgpu-native/linux-release/include/webgpu>
+    )
+    target_link_directories(${PROJECT_NAME} PRIVATE
+        $<$<CONFIG:Debug>:${CMAKE_CURRENT_SOURCE_DIR}/external/wgpu-native/linux-debug/lib>
+        $<$<CONFIG:RelWithDebInfo>:${CMAKE_CURRENT_SOURCE_DIR}/external/wgpu-native/linux-debug/lib>
+        $<$<CONFIG:Release>:${CMAKE_CURRENT_SOURCE_DIR}/external/wgpu-native/linux-release/lib>
+        $<$<CONFIG:MinSizeRel>:${CMAKE_CURRENT_SOURCE_DIR}/external/wgpu-native/linux-release/lib>
+    )
+endif(BACKEND_WGPU)
 
 target_include_directories(${PROJECT_NAME} PRIVATE
-    include
-    src
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
 if(BACKEND_BGFX)
@@ -74,6 +126,12 @@ if(BACKEND_BGFX)
         bx
     )
 endif(BACKEND_BGFX)
+
+if(BACKEND_WGPU)
+    target_link_libraries(${PROJECT_NAME}
+        libwgpu_native.a
+    )
+endif(BACKEND_WGPU)
 
 target_link_libraries(${PROJECT_NAME}
     glfw

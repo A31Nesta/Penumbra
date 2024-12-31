@@ -1,0 +1,3 @@
+option('pen_backend', type : 'combo', choices : ['bgfx', 'webgpu'], value : 'webgpu', description : 'The rendering backend that the library will use')
+option('pen_linux_x11', type : 'boolean', value : true, description : 'Linux Only. Enables X11 support. [Recommended]')
+option('pen_linux_wayland', type : 'boolean', value : true, description : 'Linux Only. Enables Wayland support. [Recommended if using a Wayland compositor]')

@@ -120,7 +120,7 @@ namespace pen::antumbra {
 
     // BASE ADD SPRITE
     Sprite* Antumbra::createSprite(std::string texture, Transform2D transform, std::string shader) {
-        std::cout << "PENUMBRA_INFO [WGPU]: Creating new Sprite...\n";
+        std::cout << "ANTUMBRA_LOG: Creating new Sprite...\n";
         uint32_t id = sprites.size();
 
         Texture* t = getTexture(texture);
@@ -133,7 +133,7 @@ namespace pen::antumbra {
         Sprite* sprite = new Sprite(id, transform, deform, textureID, shaderID);
         sprites.push_back(sprite);
 
-        std::cout << "PENUMBRA_INFO [WGPU]: Created new Sprite!\n";
+        std::cout << "ANTUMBRA_LOG: Created new Sprite!\n";
         return sprite;
     }
     // OTHER ADD SPRITES
@@ -218,9 +218,9 @@ namespace pen::antumbra {
             }
         }
 
-        std::cout << "PENUMBRA_INFO [WGPU]: Creating new texture...\n";
+        std::cout << "ANTUMBRA_LOG: Creating new texture...\n";
         Texture* newTexture = new Texture(textures.size(), texture, PENUMBRA_TEX_COLOR, colorUniform);
-        std::cout << "PENUMBRA_INFO [WGPU]: Created new texture!\n";
+        std::cout << "ANTUMBRA_LOG: Created new texture!\n";
         
         // Only add if it's Valid
         if (newTexture->isValid()) {
