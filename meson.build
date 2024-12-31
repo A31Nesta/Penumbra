@@ -38,7 +38,10 @@ endif
 
 # ADD INCLUDE DIRECTORIES
 # -----------------------
-includes = include_directories('include')
+includes = include_directories(
+    'include',
+    'src'
+)
 
 # DEFINE SOURCES
 # --------------
