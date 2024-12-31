@@ -8,3 +8,9 @@ external/glm/
 # WGPU precompiled libraries are comically large
 external/wgpu-native/linux-debug/lib/
 external/wgpu-native/linux-release/lib/
+
+# Meson subprojects
+subprojects/packagecache
+subprojects/wgpu-native-22.1.0.5
+subprojects/glfw-3.3.10
+subprojects/glm-1.0.1
