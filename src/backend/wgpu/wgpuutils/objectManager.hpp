@@ -5,7 +5,7 @@
     of Shaders (pipelines), textures and more.
 */
 
-#include <webgpu/webgpu.h>
+#include <webgpu-headers/webgpu.h>
 #include <cstdint>
 #include <string>
 #include <vector>

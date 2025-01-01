@@ -1,5 +1,5 @@
 #include "init.hpp"
-#include "webgpu/webgpu.h"
+#include <webgpu-headers/webgpu.h>
 
 #include <cassert>
 #include <iostream>

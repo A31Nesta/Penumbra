@@ -1,6 +1,6 @@
 #include "../backendVtxLayout.hpp"
 #include "backend/wgpu/wgpuutils/objectManager.hpp"
-#include "webgpu.h"
+#include <webgpu-headers/webgpu.h>
 
 #include <cstddef>
 #include <cstdint>

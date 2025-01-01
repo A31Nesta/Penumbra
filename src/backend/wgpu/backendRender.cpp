@@ -2,7 +2,7 @@
 
 #include "backend/wgpu/wgpuutils/objManager/pipeline.hpp"
 #include "backend/wgpu/wgpuutils/objectManager.hpp"
-#include "webgpu.h"
+#include <webgpu-headers/webgpu.h>
 #include <glm/fwd.hpp>
 
 namespace pen::backend {

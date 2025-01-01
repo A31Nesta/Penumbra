@@ -1,8 +1,8 @@
 #include "../backendWindow.hpp"
 #include "backend/backendRender.hpp"
 #include "utils/config.hpp"
-#include "wgpu/wgpu.h"
-#include "webgpu/webgpu.h"
+#include <wgpu.h>
+#include <webgpu-headers/webgpu.h>
 
 #include <GLFW/glfw3.h>
 

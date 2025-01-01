@@ -1,7 +1,7 @@
 #include "objectManager.hpp"
 
 #include "backend/wgpu/wgpuutils/objManager/pipeline.hpp"
-#include <webgpu/webgpu.h>
+#include <webgpu-headers/webgpu.h>
 
 #include <algorithm>
 #include <cstdint>

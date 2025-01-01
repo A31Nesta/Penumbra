@@ -13,4 +13,5 @@ external/wgpu-native/linux-release/lib/
 subprojects/packagecache
 subprojects/wgpu-native-22.1.0.5
 subprojects/glfw-3.3.10
+subprojects/glfw-3.4
 subprojects/glm-1.0.1

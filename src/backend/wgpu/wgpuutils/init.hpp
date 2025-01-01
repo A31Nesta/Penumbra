@@ -1,5 +1,5 @@
 #include <GLFW/glfw3.h>
-#include <webgpu/webgpu.h>
+#include <webgpu-headers/webgpu.h>
 
 WGPUInstance createWGPUInstance();
 

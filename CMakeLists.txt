@@ -5,8 +5,8 @@ option(LINUX_X11 "Linux Only. Enables X11 support. [Recommended]" ON)
 option(LINUX_WAYLAND "Linux Only. Enables Wayland support. [Recommended if Wayland is installed]" ON)
 
 # INFO: To develop WGPU backend, disable building with BGFX and enable building with WGPU
-option(BACKEND_BGFX "Use BGFX as Backend" ON)
-option(BACKEND_WGPU "Use WebGPU Native as Backend" OFF)
+option(BACKEND_BGFX "Use BGFX as Backend" OFF)
+option(BACKEND_WGPU "Use WebGPU Native as Backend" ON)
 # I never got Emscripten to work with CMake lol
 # In Emscripten we should use the -sASYNCIFY option and the -sUSE_GLFW=3
 
@@ -244,10 +244,10 @@ if(BACKEND_WGPU)
         $<$<CONFIG:MinSizeRel>:${CMAKE_CURRENT_SOURCE_DIR}/external/wgpu-native/linux-release/include>
 
         # Fix sussy issue where wgpu.h can't find the webgpu.h header
-        $<$<CONFIG:Debug>:${CMAKE_CURRENT_SOURCE_DIR}/external/wgpu-native/linux-debug/include/webgpu>
-        $<$<CONFIG:RelWithDebInfo>:${CMAKE_CURRENT_SOURCE_DIR}/external/wgpu-native/linux-debug/include/webgpu>
-        $<$<CONFIG:Release>:${CMAKE_CURRENT_SOURCE_DIR}/external/wgpu-native/linux-release/include/webgpu>
-        $<$<CONFIG:MinSizeRel>:${CMAKE_CURRENT_SOURCE_DIR}/external/wgpu-native/linux-release/include/webgpu>
+        $<$<CONFIG:Debug>:${CMAKE_CURRENT_SOURCE_DIR}/external/wgpu-native/linux-debug/include/webgpu-headers>
+        $<$<CONFIG:RelWithDebInfo>:${CMAKE_CURRENT_SOURCE_DIR}/external/wgpu-native/linux-debug/include/webgpu-headers>
+        $<$<CONFIG:Release>:${CMAKE_CURRENT_SOURCE_DIR}/external/wgpu-native/linux-release/include/webgpu-headers>
+        $<$<CONFIG:MinSizeRel>:${CMAKE_CURRENT_SOURCE_DIR}/external/wgpu-native/linux-release/include/webgpu-headers>
     )
     target_link_directories(${PROJECT_NAME} PRIVATE
         $<$<CONFIG:Debug>:${CMAKE_CURRENT_SOURCE_DIR}/external/wgpu-native/linux-debug/lib>

@@ -1,0 +1,9 @@
+ninja: Entering directory `/run/media/a31nesta/Seagate/Development/SELibs/Penumbra/build'
+[1/1] Linking target penumbra-tests
+FAILED: penumbra-tests 
+c++  -o penumbra-tests penumbra-tests.p/testEntry.cpp.o penumbra-tests.p/src_utils_vectors.cpp.o penumbra-tests.p/src_utils_transform2D.cpp.o penumbra-tests.p/src_antumbra_types_sprite.cpp.o penumbra-tests.p/src_antumbra_antumbra.cpp.o penumbra-tests.p/src_debug_consoleColors.cpp.o penumbra-tests.p/src_debug_log.cpp.o penumbra-tests.p/src_core_window.cpp.o penumbra-tests.p/src_utils_config.cpp.o penumbra-tests.p/src_penumbra.cpp.o penumbra-tests.p/src_backend_wgpu_backendRender.cpp.o penumbra-tests.p/src_backend_wgpu_wgpuutils_objectManager.cpp.o penumbra-tests.p/src_backend_wgpu_wgpuutils_objManager_pipeline.cpp.o penumbra-tests.p/src_backend_wgpu_wgpuutils_init.cpp.o penumbra-tests.p/src_backend_wgpu_shader.cpp.o penumbra-tests.p/src_backend_wgpu_texture.cpp.o penumbra-tests.p/src_backend_wgpu_backendWindow.cpp.o penumbra-tests.p/src_backend_wgpu_backendVtxLayout.cpp.o penumbra-tests.p/src_backend_wgpu_backendVtxBuffer.cpp.o penumbra-tests.p/src_backend_wgpu_backendIdxBuffer.cpp.o -Wl,--as-needed -Wl,--no-undefined -Wl,--start-group subprojects/wgpu-native-22.1.0.5/libwgpu_native.a -lrt -lm -ldl -lglfw /usr/lib/libglm.a -Wl,--end-group
+/usr/bin/ld: subprojects/wgpu-native-22.1.0.5/libwgpu_native.a: error adding symbols: archive has no index; run ranlib to add one
+collect2: error: ld returned 1 exit status
+ninja: build stopped: subcommand failed.
+INFO: autodetecting backend as ninja
+INFO: calculating backend command to run: /usr/bin/ninja -C /run/media/a31nesta/Seagate/Development/SELibs/Penumbra/build

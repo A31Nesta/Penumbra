@@ -1,5 +1,5 @@
 #include "pipeline.hpp"
-#include "webgpu.h"
+#include <webgpu-headers/webgpu.h>
 #include <glm/fwd.hpp>
 #include <iostream>
 

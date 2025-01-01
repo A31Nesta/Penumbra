@@ -38,10 +38,12 @@ endif
 
 # ADD INCLUDE DIRECTORIES
 # -----------------------
-includes = include_directories(
-    'include',
-    'src'
-)
+includes = [
+    include_directories(
+        'include',
+        'src'
+    )
+]
 
 # DEFINE SOURCES
 # --------------
@@ -98,13 +100,17 @@ endif
 # ----------------
 deps = []
 # GLFW
-glfw_proj = subproject('glfw')
-deps += glfw_proj.get_variable('glfw_dep')
+deps += dependency('glfw3')
 # GLM
-glm_proj = subproject('glm')
-deps += glm_proj.get_variable('glm_dep')
+deps += dependency('glm')
 # WGPU
-wgpu_native_proj = subproject('wgpu-native')
-deps += wgpu_native_proj.get_variable('dep_wgpu_native')
+if pen_backend == 'webgpu'
+    deps += dependency('wgpu-native')
+    # Add wgpu-native-22.1.0.5/ffi/webgpu-headers Directory
+    # This fixes "webgpu.h: No such file or directory" in wgpu.h
+    includes += include_directories(
+        'subprojects/wgpu-native-22.1.0.5/ffi/webgpu-headers'
+    )
+endif
 
 executable('penumbra-tests', src, cpp_args : args, dependencies : deps, include_directories : includes)
