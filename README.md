@@ -21,6 +21,27 @@ This is a Work in Progress. As of now, only 2D Rendering is supported.
 
 Right now it only supports simple 2D graphics lol.
 
+## Building
+
+Penumbra uses Meson as its build system. If you're using Meson you can use the library as a subproject.
+
+### Test executable
+
+The test executable is a simple application made to test specific parts of the library.
+
+Setup the build:
+```
+meson setup build
+```
+Then compile it:
+```
+meson compile -C build
+```
+
+### Library
+
+[Not yet. I'm still moving from a poorly made CMake file to Meson so I'm currently testing the executable.]
+
 ## Dependencies
 ### Utilities
 - **bgfx-shaderc** (included with BGFX) \[Only if using BGFX as backend\]
@@ -32,14 +53,3 @@ Right now it only supports simple 2D graphics lol.
 - **GLFW**
 - **GLM**
 - **STB Image** (included)
-
-### Extra: Arch Linux Packages
-
-If you're using Arch Linux or an Arch-based Linux distribution, you can
-use these packages to install the necessary dependencies.
-WGPU-Native is obtained from the Releases tab of [its repository](https://github.com/gfx-rs/wgpu-native/).
-
-- **bgfx-cmake-git** \[Only if using BGFX as backend\]
-- **ktx_software-git** \[Only if using BGFX as backend; KTX is currently not supported with WGPU Backend\]
-- **glfw**
-- **glm**

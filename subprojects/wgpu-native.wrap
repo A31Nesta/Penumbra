@@ -3,7 +3,7 @@ directory = wgpu-native-22.1.0.5
 url = https://github.com/gfx-rs/wgpu-native.git
 revision = v22.1.0.5
 clone-recursive = true
-; method = cargo
+patch_directory = wgpu-native-22.1.0.5
 
 [provide]
 wgpu-native = dep_wgpu_native
