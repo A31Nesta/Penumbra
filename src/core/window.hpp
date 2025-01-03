@@ -49,6 +49,6 @@ namespace pen::core {
         backend::BackendWindow window;
 
         // Renderers
-        antumbra::Antumbra* antumbra;
+        antumbra::Antumbra* antumbra = nullptr;
     };
 }

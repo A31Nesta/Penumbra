@@ -106,10 +106,10 @@ deps += dependency('glm')
 # WGPU
 if pen_backend == 'webgpu'
     deps += dependency('wgpu-native')
-    # Add wgpu-native-22.1.0.5/ffi/webgpu-headers Directory
+    # Add wgpu-native/ffi/webgpu-headers Directory
     # This fixes "webgpu.h: No such file or directory" in wgpu.h
     includes += include_directories(
-        'subprojects/wgpu-native-22.1.0.5/ffi/webgpu-headers'
+        'subprojects/wgpu-native/ffi/webgpu-headers'
     )
 endif
 

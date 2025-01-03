@@ -1,9 +1,9 @@
 [wrap-git]
-directory = wgpu-native-22.1.0.5
+directory = wgpu-native
 url = https://github.com/gfx-rs/wgpu-native.git
 revision = v22.1.0.5
 clone-recursive = true
-patch_directory = wgpu-native-22.1.0.5
+patch_directory = wgpu-native
 
 [provide]
 wgpu-native = dep_wgpu_native

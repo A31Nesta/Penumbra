@@ -39,8 +39,8 @@ namespace pen {
         }
         else {
             std::cout << "PENUMBRA_ERROR [WGPU]: UNABLE TO OPEN SHADER! Files in folder:\n";
-            std::string path = ".";
-            for (const auto & entry : std::filesystem::directory_iterator(path))
+            std::string curr_path = ".";
+            for (const auto & entry : std::filesystem::directory_iterator(curr_path))
                 std::cout << entry.path() << std::endl;
             throw std::runtime_error("PENUMBRA_ERROR: Couldn't open Shader "+name);
         }
