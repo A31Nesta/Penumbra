@@ -12,6 +12,7 @@ project('penumbra', 'c', 'cpp',
 debug = get_option('debug')
 # Get custom options
 pen_backend = get_option('pen_backend')
+pen_webgpu_lib = get_option('pen_webgpu_lib')
 pen_linux_x11 = get_option('pen_linux_x11')
 pen_linux_wayland = get_option('pen_linux_wayland')
 
@@ -24,7 +25,14 @@ args = [
 if pen_backend == 'bgfx'
     args += '-DPENUMBRA_BACKEND_BGFX'
 elif pen_backend == 'webgpu'
-    args += '-DPENUMBRA_BACKEND_WGPU'
+    # Add WebGPU macro
+    args += '-DPENUMBRA_BACKEND_WEBGPU'
+    # Add WGPU or DAWN macro depending on the library
+    if pen_webgpu_lib == 'wgpu-native'
+        args += '-DPENUMBRA_BACKEND_WGPU'
+    elif pen_webgpu_lib == 'dawn'
+        args += '-DPENUMBRA_BACKEND_DAWN'
+    endif
 endif
 # Linux-specific files
 if host_machine.system() == 'linux'
@@ -105,12 +113,43 @@ deps += dependency('glfw3')
 deps += dependency('glm')
 # WGPU
 if pen_backend == 'webgpu'
-    deps += dependency('wgpu-native')
-    # Add wgpu-native/ffi/webgpu-headers Directory
-    # This fixes "webgpu.h: No such file or directory" in wgpu.h
-    includes += include_directories(
-        'subprojects/wgpu-native/ffi/webgpu-headers'
-    )
+    if pen_webgpu_lib == 'wgpu-native'
+        deps += dependency('wgpu-native')
+        # Add wgpu-native/ffi/webgpu-headers Directory
+        # This fixes "webgpu.h: No such file or directory" in wgpu.h
+        includes += include_directories(
+            'subprojects/wgpu-native/ffi/webgpu-headers'
+        )
+    elif pen_webgpu_lib == 'dawn'
+        cmake = import('cmake')
+        dawn_options = cmake.subproject_options()
+        # Debug or Release configurations
+        if debug
+            dawn_options.add_cmake_defines({
+                'DAWN_FETCH_DEPENDENCIES': true,
+                'DAWN_ENABLE_INSTALL': true,
+                'CMAKE_BUILD_TYPE': 'Debug',
+
+                'BUILD_SAMPLES': false,
+                'BUILD_TESTS': false,
+                'BUILD_SHARED_LIBS': false
+            })
+        else
+            dawn_options.add_cmake_defines({
+                'DAWN_FETCH_DEPENDENCIES': true,
+                'DAWN_ENABLE_INSTALL': true,
+                'CMAKE_BUILD_TYPE': 'Release',
+
+                'BUILD_SAMPLES': false,
+                'BUILD_TESTS': false,
+                'BUILD_SHARED_LIBS': false
+            })
+        endif
+        # Subproject
+        dawn_subp = cmake.subproject('dawn', options: dawn_options)
+        # message('CMake targets:\n - ' + '\n - '.join(dawn_subp.target_list()))
+        deps += dawn_subp.dependency('webgpu_dawn')
+    endif
 endif
 
 executable('penumbra-tests', src, cpp_args : args, dependencies : deps, include_directories : includes)

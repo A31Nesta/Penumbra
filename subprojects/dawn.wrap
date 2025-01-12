@@ -1,0 +1,9 @@
+[wrap-git]
+directory = dawn
+url = https://dawn.googlesource.com/dawn
+revision = 44eb9f0dd0854e826da5e03b358c872cfdc5b0e9
+depth = 1
+method = cmake
+
+[provide]
+dawn = dawn_dep
