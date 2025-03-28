@@ -1,6 +1,12 @@
 <img src="readme-assets/penumbra-rotate.svg" alt="EcLibs Penumbra"></img>
 
-Penumbra is a simple Rendering Engine primarily built for Occlusion, a custom 3D game engine.  
+This project has been cancelled. I enjoyed WGPU more than BGFX but I had too many issues with building WGPU-Native so
+I just went to learn Rust and use normal WGPU instead. Turns out Rust has a good package manager and easy cross-compilation
+so... Once the new version is at least semi-usable I'll link it here.
+
+---
+
+Penumbra ~~is~~ WAS a simple Rendering Engine primarily built for Occlusion, a custom 3D game engine.  
 Cross-platform but mainly tested and developed on Linux.  
 Penumbra is part of the EcLibs project, a group of libraries and tools mainly focused on graphics and game development.  
 Like with **Occlusion**, the name of this project is also related to eclipses. Why? Rule of cool.
